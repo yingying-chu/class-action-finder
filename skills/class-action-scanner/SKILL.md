@@ -1,6 +1,7 @@
 ---
 name: class-action-scanner
-description: Scan Gmail for class action settlement emails and produce an actionable report. Use this skill whenever the user mentions class action settlements, legal notices, settlement claims, or wants to find money owed to them from lawsuits — even if they don't use exact legal vocabulary. Trigger for phrases like /class-action-scanner, "scan my email for settlements", "find class action claims in Gmail", "check if I'm eligible for any settlement money", "did I miss any settlement deadlines", "are there class action lawsuits that affect me", "find unclaimed settlement money in my inbox", "what class actions should I know about", or any time the user wants to audit their email for legal claim opportunities.
+description: >-
+  Scan Gmail for class action settlement emails and produce an actionable report. Use this skill whenever the user mentions class action settlements, legal notices, settlement claims, or wants to find money owed to them from lawsuits — even if they don't use exact legal vocabulary. Trigger for phrases like /class-action-scanner, "scan my email for settlements", "find class action claims in Gmail", "check if I'm eligible for any settlement money", "did I miss any settlement deadlines", "are there class action lawsuits that affect me", "find unclaimed settlement money in my inbox", "what class actions should I know about", or any time the user wants to audit their email for legal claim opportunities.
 ---
 
 # Class Action Scanner
