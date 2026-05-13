@@ -1,17 +1,17 @@
 # CLAUDE.md
 
-This repo contains personal Claude Code slash commands stored in `.claude/commands/`.
+This repo contains Claude skills stored in `skills/`. Run `./install.sh` to install them into Claude's global skills directory so they work across all projects.
 
-## Commands in this repo
+## Skills in this repo
 
-| Command | File | What it does |
+| Skill | Directory | What it does |
 |---|---|---|
-| `/class-action-scanner` | `.claude/commands/class-action-scanner.md` | Scans Gmail for class action settlement emails |
-| `/class-action-tracker` | `.claude/commands/class-action-tracker.md` | Tracks filed claims and payouts |
+| `class-action-scanner` | `skills/class-action-scanner/` | Scans Gmail for class action settlement emails |
+| `class-action-tracker` | `skills/class-action-tracker/` | Tracks filed claims and payouts |
 
-## Reference files (bundled in this repo)
+## Reference files
 
-The scanner reads these at runtime from `.claude/class-action-references/`:
+The scanner loads these at runtime from its own `references/` directory (bundled inside the skill):
 
 | File | Purpose |
 |---|---|
@@ -25,6 +25,6 @@ Tracked claims are stored at `~/.claude/class-action-tracker.json` (on each user
 
 ## Gmail MCP
 
-Both commands use a Gmail MCP connected via Claude.ai integrations. The scanner automatically discovers it by looking for whichever MCP provides `search_threads` and `get_thread`.
+The scanner uses a Gmail MCP connected via Claude.ai integrations. It automatically discovers whichever MCP provides `search_threads` and `get_thread` — no configuration needed.
 
-See the Prerequisites section in README.md for setup instructions.
+See README.md for setup instructions.

@@ -1,7 +1,6 @@
 ---
+name: class-action-tracker
 description: Use this skill for personal class action record-keeping — storing and retrieving the user's own claim history. Trigger when the user narrates a personal settlement event: filing a claim (mentioning a claim ID, expected payout, or filing date), receiving a settlement payment (specific dollar amount, payment method, or receipt date), or updating the status of an existing claim. Also trigger when the user queries their own history: asking if they filed for a specific company, requesting a list of their claims, or asking for their total settlement earnings. Trigger for /class-action-tracker with any argument. Skip for email scanning, research, form-filling help, opting out, and general class action questions.
-argument-hint: [filed | payout | list | watch | remove] [company name]
-allowed-tools: [Read, Write]
 ---
 
 # Class Action Tracker

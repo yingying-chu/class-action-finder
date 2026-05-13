@@ -1,17 +1,8 @@
 # Class Action Settlement Tools for Claude Code
 
-Two Claude Code slash commands that scan your Gmail for class action settlements, score each email for legitimacy, and track what you've filed and received — so you don't leave money on the table.
+Two Claude skills that scan your Gmail for class action settlements, score each email for legitimacy, and track what you've filed and received — so you don't leave money on the table.
 
----
-
-## How it works
-
-Most people have unclaimed class action settlements sitting in their inbox (or spam folder). These tools:
-
-1. **Scan** your Gmail across inbox, spam, and promotions using targeted search queries
-2. **Score** every email for phishing risk before you act on it (🟢 safe → 🔴 do not click)
-3. **Verify** open deadlines and payouts by fetching the actual settlement website
-4. **Report** everything in one structured file: what to file now, what to watch, what expired, and what you've already submitted
+Once installed, the skills work **globally** — in any folder, any project, any Claude Code session.
 
 ---
 
@@ -29,17 +20,16 @@ The scanner reads your Gmail via Claude's MCP integration — it never stores or
 
 1. Go to [claude.ai](https://claude.ai) → **Settings → Integrations**
 2. Connect **Gmail** and authorize read access
-3. That's it — no API keys or config files needed
 
-### 3. Clone and run
+### 3. Clone and install
 
 ```bash
 git clone https://github.com/yingying-chu/yy-creatives.git
 cd yy-creatives
-claude
+./install.sh
 ```
 
-Then type:
+Then open Claude Code anywhere and type:
 
 ```
 /class-action-scanner
@@ -47,9 +37,18 @@ Then type:
 
 ---
 
-## `/class-action-scanner`
+## How it works
 
-Searches your Gmail and produces a dated report file with every class action settlement it finds.
+Most people have unclaimed class action settlements sitting in their inbox (or spam folder). These tools:
+
+1. **Scan** your Gmail across inbox, spam, and promotions using targeted search queries
+2. **Score** every email for phishing risk before you act on it (🟢 safe → 🔴 do not click)
+3. **Verify** open deadlines and payouts by fetching the actual settlement website
+4. **Report** everything in one structured file: what to file now, what to watch, what expired, and what you've already submitted
+
+---
+
+## `/class-action-scanner`
 
 ### Usage
 
@@ -72,7 +71,7 @@ Searches your Gmail and produces a dated report file with every class action set
 
 ### Phishing scoring
 
-Every email gets a confidence score before it reaches you. The score starts at 50% and moves based on signals:
+Every email gets a confidence score before it reaches you:
 
 | Score | Level | Meaning |
 |---|---|---|
@@ -84,18 +83,6 @@ Every email gets a confidence score before it reaches you. The score starts at 5
 Green flags: sender is a known administrator (Epiq, Kroll, JND), case appears in news or PACER, no payment requested, court case number present.
 
 Red flags: requests a processing fee, asks for SSN or bank account, case name returns zero search results, random sender domain.
-
-### Example output
-
-```
-Report saved: class-action-report-2026-05-12.md
-
-  3 actionable claims found
-  Potential payout range: $125 – $10,200+
-  Most urgent: LastPass — deadline Jul 2, 2026 (51 days)
-  2 emails surfaced from spam
-  0 phishing alerts
-```
 
 ---
 
@@ -129,20 +116,20 @@ The scanner automatically cross-references this tracker and marks already-filed 
 
 ---
 
-## Files in this repo
+## Repo structure
 
 ```
-.claude/
-  commands/
-    class-action-scanner.md      # scanner slash command
-    class-action-tracker.md      # tracker slash command
-  class-action-references/
-    extraction-guide.md          # email classification rules
-    phishing-guide.md            # confidence scoring methodology
-    report-template.md           # output table structure
+skills/
+  class-action-scanner/
+    SKILL.md                     # scanner skill
+    references/
+      extraction-guide.md        # email classification rules
+      phishing-guide.md          # confidence scoring methodology
+      report-template.md         # output table structure
+  class-action-tracker/
+    SKILL.md                     # tracker skill
+install.sh                       # copies skills into Claude's global skills folder
 ```
-
-The reference files ship with the repo — no separate installation needed.
 
 ---
 
