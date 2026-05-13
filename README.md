@@ -100,10 +100,10 @@ The report itself looks like this:
 
 **Already Filed**
 
-| Company / Case | Filed | Claim ID | Expected | Actual |
-|---|---|---|---|---|
-| Blue Cross Blue Shield Antitrust | before 2021 | SAMPLE-ID-0003 | pro-rata share of $2.67B | Pending — checks issued May 2026 |
-| Facebook / Internet Tracking | unknown | — | $4.01 | ✅ $4.01 received via Zelle |
+| Company / Case | Filed | Expected | Actual |
+|---|---|---|---|
+| Blue Cross Blue Shield Antitrust | before 2021 | pro-rata share of $2.67B | Pending — checks issued May 2026 |
+| Facebook / Internet Tracking | unknown | $4.01 | ✅ $4.01 received via Zelle |
 
 ### Phishing scoring
 
@@ -130,7 +130,7 @@ Keeps a running record of what you've filed, what you're watching, and what you'
 
 Just narrate what happened:
 
-- *"I filed my LastPass claim, ID is SAMPLE-ID-0001"*
+- *"I filed my LastPass claim"*
 - *"I got a $47 check from Blue Cross Blue Shield"*
 - *"add Amazon Alexa Privacy to my watch list"*
 - *"show me all my filed claims"*
@@ -142,11 +142,11 @@ Your Class Action Tracker
 
 Filed Claims (4 total)
 ──────────────────────────────────────────────────────────────────
-Company / Case          Filed       Claim ID      Expected    Actual
-Blue Cross Blue Shield  pre-2021    SAMPLE-ID-0003    pro-rata    Pending ⏳
-Kaiser Privacy Breach   2026-01-14  SAMPLE-ID-0004-...   pro-rata    Pending ⏳
-Ashley Furniture        2026-05-12  SAMPLE-ID-0005      voucher     Pending ⏳
-Facebook Tracking       unknown     —             $4.01       $4.01 ✅
+Company / Case          Filed       Expected    Actual
+Blue Cross Blue Shield  pre-2021    pro-rata    Pending ⏳
+Kaiser Privacy Breach   2026-01-14  pro-rata    Pending ⏳
+Ashley Furniture        2026-05-12  voucher     Pending ⏳
+Facebook Tracking       unknown     $4.01       $4.01 ✅
 
 Total received: $4.01
 Still pending: 3 claims
