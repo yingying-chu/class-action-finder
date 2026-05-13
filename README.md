@@ -24,7 +24,7 @@ The scanner reads your Gmail via Claude's MCP integration — it never stores or
 ### 3. Clone and install
 
 ```bash
-git clone https://github.com/yingying-chu/yy-creatives.git
+git clone https://github.com/yingying-chu/yy-class-action-finder.git
 cd yy-creatives
 ./install.sh
 ```
