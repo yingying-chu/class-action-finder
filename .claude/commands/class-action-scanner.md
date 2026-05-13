@@ -30,9 +30,9 @@ Compute the date string before running any searches. Use YYYY/MM/DD format (e.g.
 
 Read all three reference files now — you'll apply them throughout the remaining steps:
 
-- `~/.claude/plugins/marketplaces/claude-plugins-official/plugins/gmail-tools/skills/class-action-scanner/references/extraction-guide.md` — how to classify emails, extract fields, spot irrelevant threads
-- `~/.claude/plugins/marketplaces/claude-plugins-official/plugins/gmail-tools/skills/class-action-scanner/references/phishing-guide.md` — confidence scoring signals, known admin domains, red flags
-- `~/.claude/plugins/marketplaces/claude-plugins-official/plugins/gmail-tools/skills/class-action-scanner/references/report-template.md` — the exact table structure and column order for the output report
+- `.claude/class-action-references/extraction-guide.md` — how to classify emails, extract fields, spot irrelevant threads
+- `.claude/class-action-references/phishing-guide.md` — confidence scoring signals, known admin domains, red flags
+- `.claude/class-action-references/report-template.md` — the exact table structure and column order for the output report
 
 Loading upfront means you won't need to re-read them mid-workflow.
 
@@ -44,7 +44,7 @@ Hold the `filed_claims` list in memory — you'll cross-reference it in Step 7 t
 
 ## Step 4 — Search Gmail (Four Queries)
 
-Run all four searches using the Gmail MCP `search_threads` tool. The MCP server is the Gmail integration connected via Claude.ai (look for the Gmail MCP in your available tools; the server ID on this machine is `2ad99722-65b9-48e5-a269-19c0384b38b5`). Use `max_results: 50` per query.
+Run all four searches using the Gmail MCP `search_threads` tool. Find the Gmail MCP in your available tools — it's whichever MCP provides `search_threads` and `get_thread`. Use `max_results: 50` per query.
 
 **Query A — Inbox, subject-based:**
 ```
@@ -70,7 +70,7 @@ Collect all thread IDs from all four queries. De-duplicate by thread ID, sort by
 
 ## Step 5 — Fetch and Classify Each Thread
 
-For each thread ID, call `get_thread` (same MCP server). Process in batches of 10 to keep context manageable — fetching all threads at once risks losing earlier results as context grows.
+For each thread ID, call `get_thread` (same Gmail MCP). Process in batches of 10 to keep context manageable — fetching all threads at once risks losing earlier results as context grows.
 
 Classify each thread immediately using the extraction guide (already loaded in Step 2):
 - **Type A (Active):** Claim form open, future deadline, URL to submit a claim present
