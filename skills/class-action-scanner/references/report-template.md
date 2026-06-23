@@ -1,79 +1,149 @@
 # Report Template
 
-Use this exact structure when writing `class-action-report-YYYY-MM-DD.md`.
-
-```markdown
-# Class Action Settlement Report
-Generated: [today's date] | Period scanned: [date range]
-Emails processed: [N] (inbox: [N], spam: [N], promotions: [N])
-Active claims: [N] | Already filed: [N] | Watch list: [N] | Expired: [N] | Phishing alerts: [N]
+Use this as the **content guide** when writing `class-action-report-YYYY-MM-DD.html`. It defines what sections to include, what data belongs in each section, and what order to present it. Step 9 of the skill defines the visual HTML structure (cards, dark header, inline CSS); this file defines the content inside that structure.
 
 ---
 
-## SECTION 1: Active Claims — Action Required
+## Header Block
 
-> Submit your claim before the deadline. Sorted by soonest deadline first.
-> ✅ = Already filed per your tracker.
+Show at the top of the page:
 
-| # | Status | Confidence | Company / Case | What It's About | Your Payout | Total Pool | Claim Deadline | Opt-Out By | Claim URL | Your Claim ID | Notes |
-|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | ✅ Filed | 🟢 91% | Meta / Facebook Privacy | Data privacy 2014–2022 | $25–$100 | $725M | 2025-08-15 | 2025-07-01 | https://... | FBP-4821-XY | Filed 2024-03-15 |
-| 2 | — | 🟡 74% | Google Location History | Location tracking | pro-rata | $392M | 2025-09-30 | — | https://... | unknown | Requires account history |
-
----
-
-## SECTION 2: Potential Future Claims — Watch List
-
-> No claim form yet. Watch your inbox for when claims open.
-
-| # | Confidence | Company / Case | What It's About | Estimated Payout | Status | Email Date | Notes |
-|---|---|---|---|---|---|---|---|
-| 1 | 🟢 88% | Amazon Alexa Privacy | Voice recording without consent | unknown | Investigation announced | 2025-03-12 | No form yet |
+- Report title: "Class Action Settlement Report"
+- Generated date (today's date)
+- Period scanned (date range from Step 1)
+- Counts: active claims, filed/auto-enrolled, watch list, expired, phishing alerts
+- Emails processed: total, broken down by inbox / spam / promotions
 
 ---
 
-## SECTION 3: Expired / Already Closed
+## Section 1 — Active Claims (Action Required)
 
-> Deadline has passed. Included for reference only.
+One card per claim. Sort by soonest deadline first.
 
-| # | Confidence | Company / Case | Deadline Was | Claim URL | Notes |
-|---|---|---|---|---|---|
-| 1 | 🟡 70% | TikTok Teen Privacy | 2024-07-31 | https://... | Deadline passed — for reference only |
+**Each card must include:**
 
----
+| Field | Notes |
+|---|---|
+| Company / case name | Defendant + case citation if available |
+| What it's about | One sentence describing the alleged harm |
+| Confidence score | e.g., "🟢 96% — PCWorld coverage, Epiq sender, no payment requested" |
+| Claim deadline | Highlight as urgent if ≤ 14 days away |
+| Opt-out deadline | Show if different from claim deadline |
+| Your payout | Amount or range; "pro-rata, unknown" if not stated |
+| Total settlement pool | e.g., "$725M" |
+| Claim ID / Notice ID / PIN | Render in monospace; show each code on its own labeled line |
+| Claim URL | Clickable link |
+| Notes | One sentence on anything notable (e.g., "CA residents get +$100 CCPA") |
 
-## SECTION 4: Already Filed — Your Tracker
-
-> Claims you have previously recorded as filed via /class-action-tracker.
-
-| # | Company / Case | Filed Date | Your Claim ID | Expected Payout | Actual Payout | Notes |
-|---|---|---|---|---|---|---|
-| 1 | Meta / Facebook Privacy | 2024-03-15 | FBP-4821-XY | $25–$100 | Pending | — |
-
----
-
-## SECTION 5: Phishing Alerts — Do Not Click
-
-> These emails matched class action search terms but show strong signs of phishing.
-> DO NOT visit any URLs in these emails. Report as phishing in Gmail.
-
-| # | Confidence | Sender | Subject | Red Flags | Email Date |
-|---|---|---|---|---|---|
-| 1 | 🔴 22% | claims@xk7r-settle.xyz | Claim your $5,000 settlement NOW | Requests $25 processing fee; case name unverifiable; random sender domain | 2025-04-01 |
+Include auto-enrolled cases here too (no form needed, but payout is pending).
 
 ---
 
-## What To Do Next
+## Section 2 — Watch List (Potential Future Claims)
 
-**Immediate actions (soonest deadline first):**
-- **[Company]** — Deadline [DATE]: Visit [URL] to file. Use claim ID [ID] if available.
+One card per case. No claim form exists yet, or eligibility condition applies.
 
-**Nothing to do yet (watch list):**
-- **[Company]**: Watch for claim opening notice.
+**Each card must include:**
 
-**Manage your claims:**
-- To mark a claim as filed: tell Claude "Mark [Company] as filed with claim ID [ID]" or use `/class-action-tracker`
-- To record a payout you received: use `/class-action-tracker`
+| Field | Notes |
+|---|---|
+| Company / case name | |
+| What it's about | |
+| Confidence score | |
+| Eligibility condition | Who qualifies (e.g., "legally blind individuals only") |
+| Estimated payout | "unknown" if not stated |
+| Status | e.g., "Trial pending", "Investigation announced", "No claim form yet" |
+| Case website | If available |
+| Notes | Including any opt-out or important dates already passed |
+
+---
+
+## Section 3 — Expired / Already Closed
+
+One card per case. Deadline has passed.
+
+**Each card must include:**
+
+| Field | Notes |
+|---|---|
+| Company / case name | |
+| Confidence score | |
+| What the deadline was | |
+| What benefits were available | |
+| Your claim ID | If one was found in the email |
+| Claim URL | For reference even if closed |
+
+---
+
+## Section 4 — Already Filed / Payouts Received
+
+One card per claim previously submitted or auto-enrolled. Cross-referenced from tracker (Step 3) and from current emails.
+
+**Each card must include:**
+
+| Field | Notes |
+|---|---|
+| Company / case name | |
+| Filed date | From tracker or email |
+| Your claim ID | |
+| Expected payout | From tracker or email |
+| Actual payout | If received; "Pending ⏳" if not |
+| Payment method | e.g., "Zelle", "Virtual Visa", "check" |
+| Notes | Include any action still needed (e.g., redeem a prepaid card) |
+
+---
+
+## Section 5 — Phishing Alerts (Do Not Click)
+
+One card per suspicious email. Move any email scoring 🔴 (<40%) here instead of Sections 1–4.
+
+**Each card must include:**
+
+| Field | Notes |
+|---|---|
+| Sender / domain | |
+| Subject line | |
+| Confidence score | e.g., "🔴 18%" |
+| Red flags | List the specific signals that drove the low score |
+| Email date | |
+| Advice | Always include: "Do not click any links. Report as phishing in Gmail." |
+
+If no phishing emails were found, show: "No phishing emails detected in this scan."
+
+---
+
+## "What To Do Next" Panel
+
+A highlighted action panel at the bottom. List items sorted by soonest deadline first.
+
+**Format:**
+
+```
+[Company] — Deadline [DATE]:
+  Visit [URL] · ID: [CLAIM_ID] · PIN: [PIN]
+  [One sentence on what to bring or what to expect]
+
+[Company] — Redeem your [PAYMENT TYPE]:
+  Visit [URL] · Enter code [CODE]
+
+[Company] — Watch for payment:
+  Monitor [URL] for distribution updates.
 ```
 
-If a section has no entries, write "No entries found." under the heading — never omit the section entirely. This keeps the report structure consistent across runs so sections are easy to scan.
+Also include a reminder:
+- To log a filed claim: use `/class-action-tracker`
+- To record a payout received: use `/class-action-tracker`
+
+---
+
+## Empty Section Rule
+
+If a section has no entries, show a brief italicized note — never omit the section entirely:
+
+- Section 1: "No active claims found in this scan."
+- Section 2: "No potential future claims found."
+- Section 3: "No expired claims found."
+- Section 4: "No previously filed claims on record. Use `/class-action-tracker` to log claims you have filed."
+- Section 5: "No phishing emails detected in this scan."
+
+This keeps the report structure consistent across runs.
