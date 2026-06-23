@@ -6,7 +6,7 @@ description: >-
 
 # Class Action Scanner
 
-Scan Gmail (inbox, spam, and promotions) for class action settlement emails. Produce an actionable markdown report with phishing confidence scores, split into five sections: Active Claims, Watch List, Expired, Already Filed, and Phishing Alerts.
+Scan Gmail (inbox, spam, and promotions) for class action settlement emails. Produce an actionable HTML report with phishing confidence scores, split into five sections: Active Claims, Watch List, Expired, Already Filed, and Phishing Alerts.
 
 ## Arguments
 
@@ -129,12 +129,18 @@ If the form has closed (deadline passed), change `type` to `EXPIRED`.
 
 ## Step 9 — Write the Report
 
-Write `class-action-report-YYYY-MM-DD.md` to the current working directory. Use the table structure from the report template (already loaded in Step 2). Sort Section 1 by soonest deadline first.
+Write `class-action-report-YYYY-MM-DD.html` to the current working directory. Produce a self-contained HTML file (no external dependencies) with inline CSS. Use the structure from the report template (already loaded in Step 2) as your content guide, but render it as styled HTML — not raw markdown tables. Requirements:
+
+- Dark header bar showing report date, scan period, and badge counts
+- One card per claim (not a raw `<table>`) with: company name, case, confidence score with color-coded indicator (🟢 85–100% green, 🟡 60–84% yellow, 🟠 40–59% orange, 🔴 <40% red), deadline pill (red/urgent if ≤ 14 days away), payout info, claim ID/PIN in monospace boxes, and claim URL as a clickable link
+- A highlighted "What To Do Next" action panel at the bottom listing items sorted by soonest deadline
+- All five sections present even if empty
+- Sort Section 1 by soonest deadline first
 
 ## Step 10 — Report Back to User
 
 Give a 4–5 line summary in the conversation:
-1. File path of the saved report
+1. File path of the saved HTML report (open in any browser)
 2. Count of actionable claims and rough total payout range
 3. Most urgent single deadline
 4. How many emails surfaced from spam or promotions (notable when > 0)
