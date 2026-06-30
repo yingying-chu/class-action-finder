@@ -75,12 +75,22 @@ Or trigger it in natural language:
 | **Already Filed** | Cross-referenced from your tracker |
 | **Phishing Alerts** | Emails that scored below 40% — do not click these |
 
+### Where reports go
+
+Every scan is saved inside the skill's own `output/` folder — never to your Desktop, Documents, or whatever folder you happened to have open:
+
+```
+~/.claude/skills/class-action-scanner/output/class-action-report-YYYY-MM-DD.html
+```
+
+Keeping reports inside the skill bundle means they don't scatter across your filesystem, and they're easy to find or delete later (just empty the `output/` folder).
+
 ### Example output
 
 After the scan, Claude reports:
 
 ```
-Report saved: class-action-report-2026-05-12.html
+Report saved: ~/.claude/skills/class-action-scanner/output/class-action-report-2026-05-12.html
 
   3 actionable claims found
   Potential payout: $125 – $10,200+
@@ -180,6 +190,7 @@ skills/
       extraction-guide.md        # email classification rules
       phishing-guide.md          # confidence scoring methodology
       report-template.md         # HTML report content guide
+    output/                      # generated reports land here, not on your Desktop
   class-action-tracker/
     SKILL.md                     # tracker skill
 install.sh                       # copies skills into ~/.claude/skills/
@@ -191,5 +202,6 @@ install.sh                       # copies skills into ~/.claude/skills/
 
 - The scanner uses Gmail's search API (read-only) via Claude's MCP integration
 - No email content is stored anywhere by these tools
+- Generated reports stay in `~/.claude/skills/class-action-scanner/output/` — local to your machine, not synced, not committed to this repo
 - The tracker file (`~/.claude/class-action-tracker.json`) is local to your machine and not synced
 - Settlement websites are fetched to verify deadlines — only the claim URL is visited, not your personal data

@@ -8,6 +8,10 @@ description: >-
 
 Scan Gmail (inbox, spam, and promotions) for class action settlement emails. Produce an actionable HTML report with phishing confidence scores, split into five sections: Active Claims, Watch List, Expired, Already Filed, and Phishing Alerts.
 
+## Paths
+
+Every path in this skill (`references/...`, `output/...`) is relative to **this skill's own directory** — the folder this `SKILL.md` lives in (e.g. `~/.claude/skills/class-action-scanner/`) — never the user's current working directory. Reports must not land in whatever folder the user happened to have open (Desktop, Documents, a random project). Resolve the skill's own directory first, then read and write everything relative to it.
+
 ## Arguments
 
 The user invoked this with: $ARGUMENTS
@@ -129,7 +133,9 @@ If the form has closed (deadline passed), change `type` to `EXPIRED`.
 
 ## Step 9 — Write the Report
 
-Write `class-action-report-YYYY-MM-DD.html` to the current working directory. Produce a self-contained HTML file (no external dependencies) with inline CSS. Use the structure from the report template (already loaded in Step 2) as your content guide, but render it as styled HTML — not raw markdown tables. Requirements:
+Write the report to `output/class-action-report-YYYY-MM-DD.html`, relative to this skill's own directory (see **Paths** above) — not the user's current working directory and not Desktop/Documents. Create the `output/` folder first if it doesn't exist. Keeping every run's output inside the skill bundle means reports never scatter across the filesystem and are easy to find or clean up later.
+
+Produce a self-contained HTML file (no external dependencies) with inline CSS. Use the structure from the report template (already loaded in Step 2) as your content guide, but render it as styled HTML — not raw markdown tables. Requirements:
 
 - Dark header bar showing report date, scan period, and badge counts
 - One card per claim (not a raw `<table>`) with: company name, case, confidence score with color-coded indicator (🟢 85–100% green, 🟡 60–84% yellow, 🟠 40–59% orange, 🔴 <40% red), deadline pill (red/urgent if ≤ 14 days away), payout info, claim ID/PIN in monospace boxes, and claim URL as a clickable link
@@ -140,7 +146,7 @@ Write `class-action-report-YYYY-MM-DD.html` to the current working directory. Pr
 ## Step 10 — Report Back to User
 
 Give a 4–5 line summary in the conversation:
-1. File path of the saved HTML report (open in any browser)
+1. Full path of the saved HTML report (e.g. `~/.claude/skills/class-action-scanner/output/class-action-report-2026-06-30.html`) — open in any browser
 2. Count of actionable claims and rough total payout range
 3. Most urgent single deadline
 4. How many emails surfaced from spam or promotions (notable when > 0)
@@ -156,3 +162,4 @@ Don't reproduce the tables in chat. The file is the artifact.
 - **QR code only, no URL:** Note "QR code in email — scan on your phone" in the `notes` field.
 - **Same case, multiple emails:** Deduplicate by company/case name, keep the most recent email's data.
 - **Tracker file missing:** Create it at `~/.claude/class-action-tracker.json` with empty arrays during Step 3.
+- **Report for today already exists in `output/`:** Overwrite it — a re-run on the same day means the user wants fresh results, not a duplicate file.

@@ -19,6 +19,10 @@ The scanner loads these at runtime from its own `references/` directory (bundled
 | `phishing-guide.md` | Confidence scoring signals and known settlement administrator domains |
 | `report-template.md` | Content guide for the 5-section HTML report output |
 
+## Generated reports
+
+The scanner writes HTML reports to `skills/class-action-scanner/output/` — relative to the skill's own installed directory, never the user's cwd or Desktop/Documents. That folder is gitignored (`*.html`) except for a `.gitkeep` placeholder, so reports stay local and the repo doesn't accumulate personal scan data.
+
 ## Persistent claim data
 
 Tracked claims are stored at `~/.claude/class-action-tracker.json` (on each user's own machine — not committed to this repo).
