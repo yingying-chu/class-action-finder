@@ -1,32 +1,15 @@
 #!/bin/bash
-# Install class-action skills into Claude's global skills directory
+# Install class-action skills into Claude Code's global skills directory
 # Usage: ./install.sh
 
 set -e
 
-# Find the skills directory
-SKILLS_BASE="$HOME/Library/Application Support/Claude/local-agent-mode-sessions/skills-plugin"
-
-if [ ! -d "$SKILLS_BASE" ]; then
-  echo "Error: Claude skills directory not found at:"
-  echo "  $SKILLS_BASE"
-  echo ""
-  echo "Make sure Claude Code is installed and has been opened at least once."
-  exit 1
-fi
-
-# Find the most recently modified session/plugin directory
-SKILLS_DIR=$(find "$SKILLS_BASE" -name "skills" -type d | sort | tail -1)
-
-if [ -z "$SKILLS_DIR" ]; then
-  echo "Error: Could not find a 'skills' directory inside $SKILLS_BASE"
-  exit 1
-fi
+SKILLS_DIR="$HOME/.claude/skills"
+mkdir -p "$SKILLS_DIR"
 
 echo "Installing to: $SKILLS_DIR"
 echo ""
 
-# Install each skill
 for skill in skills/*/; do
   skill_name=$(basename "$skill")
   dest="$SKILLS_DIR/$skill_name"
@@ -45,3 +28,4 @@ echo ""
 echo "Done. Restart Claude Code for the skills to take effect."
 echo ""
 echo "Then try: /class-action-scanner"
+echo "Or just say: \"scan my email for class action settlements\""

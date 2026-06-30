@@ -17,7 +17,7 @@ The scanner loads these at runtime from its own `references/` directory (bundled
 |---|---|
 | `extraction-guide.md` | How to classify emails, extract fields, skip irrelevant threads |
 | `phishing-guide.md` | Confidence scoring signals and known settlement administrator domains |
-| `report-template.md` | Exact 5-section markdown table structure for the output report |
+| `report-template.md` | Content guide for the 5-section HTML report output |
 
 ## Persistent claim data
 

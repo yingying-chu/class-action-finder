@@ -29,9 +29,11 @@ cd yy-class-action-finder
 ./install.sh
 ```
 
-Then open Claude Code anywhere and say:
+Restart Claude Code, then run your first scan:
 
-> "scan my email for class action settlements"
+```
+/class-action-scanner
+```
 
 ---
 
@@ -42,25 +44,26 @@ Most people have unclaimed class action settlements sitting in their inbox (or s
 1. **Scan** your Gmail across inbox, spam, and promotions using targeted search queries
 2. **Score** every email for phishing risk before you act on it (🟢 safe → 🔴 do not click)
 3. **Verify** open deadlines and payouts by fetching the actual settlement website
-4. **Report** everything in one structured file: what to file now, what to watch, what expired, and what you've already submitted
+4. **Report** everything in a styled HTML file you can open in any browser
 
 ---
 
-## `class-action-scanner`
+## `/class-action-scanner`
 
-### How to trigger
+### Usage
 
-Just describe what you want in plain English:
+```
+/class-action-scanner              # last 12 months (default)
+/class-action-scanner 6 months     # last 6 months
+/class-action-scanner 2024         # all of 2024
+/class-action-scanner 2023 to 2024 # custom range
+```
+
+Or trigger it in natural language:
 
 - *"scan my email for class action settlements"*
-- *"check my Gmail for the last 6 months"*
 - *"any class action claims I should file?"*
 - *"find unclaimed settlement money in my inbox"*
-
-You can also specify a time range:
-
-- *"scan my email for settlements from 2024"*
-- *"check the last 3 months for class action notices"*
 
 ### What the report contains
 
@@ -74,8 +77,10 @@ You can also specify a time range:
 
 ### Example output
 
+After the scan, Claude reports:
+
 ```
-Report saved: class-action-report-2026-05-12.md
+Report saved: class-action-report-2026-05-12.html
 
   3 actionable claims found
   Potential payout: $125 – $10,200+
@@ -84,26 +89,26 @@ Report saved: class-action-report-2026-05-12.md
   0 phishing alerts
 ```
 
-The report itself looks like this:
+Open the `.html` file in any browser to see the full report with cards, color-coded confidence indicators, and clickable claim links.
 
 **Active Claims — Action Required**
 
-| Company / Case | What It's About | Your Payout | Deadline | Claim URL |
-|---|---|---|---|---|
-| LastPass / Security Breach | 2022 data breach exposed account data | $25 base; up to $10,000 with losses; $100 for CA residents | Jul 2, 2026 | lastpasssettlement.com |
+| Company / Case | What It's About | Your Payout | Deadline |
+|---|---|---|---|
+| LastPass / Security Breach | 2022 data breach exposed account data | $25 base; up to $10,000 with losses | Jul 2, 2026 |
 
 **Watch List — No Action Yet**
 
-| Company / Case | What It's About | Status | Notes |
-|---|---|---|---|
-| Google / Android Cellular Data | Android phones transferred data without permission | Awaiting final approval Jun 23, 2026 | No claim form — CA Android users paid automatically |
+| Company / Case | What It's About | Status |
+|---|---|---|
+| Google / Android Cellular Data | Android phones transferred data without permission | Awaiting final approval Jun 23, 2026 |
 
 **Already Filed**
 
 | Company / Case | Filed | Expected | Actual |
 |---|---|---|---|
-| Blue Cross Blue Shield Antitrust | before 2021 | pro-rata share of $2.67B | Pending — checks issued May 2026 |
-| Facebook / Internet Tracking | unknown | $4.01 | ✅ $4.01 received via Zelle |
+| Blue Cross Blue Shield Antitrust | before 2021 | pro-rata share of $2.67B | Pending |
+| Facebook / Internet Tracking | unknown | $4.01 | ✅ $4.01 received |
 
 ### Phishing scoring
 
@@ -122,13 +127,18 @@ Red flags: requests a processing fee, asks for SSN or bank account, case name re
 
 ---
 
-## `class-action-tracker`
+## `/class-action-tracker`
 
 Keeps a running record of what you've filed, what you're watching, and what you've been paid. Data lives in `~/.claude/class-action-tracker.json` on your machine — never committed to this repo.
 
-### How to trigger
+### Usage
 
-Just narrate what happened:
+```
+/class-action-tracker list
+```
+Shows all filed claims, watch list items, and payouts received.
+
+Or trigger it in natural language:
 
 - *"I filed my LastPass claim"*
 - *"I got a $47 check from Blue Cross Blue Shield"*
@@ -141,7 +151,7 @@ Just narrate what happened:
 Your Class Action Tracker
 
 Filed Claims (4 total)
-──────────────────────────────────────────────────────────────────
+──────────────────────────────────────────────────────────
 Company / Case          Filed       Expected    Actual
 Blue Cross Blue Shield  pre-2021    pro-rata    Pending ⏳
 Kaiser Privacy Breach   2026-01-14  pro-rata    Pending ⏳
@@ -152,7 +162,7 @@ Total received: $4.01
 Still pending: 3 claims
 
 Watch List (1 item)
-──────────────────────────────────────────────────────────────────
+──────────────────────────────────────────────────────────
 Amazon Alexa Privacy — no claim form yet
 ```
 
@@ -169,10 +179,10 @@ skills/
     references/
       extraction-guide.md        # email classification rules
       phishing-guide.md          # confidence scoring methodology
-      report-template.md         # output table structure
+      report-template.md         # HTML report content guide
   class-action-tracker/
     SKILL.md                     # tracker skill
-install.sh                       # copies skills into Claude's global skills folder
+install.sh                       # copies skills into ~/.claude/skills/
 ```
 
 ---
