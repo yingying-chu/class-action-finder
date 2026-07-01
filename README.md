@@ -8,13 +8,19 @@ Once installed, the skills work **globally** — in any folder, any project, any
 
 ## Quick start
 
+**Already have Claude Code?** Skip straight to [step 2](#2-connect-gmail) — no need to reinstall or reconfigure anything. `install.sh` only adds these two skills; it doesn't touch any skills, commands, or settings you already have.
+
 ### 1. Install Claude Code
+
+Skip this if `claude` already works in your terminal (check with `claude --version`).
 
 ```bash
 npm install -g @anthropic-ai/claude-code
 ```
 
 ### 2. Connect Gmail
+
+Skip this if you've already connected Gmail to Claude — the scanner will just reuse it.
 
 The scanner reads your Gmail via Claude's MCP integration — it never stores or transmits your email data.
 
@@ -28,6 +34,8 @@ git clone https://github.com/yingying-chu/yy-class-action-finder.git
 cd yy-class-action-finder
 ./install.sh
 ```
+
+This copies both skills into `~/.claude/skills/`, alongside any skills you already have. If you're re-running this after a `git pull` to grab an update, `install.sh` overwrites just these two skill folders — everything else in `~/.claude/skills/` is untouched.
 
 Restart Claude Code, then run your first scan:
 
