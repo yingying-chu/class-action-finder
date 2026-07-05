@@ -25,7 +25,7 @@ for skill in skills/*/; do
 done
 
 echo ""
-echo "Done. Restart Claude Code for the skills to take effect."
+echo "Done. Restart Claude Code for the skill to take effect."
 echo ""
-echo "Then try: /class-action-scanner"
+echo "Then try: /class-action-finder"
 echo "Or just say: \"scan my email for class action settlements\""

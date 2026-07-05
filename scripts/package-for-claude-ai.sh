@@ -19,7 +19,7 @@ for skill in "$REPO_ROOT"/skills/*/; do
   echo "Packaging $skill_name..."
 
   # cd into skills/ so the zip's top-level entry is the skill folder itself
-  # (e.g. class-action-scanner/SKILL.md), matching what Claude.ai expects.
+  # (e.g. class-action-finder/SKILL.md), matching what Claude.ai expects.
   # Exclude the runtime output/ folder — reports there are a local Claude Code
   # concept and don't belong in an uploaded skill (Claude.ai returns the report
   # in-conversation instead).

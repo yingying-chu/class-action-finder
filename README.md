@@ -1,8 +1,8 @@
-# Class Action Finder — a Claude skill
+# Class Action Finder
 
-One Claude skill that scans your email for class action settlements, scores each notice for legitimacy, and remembers what you've filed and been paid — so you don't leave money on the table.
+A skill that scans your email for class action settlements, scores each notice for legitimacy, and remembers what you've filed and been paid — so you don't leave money on the table.
 
-Once installed, it works **globally** — in any folder, any project, any Claude Code session. No terminal? It runs on **Claude.ai** (web/desktop/mobile) too — see [Using it on Claude.ai](#using-it-on-claudeai) below.
+It's just a plain-Markdown `SKILL.md` plus a few reference guides — nothing tool-specific baked into the logic. Today you run it on Claude (**Claude Code** or **Claude.ai** — web, desktop, mobile); because it's ordinary written instructions, any other agent that supports the skill format can read it too. Once installed it works **globally** — in any folder or session. No terminal? See [Using it on Claude.ai](#using-it-on-claudeai) below.
 
 > **Which email providers work?** It reads whatever email account you connect to Claude. **Gmail is fully supported and best-tested.** Connect a different provider (where Claude offers an integration) and it adapts its searches — with a couple of caveats. See [Using a different email provider](#using-a-different-email-provider).
 
@@ -181,7 +181,7 @@ Bottom line: connect the email account you actually use. Gmail gets you everythi
 
 ## Run it automatically (scheduled scans)
 
-You don't have to remember to run this. Because it's triggered by plain language, **any Claude agent that can run on a schedule can run it for you** — Claude Code routines/cron, a scheduled task, or any agent framework that supports the Skills format and a timer. Point the schedule at a prompt like *"scan my email for class action settlements from the last 30 days"* and it runs unattended.
+You don't have to remember to run this. Because it's triggered by plain language, **any agent that can run on a schedule can run it for you** — Claude Code routines/cron, a scheduled task, or any agent framework that supports the skill format and a timer. Point the schedule at a prompt like *"scan my email for class action settlements from the last 30 days"* and it runs unattended.
 
 Before you rely on that:
 
