@@ -77,7 +77,7 @@ Go to **Settings → Capabilities → Skills → Upload skill**, and upload both
 Same triggers as Claude Code — just talk to Claude:
 
 - *"scan my email for class action settlements"*
-- *"I filed my LastPass claim"*
+- *"I filed my ExampleApp claim"*
 
 One difference: the scanner's `output/` folder convention (see below) is a Claude Code / local-filesystem concept. In Claude.ai, the generated HTML report is returned to you directly in the conversation as a file you can download — there's no `~/.claude/skills/.../output/` path to check.
 
@@ -150,7 +150,7 @@ Report saved: ~/.claude/skills/class-action-scanner/output/class-action-report-2
 
   3 actionable claims found
   Potential payout: $125 – $10,200+
-  Most urgent: LastPass — deadline Jul 2, 2026 (51 days)
+  Most urgent: ExampleApp — deadline Jul 2, 2026 (51 days)
   2 emails surfaced from spam
   0 phishing alerts
 ```
@@ -193,9 +193,9 @@ Shows all filed claims, watch list items, and payouts received.
 
 Or trigger it in natural language:
 
-- *"I filed my LastPass claim"*
-- *"I got a $47 check from Blue Cross Blue Shield"*
-- *"add Amazon Alexa Privacy to my watch list"*
+- *"I filed my ExampleApp claim"*
+- *"I got a $47 check from SampleHealth Group"*
+- *"add SampleVoice Privacy to my watch list"*
 - *"show me all my filed claims"*
 
 ### What it tracks
@@ -206,17 +206,17 @@ Your Class Action Tracker
 Filed Claims (4 total)
 ──────────────────────────────────────────────────────────
 Company / Case          Filed       Expected    Actual
-Blue Cross Blue Shield  pre-2021    pro-rata    Pending ⏳
-Kaiser Privacy Breach   2026-01-14  pro-rata    Pending ⏳
-Ashley Furniture        2026-05-12  voucher     Pending ⏳
-Facebook Tracking       unknown     $4.01       $4.01 ✅
+SampleHealth Group      pre-2021    pro-rata    Pending ⏳
+SampleCloud Breach      2026-01-14  pro-rata    Pending ⏳
+SampleStore Voucher     2026-05-12  voucher     Pending ⏳
+SampleSocial Tracking   unknown     $12.50      $12.50 ✅
 
-Total received: $4.01
+Total received: $12.50
 Still pending: 3 claims
 
 Watch List (1 item)
 ──────────────────────────────────────────────────────────
-Amazon Alexa Privacy — no claim form yet
+SampleVoice Privacy — no claim form yet
 ```
 
 The scanner automatically cross-references this tracker and marks already-filed claims with ✅ in the report.

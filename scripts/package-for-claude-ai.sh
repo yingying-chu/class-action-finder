@@ -20,7 +20,12 @@ for skill in "$REPO_ROOT"/skills/*/; do
 
   # cd into skills/ so the zip's top-level entry is the skill folder itself
   # (e.g. class-action-scanner/SKILL.md), matching what Claude.ai expects.
-  (cd "$REPO_ROOT/skills" && zip -rq "$out_file" "$skill_name" -x "*.DS_Store")
+  # Exclude the runtime output/ folder — reports there are a local Claude Code
+  # concept and don't belong in an uploaded skill (Claude.ai returns the report
+  # in-conversation instead).
+  rm -f "$out_file"
+  (cd "$REPO_ROOT/skills" && zip -rq "$out_file" "$skill_name" \
+    -x "*.DS_Store" "*/output/*" "*/output")
 
   echo "  -> $out_file"
 done

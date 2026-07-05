@@ -48,10 +48,10 @@ If the intent is still unclear after parsing, ask one question before reading or
 
 ```json
 {
-  "company": "TikTok Inc.",
-  "case": "TikTok Privacy Class Action Settlement",
+  "company": "SampleVid Inc.",
+  "case": "SampleVid Privacy Class Action Settlement",
   "filed_date": "2026-05-11",
-  "claim_id": "TKTK-99281",
+  "claim_id": "SAMPLE-99281",
   "pin": null,
   "claim_url": null,
   "expected_payout": "$15–$30",
@@ -91,8 +91,8 @@ Add an entry to `watch_list` and write the complete updated file:
 
 ```json
 {
-  "company": "Google LLC",
-  "case": "Google Location History Privacy",
+  "company": "SampleMaps LLC",
+  "case": "SampleMaps Location History Privacy",
   "added_date": "2026-05-12",
   "source": "Email received 2026-04-30",
   "estimated_payout": "unknown",
@@ -121,8 +121,8 @@ Read `~/.claude/class-action-tracker.json` and display a summary in the conversa
 
 | Company / Case | Filed | Claim ID | Expected | Actual | Status |
 |---|---|---|---|---|---|
-| Meta / Facebook Privacy | 2024-03-15 | FBP-4821-XY | $25–$100 | $47.23 ✅ | Paid |
-| Zoom Privacy | 2024-11-02 | ZM-99312 | $25–$75 | Pending ⏳ | Awaiting |
+| SampleSocial Privacy | 2024-03-15 | SAMPLE-1234 | $25–$100 | $47.23 ✅ | Paid |
+| SampleMeet Privacy | 2024-11-02 | SAMPLE-5678 | $25–$75 | Pending ⏳ | Awaiting |
 
 **Total received so far:** $47.23
 **Still pending:** 1 claim
@@ -131,7 +131,7 @@ Read `~/.claude/class-action-tracker.json` and display a summary in the conversa
 
 | Company / Case | Added | Estimated Payout | Notes |
 |---|---|---|---|
-| Amazon Alexa Privacy | 2025-01-10 | unknown | No form yet |
+| SampleVoice Privacy | 2025-01-10 | unknown | No form yet |
 ```
 
 After the summary, ask: "Want to update anything?"

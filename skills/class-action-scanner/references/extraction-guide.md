@@ -93,7 +93,7 @@ Administrators use inconsistent terminology for the same idea (a per-recipient t
 | "Notice ID", "Unique ID" | `claim_id` (these are functionally the same as a claim ID — use whichever the email calls it) |
 | "PIN", "Access Code", "Security Code" | `pin` |
 
-**Many settlements require both to log in** (e.g., "Unique ID: 3F74V49V9V, PIN: 4748") — extract both when present. Don't fold a PIN into `claim_id` or vice versa; the report needs to show them as separate labeled values so the user can tell which one goes in which login field. If only one code is present, record it as `claim_id` and leave `pin` as `null`.
+**Many settlements require both to log in** (e.g., "Unique ID: ABC1234XYZ, PIN: 0000") — extract both when present. Don't fold a PIN into `claim_id` or vice versa; the report needs to show them as separate labeled values so the user can tell which one goes in which login field. If only one code is present, record it as `claim_id` and leave `pin` as `null`.
 
 ---
 

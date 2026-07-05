@@ -1,6 +1,9 @@
 # macOS
 .DS_Store
 
+# Local Claude Code settings — machine-specific, not part of the distributed skills
+.claude/
+
 # Generated scan reports — personal data, regenerated on every run
 skills/class-action-scanner/output/*.html
 !skills/class-action-scanner/output/.gitkeep
