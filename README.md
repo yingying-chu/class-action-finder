@@ -237,6 +237,21 @@ The scanner automatically cross-references this tracker and marks already-filed 
 
 ---
 
+## Run it automatically (scheduled scans)
+
+You don't have to remember to run this. Because it's a normal skill triggered by plain language, **any Claude agent that can run on a schedule can run it for you** — Claude Code routines/cron, a scheduled task, or any agent framework that supports the Skills format and a timer. Point the schedule at a prompt like *"scan my email for class action settlements from the last 30 days"* and it runs unattended.
+
+A few things worth knowing before you set that up:
+
+- **Weekly beats daily.** Settlement notices trickle in and deadlines are usually weeks or months out, so a daily scan mostly produces empty reports and wasted runs. **Once a week (or even monthly) catches everything** with far less noise.
+- **Check that the scheduled run can actually reach your mail.** This is the big one: the scanner needs your email integration connected *and authorized in the environment where the schedule runs*. Interactive Gmail auth doesn't always carry into an unattended/background run. **Do one manual run inside the scheduled setup first** to confirm it can read your inbox — then automate.
+- **Send yourself the result.** A scan that writes an HTML file to a folder nobody opens is a scan that didn't happen. Use your scheduler's completion notification (push/email) so you actually see when there's a new claim to file.
+- **Keep your tracker current.** A weekly scan will keep surfacing the same open claims until you mark them filed via `/class-action-tracker`. Logging what you've filed keeps each report focused on what's genuinely new.
+
+Set the cadence, confirm mail access once, turn on notifications — then it quietly checks for money you're owed while you forget it exists.
+
+---
+
 ## Repo structure
 
 ```
