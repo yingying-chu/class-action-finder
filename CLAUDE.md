@@ -23,6 +23,10 @@ The scanner loads these at runtime from its own `references/` directory (bundled
 
 The scanner writes HTML reports to `skills/class-action-scanner/output/` — relative to the skill's own installed directory, never the user's cwd or Desktop/Documents. That folder is gitignored (`*.html`) except for a `.gitkeep` placeholder, so reports stay local and the repo doesn't accumulate personal scan data.
 
+## Claude.ai distribution (dist/)
+
+`dist/class-action-scanner.skill` and `dist/class-action-tracker.skill` are checked into the repo (not gitignored) so README download links work for people with no terminal — they just click and upload straight to Claude.ai. **After editing either `SKILL.md`, re-run `./scripts/package-for-claude-ai.sh` and commit the updated `.skill` files** — otherwise those download links go stale and Claude.ai users get an outdated skill.
+
 ## Persistent claim data
 
 Tracked claims are stored at `~/.claude/class-action-tracker.json` (on each user's own machine — not committed to this repo).

@@ -55,27 +55,22 @@ Restart Claude Code, then run your first scan:
 
 ## Using this in Claude.ai instead of Claude Code
 
-No terminal needed. Claude.ai (web, desktop, and mobile apps) supports the same Skills format directly through **Settings → Capabilities → Skills**.
+No terminal, no git, no cloning required. Claude.ai (web, desktop, and mobile apps) supports the same Skills format directly through **Settings → Capabilities → Skills**.
 
-### 1. Connect Gmail
+### 1. Download the two skill files
 
-Same as above: **Settings → Integrations → Gmail**.
+Click each link below — it downloads directly, no zipping or repo cloning needed:
 
-### 2. Package the skills
+- [class-action-scanner.skill](https://raw.githubusercontent.com/yingying-chu/yy-class-action-finder/main/dist/class-action-scanner.skill)
+- [class-action-tracker.skill](https://raw.githubusercontent.com/yingying-chu/yy-class-action-finder/main/dist/class-action-tracker.skill)
 
-If you have the repo cloned locally:
+### 2. Upload to Claude.ai
 
-```bash
-./scripts/package-for-claude-ai.sh
-```
+Go to **Settings → Capabilities → Skills → Upload skill**, and upload both `.skill` files you just downloaded.
 
-This produces `dist/class-action-scanner.skill` and `dist/class-action-tracker.skill`.
+### 3. Connect Gmail
 
-No terminal at all? Download the repo as a ZIP from GitHub, open the `skills/class-action-scanner/` folder, and zip it yourself — the important part is that `SKILL.md` sits at the top level once you unzip it.
-
-### 3. Upload
-
-In Claude.ai, go to **Settings → Capabilities → Skills → Upload skill**, and upload both `.skill` files from `dist/`.
+**Settings → Integrations → Gmail** — same connection the scanner needs on Claude Code.
 
 ### 4. Use it
 
@@ -85,6 +80,16 @@ Same triggers as Claude Code — just talk to Claude:
 - *"I filed my LastPass claim"*
 
 One difference: the scanner's `output/` folder convention (see below) is a Claude Code / local-filesystem concept. In Claude.ai, the generated HTML report is returned to you directly in the conversation as a file you can download — there's no `~/.claude/skills/.../output/` path to check.
+
+### For developers: rebuilding the .skill files
+
+If you've cloned the repo and edited a `SKILL.md`, regenerate the `.skill` files before committing:
+
+```bash
+./scripts/package-for-claude-ai.sh
+```
+
+This overwrites `dist/class-action-scanner.skill` and `dist/class-action-tracker.skill` in place — they're checked into the repo specifically so the download links above always work without anyone needing to build them.
 
 ---
 
@@ -233,7 +238,10 @@ skills/
     SKILL.md                     # tracker skill
 install.sh                       # copies skills into ~/.claude/skills/ (Claude Code)
 scripts/
-  package-for-claude-ai.sh       # zips skills into dist/*.skill (Claude.ai upload)
+  package-for-claude-ai.sh       # rebuilds dist/*.skill after a SKILL.md edit
+dist/
+  class-action-scanner.skill      # checked in — direct-download link for Claude.ai, no build step
+  class-action-tracker.skill      # checked in — direct-download link for Claude.ai, no build step
 docs/
   demo-report.html               # sample report used for the README screenshots
   screenshot-*.png               # README images, generated from demo-report.html

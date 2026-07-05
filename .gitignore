@@ -5,5 +5,3 @@
 skills/class-action-scanner/output/*.html
 !skills/class-action-scanner/output/.gitkeep
 
-# Packaged .skill files for Claude.ai upload — build artifact, regenerate with scripts/package-for-claude-ai.sh
-dist/
