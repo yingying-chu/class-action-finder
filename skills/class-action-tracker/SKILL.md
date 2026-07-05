@@ -37,12 +37,14 @@ If the intent is still unclear after parsing, ask one question before reading or
 2. Collect any missing required fields — ask the user if they weren't provided in the original message:
    - Company / case name (required)
    - Claim ID or notice ID (optional — store `null` if absent)
+   - PIN or access code (optional, only if the settlement uses one in addition to a claim ID — store `null` if absent)
    - Date filed (required — default to today if user says "today" or "just now")
    - Expected payout (optional — store `"unknown"` if absent)
    - Claim URL (optional)
    - Notes (optional — e.g., "Tier 2 with receipts")
 3. Check for a duplicate: if a `company` fuzzy-matches an existing entry (ignore "Inc.", "LLC", "Corp.", capitalization differences, and common abbreviations), ask whether to update it or add a new entry (useful when the same company has multiple cases).
-4. Add the new entry to `filed_claims`:
+4. Check `watch_list` for the same `company` (same fuzzy matching). If found, remove it from `watch_list` — the user has now filed a claim, so it's no longer just something to watch for. Mention this in the confirmation message so the user knows it moved rather than silently vanishing.
+5. Add the new entry to `filed_claims`:
 
 ```json
 {
@@ -50,6 +52,7 @@ If the intent is still unclear after parsing, ask one question before reading or
   "case": "TikTok Privacy Class Action Settlement",
   "filed_date": "2026-05-11",
   "claim_id": "TKTK-99281",
+  "pin": null,
   "claim_url": null,
   "expected_payout": "$15–$30",
   "actual_payout": null,
@@ -59,8 +62,8 @@ If the intent is still unclear after parsing, ask one question before reading or
 }
 ```
 
-5. Write the complete updated file (both arrays — never write partial JSON).
-6. Confirm: "Recorded: [Company] claim filed on [DATE] with claim ID [ID]. I'll track the payout when you receive it."
+6. Write the complete updated file (both arrays — never write partial JSON).
+7. Confirm: "Recorded: [Company] claim filed on [DATE] with claim ID [ID]. I'll track the payout when you receive it." If step 4 removed a watch list entry, add: "Also moved it off your watch list since you've now filed."
 
 ---
 
@@ -151,6 +154,7 @@ Print the command table from the "Determine the Command" section above, plus one
       "case": "string or null",
       "filed_date": "YYYY-MM-DD",
       "claim_id": "string or null",
+      "pin": "string or null",
       "claim_url": "string or null",
       "expected_payout": "string — e.g. '$25–$100' or 'pro-rata, unknown'",
       "actual_payout": "string or null",
@@ -181,3 +185,4 @@ Always write the **complete file** (both arrays) on every update — partial wri
 - **Auto-enrolled payout (no claim form):** Add a `filed_claims` entry with `filed_date: null` and note "No claim form required — auto-enrolled."
 - **Installment payments:** Record each installment in `notes` (e.g., "Installment 1: $23.50 on 2026-08-15; Installment 2: pending") and update `actual_payout` to the running total.
 - **Same company, multiple cases:** When fuzzy match is ambiguous, show the user the matching entries and ask which one to update.
+- **Watch list item never gets filed and instead shows up in a scan:** If `/class-action-scanner` reports a claim that's already on the `watch_list`, that's expected — the scanner cross-references `filed_claims`, not `watch_list`. Only remove a `watch_list` entry once the user explicitly files it (handled in step 4 of "Mark as Filed" above).

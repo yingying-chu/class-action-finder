@@ -83,6 +83,20 @@ Deadlines appear in several phrasings — always extract the date as `YYYY-MM-DD
 
 ---
 
+## Extracting Claim IDs, Notice Numbers, and PINs
+
+Administrators use inconsistent terminology for the same idea (a per-recipient token that pre-fills the claim form). Extract each one you find into its own field rather than merging them:
+
+| Term seen in email | Record as |
+|---|---|
+| "Claim ID", "Claimant ID", "Confirmation Number" | `claim_id` |
+| "Notice ID", "Unique ID" | `claim_id` (these are functionally the same as a claim ID — use whichever the email calls it) |
+| "PIN", "Access Code", "Security Code" | `pin` |
+
+**Many settlements require both to log in** (e.g., "Unique ID: 3F74V49V9V, PIN: 4748") — extract both when present. Don't fold a PIN into `claim_id` or vice versa; the report needs to show them as separate labeled values so the user can tell which one goes in which login field. If only one code is present, record it as `claim_id` and leave `pin` as `null`.
+
+---
+
 ## Type A vs. Type B Classification
 
 | Signal | Type A (Active — submit now) | Type B (Potential — watch) |

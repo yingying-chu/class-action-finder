@@ -27,11 +27,12 @@ One card per claim. Sort by soonest deadline first.
 | Company / case name | Defendant + case citation if available |
 | What it's about | One sentence describing the alleged harm |
 | Confidence score | e.g., "🟢 96% — PCWorld coverage, Epiq sender, no payment requested" |
+| Already filed? | If `already_filed` is true (Step 7), show a distinct "✅ Already filed on [date]" badge — separate from the confidence score, so it can't be mistaken for a phishing signal |
 | Claim deadline | Highlight as urgent if ≤ 14 days away |
 | Opt-out deadline | Show if different from claim deadline |
 | Your payout | Amount or range; "pro-rata, unknown" if not stated |
 | Total settlement pool | e.g., "$725M" |
-| Claim ID / Notice ID / PIN | Render in monospace; show each code on its own labeled line |
+| Claim ID / PIN | Two separate monospace boxes — `claim_id` and `pin` from Step 7. Omit the PIN box entirely if none was extracted; don't show an empty one |
 | Claim URL | Clickable link |
 | Notes | One sentence on anything notable (e.g., "CA residents get +$100 CCPA") |
 
@@ -85,7 +86,7 @@ One card per claim previously submitted or auto-enrolled. Cross-referenced from 
 |---|---|
 | Company / case name | |
 | Filed date | From tracker or email |
-| Your claim ID | |
+| Your claim ID / PIN | From tracker or email — show both if the tracker has a `pin` |
 | Expected payout | From tracker or email |
 | Actual payout | If received; "Pending ⏳" if not |
 | Payment method | e.g., "Zelle", "Virtual Visa", "check" |
