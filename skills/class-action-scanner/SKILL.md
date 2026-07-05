@@ -6,7 +6,7 @@ description: >-
 
 # Class Action Scanner
 
-Scan Gmail (inbox, spam, and promotions) for class action settlement emails. Produce an actionable HTML report with phishing confidence scores, split into five sections: Active Claims, Watch List, Expired, Already Filed, and Phishing Alerts.
+Scan the user's connected email account (Gmail inbox, spam, and promotions — or the nearest equivalent on another connected provider, see Step 4) for class action settlement emails. Produce an actionable HTML report with phishing confidence scores, split into five sections: Active Claims, Watch List, Expired, Already Filed, and Phishing Alerts.
 
 ## Paths
 
@@ -50,35 +50,39 @@ Read `~/.claude/class-action-tracker.json`. If the file doesn't exist, treat it 
 
 Hold the `filed_claims` list in memory — you'll cross-reference it in Step 7 to mark claims the user has already submitted.
 
-## Step 4 — Search Gmail (Four Queries)
+## Step 4 — Search the User's Mail (Four Searches)
 
-Run all four searches using the Gmail MCP `search_threads` tool. Find the Gmail MCP in your available tools — it's whichever MCP provides `search_threads` and `get_thread`. Use `max_results: 50` per query.
+Find the connected mail MCP among your available tools — it's whichever one provides `search_threads` and `get_thread`. This skill is **provider-adaptive**: it works best with Gmail (the reference queries below are Gmail-tuned), but it should adapt to whatever mail account the user has actually connected rather than assume Gmail.
 
-**Query A — Inbox, subject-based:**
-```
-subject:(settlement OR "class action" OR "claim form") after:YYYY/MM/DD
-```
+### 4a. Identify the provider and its query syntax
 
-**Query B — Inbox, body urgency signals:**
-```
-("claim deadline" OR "submit your claim" OR "file a claim" OR "settlement administrator" OR "opt out" OR "claims period") after:YYYY/MM/DD
-```
+Before searching, look at the connected mail MCP's server name and its `search_threads` tool description/schema to learn (1) which provider it is (Gmail, Outlook, etc.) and (2) what query syntax it accepts — its date-filter format, its folder/junk filters, and how it expresses OR / phrase matching. You'll express the four searches below in that provider's syntax.
 
-**Query C — Spam folder** (many legitimate settlement notices land here due to bulk sending):
-```
-in:spam (settlement OR "class action" OR "claim form" OR "claim deadline" OR "submit your claim") after:YYYY/MM/DD
-```
+### 4b. The four searches (purpose first, Gmail syntax as reference)
 
-**Query D — Promotions category:**
-```
-category:promotions (settlement OR "class action" OR "claim form" OR "claim deadline" OR "submit your claim") after:YYYY/MM/DD
-```
+Each search has a *purpose* that's the same on any provider; the Gmail query is the reference implementation to translate from.
 
-Collect all thread IDs from all four queries. De-duplicate by thread ID, sort by most recent, and cap at 100. Keeping only the 100 most recent matters because older threads rarely have open claim windows — processing them wastes time without yielding actionable results. Note in the report header how many came from spam vs. promotions vs. inbox.
+| # | Purpose | Gmail reference query |
+|---|---|---|
+| A | Settlement/claim terms in the **subject line** | `subject:(settlement OR "class action" OR "claim form") after:YYYY/MM/DD` |
+| B | Urgency/claim phrases **anywhere in the body** | `("claim deadline" OR "submit your claim" OR "file a claim" OR "settlement administrator" OR "opt out" OR "claims period") after:YYYY/MM/DD` |
+| C | Same terms, but in the **spam / junk** folder | `in:spam (settlement OR "class action" OR "claim form" OR "claim deadline" OR "submit your claim") after:YYYY/MM/DD` |
+| D | Same terms, in the **promotions / bulk** category | `category:promotions (settlement OR "class action" OR "claim form" OR "claim deadline" OR "submit your claim") after:YYYY/MM/DD` |
+
+Use `max_results: 50` (or the provider's nearest equivalent) per search.
+
+### 4c. Adapt to the connected provider
+
+- **Gmail:** use the reference queries verbatim.
+- **Another provider that documents its own search operators:** translate each purpose into that syntax (its date format, its folder/junk filter, its OR/phrase syntax). Keep the same search terms.
+- **A provider with only plain keyword search (no folder or field operators):** run A and B as keyword + date searches across all mail. If there's no spam/junk folder or bulk/promotions category to target, skip C and/or D — and **record in the report header that spam/promotions couldn't be searched on this provider**, so the user knows a junk-filed notice could have been missed.
+- **No working mail search at all:** stop and tell the user which mail account is connected and that the scanner needs a searchable mail integration (Gmail is the most complete).
+
+Collect all thread IDs from every search that ran. De-duplicate by thread ID, sort by most recent, and cap at 100. Keeping only the 100 most recent matters because older threads rarely have open claim windows — processing them wastes time without yielding actionable results. Note in the report header how many came from spam vs. promotions vs. inbox (and which of those, if any, the provider didn't support).
 
 ## Step 5 — Fetch and Classify Each Thread
 
-For each thread ID, call `get_thread` (same Gmail MCP). Process in batches of 10 to keep context manageable — fetching all threads at once risks losing earlier results as context grows.
+For each thread ID, call `get_thread` (same mail MCP). Process in batches of 10 to keep context manageable — fetching all threads at once risks losing earlier results as context grows.
 
 Classify each thread immediately using the extraction guide (already loaded in Step 2):
 - **Type A (Active):** Claim form open, future deadline, URL to submit a claim present
@@ -170,3 +174,4 @@ Don't reproduce the tables in chat. The file is the artifact.
 - **Same case, multiple emails:** Deduplicate by company/case name, keep the most recent email's data.
 - **Tracker file missing:** Create it at `~/.claude/class-action-tracker.json` with empty arrays during Step 3.
 - **Report for today already exists in `output/`:** Overwrite it — a re-run on the same day means the user wants fresh results, not a duplicate file.
+- **A non-Gmail mail integration is connected:** Don't refuse — adapt. Follow Step 4c: read that provider's search syntax, translate the four searches, and degrade gracefully (skip spam/promotions searches if the provider has no such folders, noting it in the report). Only stop if there's no working mail search at all.
