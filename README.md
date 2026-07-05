@@ -265,8 +265,27 @@ docs/
 
 ## Privacy
 
-- The scanner uses Gmail's search API (read-only) via Claude's MCP integration
+- The scanner uses your email provider's search API (read-only) via Claude's MCP integration
 - No email content is stored anywhere by these tools
 - Generated reports stay in `~/.claude/skills/class-action-scanner/output/` — local to your machine, not synced, not committed to this repo
 - The tracker file (`~/.claude/class-action-tracker.json`) is local to your machine and not synced
 - Settlement websites are fetched to verify deadlines — only the claim URL is visited, not your personal data
+
+---
+
+## Fork it, make it yours
+
+These are just two `SKILL.md` files and some reference guides — easy to fork and bend to your own needs. **Please do.** Some ideas:
+
+- **Add first-class support for your email provider.** The scanner is already provider-adaptive (see [Step 4 of the scanner](skills/class-action-scanner/SKILL.md)); if you use Outlook, Proton, Fastmail, etc., you could tune the searches for it and send the improvement back.
+- **Tweak the phishing scoring** in [`phishing-guide.md`](skills/class-action-scanner/references/phishing-guide.md) — add settlement-administrator domains you trust, or adjust the point weights.
+- **Change the report design.** [`report-template.md`](skills/class-action-scanner/references/report-template.md) and Step 9 of the scanner define the HTML; restyle it however you like.
+- **Localize it** for settlements and claim-notice conventions in your country.
+
+To contribute back: fork the repo, make your change, and open a pull request — or just open an issue describing what you'd like. No contribution is too small, and adapting it purely for yourself is completely fine too.
+
+---
+
+## License
+
+[MIT](LICENSE) — use, modify, and redistribute freely, for any purpose, including commercially; just keep the copyright notice.
