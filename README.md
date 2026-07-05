@@ -1,12 +1,14 @@
-# Class Action Settlement Tools for Claude Code
+# Class Action Settlement Tools for Claude
 
 Two Claude skills that scan your Gmail for class action settlements, score each email for legitimacy, and track what you've filed and received — so you don't leave money on the table.
 
 Once installed, the skills work **globally** — in any folder, any project, any Claude Code session.
 
+Don't use Claude Code? These also work directly in **Claude.ai** (web/desktop/mobile) — see [Using this in Claude.ai instead](#using-this-in-claudeai-instead-of-claude-code) below.
+
 ---
 
-## Quick start
+## Quick start (Claude Code)
 
 **Already have Claude Code?** Skip straight to [step 2](#2-connect-gmail) — no need to reinstall or reconfigure anything. `install.sh` only adds these two skills; it doesn't touch any skills, commands, or settings you already have.
 
@@ -42,6 +44,41 @@ Restart Claude Code, then run your first scan:
 ```
 /class-action-scanner
 ```
+
+---
+
+## Using this in Claude.ai instead of Claude Code
+
+No terminal needed. Claude.ai (web, desktop, and mobile apps) supports the same Skills format directly through **Settings → Capabilities → Skills**.
+
+### 1. Connect Gmail
+
+Same as above: **Settings → Integrations → Gmail**.
+
+### 2. Package the skills
+
+If you have the repo cloned locally:
+
+```bash
+./scripts/package-for-claude-ai.sh
+```
+
+This produces `dist/class-action-scanner.skill` and `dist/class-action-tracker.skill`.
+
+No terminal at all? Download the repo as a ZIP from GitHub, open the `skills/class-action-scanner/` folder, and zip it yourself — the important part is that `SKILL.md` sits at the top level once you unzip it.
+
+### 3. Upload
+
+In Claude.ai, go to **Settings → Capabilities → Skills → Upload skill**, and upload both `.skill` files from `dist/`.
+
+### 4. Use it
+
+Same triggers as Claude Code — just talk to Claude:
+
+- *"scan my email for class action settlements"*
+- *"I filed my LastPass claim"*
+
+One difference: the scanner's `output/` folder convention (see below) is a Claude Code / local-filesystem concept. In Claude.ai, the generated HTML report is returned to you directly in the conversation as a file you can download — there's no `~/.claude/skills/.../output/` path to check.
 
 ---
 
@@ -201,7 +238,9 @@ skills/
     output/                      # generated reports land here, not on your Desktop
   class-action-tracker/
     SKILL.md                     # tracker skill
-install.sh                       # copies skills into ~/.claude/skills/
+install.sh                       # copies skills into ~/.claude/skills/ (Claude Code)
+scripts/
+  package-for-claude-ai.sh       # zips skills into dist/*.skill (Claude.ai upload)
 ```
 
 ---
