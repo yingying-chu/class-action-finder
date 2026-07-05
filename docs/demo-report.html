@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Class Action Settlement Report — Sample</title>
+<style>
+  :root {
+    --bg: #f4f5f7;
+    --card-bg: #ffffff;
+    --header-bg: #14161f;
+    --header-bg2: #1f2333;
+    --text: #1c1e26;
+    --muted: #6b7280;
+    --border: #e5e7eb;
+    --green: #16a34a;
+    --green-bg: #dcfce7;
+    --yellow: #b45309;
+    --yellow-bg: #fef3c7;
+    --orange: #c2410c;
+    --orange-bg: #ffedd5;
+    --red: #dc2626;
+    --red-bg: #fee2e2;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+  }
+  .container { max-width: 920px; margin: 0 auto; padding: 0 20px 48px; }
+  header {
+    background: linear-gradient(135deg, var(--header-bg), var(--header-bg2));
+    color: #fff;
+    padding: 32px 20px;
+    margin-bottom: 28px;
+  }
+  header .inner { max-width: 920px; margin: 0 auto; }
+  header .badge-demo {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    margin-bottom: 12px;
+  }
+  header h1 { margin: 0 0 6px; font-size: 24px; }
+  header .meta { color: #b8bccc; font-size: 14px; margin-bottom: 20px; }
+  .badges { display: flex; gap: 10px; flex-wrap: wrap; }
+  .badge {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    min-width: 96px;
+  }
+  .badge .num { font-size: 20px; font-weight: 700; display: block; }
+  .badge .label { color: #b8bccc; }
+
+  section.group { margin-bottom: 32px; }
+  .group h2 {
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    margin: 0 0 12px;
+  }
+
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+  .card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .card h3 { margin: 0; font-size: 17px; }
+  .card .sub { color: var(--muted); font-size: 13px; margin-top: 2px; }
+
+  .confidence {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .confidence.green { color: var(--green); background: var(--green-bg); }
+  .confidence.yellow { color: var(--yellow); background: var(--yellow-bg); }
+  .confidence.orange { color: var(--orange); background: var(--orange-bg); }
+  .confidence.red { color: var(--red); background: var(--red-bg); }
+
+  .row { display: flex; gap: 24px; flex-wrap: wrap; margin: 12px 0; font-size: 14px; }
+  .field .k { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 2px; }
+  .field .v { font-weight: 600; }
+
+  .pill-deadline {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .pill-deadline.urgent { background: var(--red-bg); color: var(--red); }
+  .pill-deadline.normal { background: #eef2ff; color: #4338ca; }
+
+  .idbox {
+    display: inline-block;
+    font-family: "SF Mono", Menlo, monospace;
+    background: #f1f2f5;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 12px;
+    margin-right: 6px;
+  }
+
+  .card a.link { color: #2563eb; font-size: 13px; text-decoration: none; }
+  .card a.link:hover { text-decoration: underline; }
+  .notes { font-size: 13px; color: var(--muted); margin-top: 10px; border-top: 1px dashed var(--border); padding-top: 10px; }
+
+  .card.phishing { border-color: #fecaca; background: #fff5f5; }
+  .card.filed .card-top { align-items: center; }
+  .check { color: var(--green); font-weight: 700; }
+
+  .empty { color: var(--muted); font-style: italic; font-size: 14px; }
+
+  .action-panel {
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    border-radius: 12px;
+    padding: 20px 22px;
+  }
+  .action-panel h2 { margin-top: 0; color: #065f46; }
+  .action-item { margin-bottom: 14px; font-size: 14px; }
+  .action-item .co { font-weight: 700; }
+  .action-item .dl { color: var(--red); font-weight: 600; }
+</style>
+</head>
+<body>
+<header>
+  <div class="inner">
+    <span class="badge-demo">SAMPLE REPORT · ILLUSTRATIVE DATA</span>
+    <h1>Class Action Settlement Report</h1>
+    <div class="meta">Generated Jun 30, 2026 · Period scanned: Jul 2025 – Jun 2026 · 148 emails processed (inbox: 132, spam: 11, promotions: 5)</div>
+    <div class="badges">
+      <div class="badge"><span class="num">3</span><span class="label">Active</span></div>
+      <div class="badge"><span class="num">4</span><span class="label">Filed</span></div>
+      <div class="badge"><span class="num">2</span><span class="label">Watch list</span></div>
+      <div class="badge"><span class="num">1</span><span class="label">Expired</span></div>
+      <div class="badge"><span class="num">1</span><span class="label">Phishing</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+
+  <section class="group">
+    <h2>Section 1 — Active Claims: Action Required</h2>
+
+    <div class="card">
+      <div class="card-top">
+        <div>
+          <h3>LastPass — Security Breach Settlement</h3>
+          <div class="sub">2022 data breach exposed encrypted vault data</div>
+        </div>
+        <span class="confidence green">🟢 92% confident</span>
+      </div>
+      <div class="row">
+        <div class="field"><div class="k">Deadline</div><div class="v"><span class="pill-deadline urgent">Jul 2, 2026 · 2 days left</span></div></div>
+        <div class="field"><div class="k">Your payout</div><div class="v">$25–$10,000</div></div>
+        <div class="field"><div class="k">Total pool</div><div class="v">$24.45M</div></div>
+      </div>
+      <div>
+        <span class="idbox">ID: SAMPLE-ID-0001</span><span class="idbox">PIN: 0000</span>
+        <a class="link" href="#" onclick="return false;">lastpasssettlement.com →</a>
+      </div>
+      <div class="notes">CA residents get an automatic +$100 under CCPA. Deadline is firm — no extensions confirmed.</div>
+    </div>
+
+    <div class="card">
+      <div class="card-top">
+        <div>
+          <h3>Equifax — Data Security Incident</h3>
+          <div class="sub">2017 breach exposed SSNs and financial records</div>
+        </div>
+        <span class="confidence green">🟢 96% confident</span>
+      </div>
+      <div class="row">
+        <div class="field"><div class="k">Deadline</div><div class="v"><span class="pill-deadline normal">Sep 14, 2026</span></div></div>
+        <div class="field"><div class="k">Your payout</div><div class="v">up to $20,000 (documented losses)</div></div>
+        <div class="field"><div class="k">Total pool</div><div class="v">$425M</div></div>
+      </div>
+      <div>
+        <span class="idbox">ID: EQ-88213</span>
+        <a class="link" href="#" onclick="return false;">equifaxbreachsettlement.com →</a>
+      </div>
+      <div class="notes">Credit monitoring time can count toward the claim — track hours spent.</div>
+    </div>
+  </section>
+
+  <section class="group">
+    <h2>Section 2 — Watch List: No Action Yet</h2>
+    <div class="card">
+      <div class="card-top">
+        <div>
+          <h3>Google — Android Cellular Data</h3>
+          <div class="sub">Android phones transferred data over cellular without permission</div>
+        </div>
+        <span class="confidence yellow">🟡 78% confident</span>
+      </div>
+      <div class="row">
+        <div class="field"><div class="k">Status</div><div class="v">Awaiting final approval — Jun 23, 2026</div></div>
+        <div class="field"><div class="k">Estimated payout</div><div class="v">pro-rata, unknown</div></div>
+      </div>
+      <div class="notes">No claim form needed — CA Android users on a cellular plan since 2016 are paid automatically if approved.</div>
+    </div>
+  </section>
+
+  <section class="group">
+    <h2>Section 3 — Expired / Already Closed</h2>
+    <div class="empty">No expired claims found in this scan.</div>
+  </section>
+
+  <section class="group">
+    <h2>Section 4 — Already Filed</h2>
+    <div class="card filed">
+      <div class="card-top">
+        <div><h3>Blue Cross Blue Shield — Antitrust</h3><div class="sub">Filed pre-2021</div></div>
+        <span class="confidence green">Pending ⏳</span>
+      </div>
+      <div class="row">
+        <div class="field"><div class="k">Expected</div><div class="v">pro-rata share of $2.67B</div></div>
+        <div class="field"><div class="k">Status</div><div class="v">Checks issued May 2026</div></div>
+      </div>
+    </div>
+    <div class="card filed">
+      <div class="card-top">
+        <div><h3>Facebook — Internet Tracking</h3><div class="sub">Filed date unknown</div></div>
+        <span class="confidence green"><span class="check">✅</span> Paid</span>
+      </div>
+      <div class="row">
+        <div class="field"><div class="k">Received</div><div class="v">$4.01 via Zelle</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="group">
+    <h2>Section 5 — Phishing Alerts: Do Not Click</h2>
+    <div class="card phishing">
+      <div class="card-top">
+        <div><h3>"Claim Your $5,000 Settlement NOW"</h3><div class="sub">claims@xk7r-settle.xyz</div></div>
+        <span class="confidence red">🔴 18% confident</span>
+      </div>
+      <div class="notes">Requests a $25 "processing fee"; case name returns zero search results; sender domain is unrelated to any known administrator. Do not click any links — report as phishing in Gmail.</div>
+    </div>
+  </section>
+
+  <div class="action-panel">
+    <h2>What To Do Next</h2>
+    <div class="action-item">
+      <span class="co">LastPass</span> — <span class="dl">deadline Jul 2, 2026 (2 days)</span><br>
+      Visit lastpasssettlement.com · ID SAMPLE-ID-0001 · PIN 0000
+    </div>
+    <div class="action-item">
+      <span class="co">Equifax</span> — deadline Sep 14, 2026<br>
+      Visit equifaxbreachsettlement.com · ID EQ-88213
+    </div>
+    <div class="action-item">
+      <span class="co">Blue Cross Blue Shield</span> — watch for payment<br>
+      Checks issued May 2026 — check your mail this week.
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
