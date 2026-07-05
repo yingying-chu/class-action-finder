@@ -5,6 +5,7 @@
 .claude/
 
 # Generated scan reports — personal data, regenerated on every run
-skills/class-action-scanner/output/*.html
-!skills/class-action-scanner/output/.gitkeep
+skills/class-action-finder/output/*.html
+skills/class-action-finder/output/*.json
+!skills/class-action-finder/output/.gitkeep
 

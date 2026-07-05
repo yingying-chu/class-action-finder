@@ -132,8 +132,8 @@ A highlighted action panel at the bottom. List items sorted by soonest deadline 
 ```
 
 Also include a reminder:
-- To log a filed claim: use `/class-action-tracker`
-- To record a payout received: use `/class-action-tracker`
+- To log a filed claim: just tell Claude (e.g. "I already filed the [company] one")
+- To record a payout received: just tell Claude (e.g. "I got $47 from [company]")
 
 ---
 
@@ -144,7 +144,7 @@ If a section has no entries, show a brief italicized note — never omit the sec
 - Section 1: "No active claims found in this scan."
 - Section 2: "No potential future claims found."
 - Section 3: "No expired claims found."
-- Section 4: "No previously filed claims on record. Use `/class-action-tracker` to log claims you have filed."
+- Section 4: "No previously filed claims on record. Tell Claude "I already filed [company]" to log it."
 - Section 5: "No phishing emails detected in this scan."
 
 This keeps the report structure consistent across runs.

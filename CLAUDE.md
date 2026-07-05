@@ -1,42 +1,39 @@
 # CLAUDE.md
 
-This repo contains Claude skills stored in `skills/`. Run `./install.sh` to install them into Claude's global skills directory so they work across all projects.
+This repo contains a single Claude skill in `skills/class-action-finder/`. Run `./install.sh` to install it into Claude's global skills directory (`~/.claude/skills/`) so it works across all projects.
 
-## Skills in this repo
+## The skill
 
-| Skill | Directory | What it does |
-|---|---|---|
-| `class-action-scanner` | `skills/class-action-scanner/` | Scans Gmail for class action settlement emails |
-| `class-action-tracker` | `skills/class-action-tracker/` | Tracks filed claims and payouts |
+`class-action-finder` does two jobs that feed each other, in one `SKILL.md`:
+- **Find** — scans the user's connected email for class action settlement notices and produces a styled HTML report (`SKILL.md` Part A)
+- **Remember** — reads and writes a persistent record of what the user has filed and been paid (`SKILL.md` Part B), and can refresh the current report after a correction without re-scanning email (Part C)
+
+It was previously two separate skills (`class-action-scanner` + `class-action-tracker`); they were merged so the record ↔ report loop lives in one place. If you see stale references to the old names anywhere, update them.
 
 ## Reference files
 
-The scanner loads these at runtime from its own `references/` directory (bundled inside the skill):
+The skill reads these at runtime from its own `references/` directory:
 
 | File | Purpose |
 |---|---|
-| `extraction-guide.md` | How to classify emails, extract fields, skip irrelevant threads |
+| `extraction-guide.md` | How to classify emails, extract fields (incl. claim ID vs. PIN), skip irrelevant threads |
 | `phishing-guide.md` | Confidence scoring signals and known settlement administrator domains |
-| `report-template.md` | Content guide for the 5-section HTML report output |
+| `report-template.md` | Content guide for the 5-section HTML report |
+
+## Persistent claim record
+
+Stored at `~/.claude/class-action-tracker.json` on each user's own machine (not committed). The filename kept the `tracker` name for backward compatibility with existing data — don't rename it.
 
 ## Generated reports
 
-The scanner writes HTML reports to `skills/class-action-scanner/output/` — relative to the skill's own installed directory, never the user's cwd or Desktop/Documents. That folder is gitignored (`*.html`) except for a `.gitkeep` placeholder, so reports stay local and the repo doesn't accumulate personal scan data.
-
-## Claude.ai distribution (dist/)
-
-`dist/class-action-scanner.skill` and `dist/class-action-tracker.skill` are checked into the repo (not gitignored) so README download links work for people with no terminal — they just click and upload straight to Claude.ai. **After editing either `SKILL.md`, re-run `./scripts/package-for-claude-ai.sh` and commit the updated `.skill` files** — otherwise those download links go stale and Claude.ai users get an outdated skill.
-
-## Persistent claim data
-
-Tracked claims are stored at `~/.claude/class-action-tracker.json` (on each user's own machine — not committed to this repo).
+Written to `skills/class-action-finder/output/` — relative to the skill's own installed directory, never the user's cwd or Desktop/Documents. That folder is gitignored (`*.html`, `*.json`) except for a `.gitkeep`, so reports stay local and the repo doesn't accumulate personal scan data.
 
 ## Mail MCP (Gmail-first, provider-adaptive)
 
-The scanner uses a mail MCP connected via Claude.ai integrations — whichever one provides `search_threads` and `get_thread`. No configuration needed.
+The skill uses whichever connected mail MCP provides `search_threads` and `get_thread`. Gmail is the reference provider (Step 4's queries are Gmail syntax and give the fullest scan). Step 4 is deliberately provider-adaptive: it reads the connected MCP's search-tool schema, translates the four searches into that provider's syntax, and degrades gracefully (skipping spam/promotions sweeps where absent, flagging the gap). It only hard-stops if there's no working mail search at all. Don't reduce this back to Gmail-only.
 
-**Gmail is the reference provider.** Step 4's four searches are written in Gmail syntax (`in:spam`, `category:promotions`, `after:YYYY/MM/DD`) and give the fullest scan (including spam/promotions folders). But Step 4 is deliberately **provider-adaptive**: it instructs the model to read the connected MCP's search-tool schema, translate the four searches into that provider's syntax, and degrade gracefully (skip spam/promotions sweeps where the provider has no such folders, flagging the gap in the report). It only hard-stops if there's no working mail search at all.
+## Claude.ai distribution (dist/)
 
-This adaptation is instruction-level, not a fabricated per-provider API — the model reads whatever mail MCP is actually connected and adapts. README's "Using a different email provider" section explains the same to users, and is explicit that providers with no Claude integration simply can't be reached (a limit of available integrations, not the skill).
+`dist/class-action-finder.skill` is checked in (not gitignored) so the README download link works for people with no terminal. **After editing `SKILL.md` or a reference file, re-run `./scripts/package-for-claude-ai.sh` and commit the updated `.skill`** — otherwise the download link goes stale.
 
 See README.md for setup instructions.
