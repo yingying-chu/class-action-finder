@@ -15,7 +15,7 @@ Start at a baseline of 50%. Apply the signals below. The final score determines 
 | 40–59% | 🟠 Uncertain | Include in report with caution warning |
 | < 40% | 🔴 Phishing risk | Move to Section 5, warn user not to click |
 
-Always run a `WebSearch` for the case name + "settlement" or company name + "class action" to check for news coverage or court records. This is the single most reliable signal.
+Always use the runtime's web search capability for the case name + "settlement" or company name + "class action" to check for news coverage or court records. This is the single most reliable signal.
 
 ---
 
@@ -23,13 +23,13 @@ Always run a `WebSearch` for the case name + "settlement" or company name + "cla
 
 | Signal | Points | How to detect |
 |---|---|---|
-| Case verifiable via WebSearch (news article, court record, PACER) | +25 | Search "[Company] class action settlement [year]" |
-| Sender email domain is a known settlement administrator (Epiq, Kroll, JND, Rust Consulting, Analytics) | +20 | Check sender domain against list below |
+| Case verifiable via web search (news article, court record, PACER) | +25 | Search "[Company] class action settlement [year]" |
+| Authenticated sender domain is a known settlement administrator (Epiq, Kroll, JND, Rust Consulting, Analytics) | +20 | Check the actual From domain and visible authentication/header evidence when available; display names alone do not count |
 | Email contains a PACER/court case number (format: N:YY-cv-NNNNN) | +15 | Look for "Case No." in the body |
 | Claim URL domain contains "settlement" or "claims" and matches the defendant's name | +15 | e.g., `facebookuserprivacysettlement.com`, `applesettlement.com` |
 | Email is addressed to a specific claim ID / notice ID tied to the recipient | +10 | Unique code present in email, not generic |
 | No request for payment, SSN, bank account, or credit card anywhere | +10 | Scan full email body for these requests |
-| Total settlement amount matches publicly reported figures | +10 | Confirm via WebSearch |
+| Total settlement amount matches publicly reported figures | +10 | Confirm via web search |
 
 Maximum addable: +105 (score can exceed 100 — cap at 100)
 
@@ -41,7 +41,7 @@ Maximum addable: +105 (score can exceed 100 — cap at 100)
 |---|---|---|
 | Requests payment to "process" or "expedite" the claim | −40 | "Pay $X processing fee" — legitimate settlements are free to file |
 | Requests SSN, bank account number, or credit card | −35 | Any financial account detail request is a major red flag |
-| Case name not findable in any news, legal database, or court record via WebSearch | −25 | Unverifiable cases are almost always fabricated |
+| Case name not findable in any news, legal database, or court record via web search | −25 | Unverifiable cases are almost always fabricated |
 | Sender domain is random characters or unrelated to settlements | −20 | e.g., `noreply@xk7r2claim.com` vs `notices@epiqsystems.com` |
 | Claim URL domain is newly registered or completely unrelated to the defendant | −20 | Domain doesn't mention defendant or case |
 | Body is very short (< 100 words) with only a link — no case details | −15 | Real settlement notices are detailed |
@@ -63,9 +63,9 @@ These domains sending settlement emails should add confidence:
 - `angeiongroup.com`
 - `heffler.com` (Heffler Claims Group)
 - `gilardi.com`
-- Any domain matching `*settlement*.com` or `*claims*.com` where the subdomain or name matches the defendant
+- Case-specific domains containing `settlement` or `claims` are not automatically trusted; corroborate them against a court record, known administrator, or independently verified case source
 
-If the sender is one of the above, add +20 to the score.
+If the authenticated sender domain is one of the named administrator domains above, add +20 to the score. Do not award these points merely because the display name says "Settlement Administrator" or because a domain contains `settlement` or `claims`.
 
 ---
 

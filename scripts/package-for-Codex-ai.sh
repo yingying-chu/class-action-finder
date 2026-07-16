@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# Backward-compatible wrapper. Portable .skill archives are now built by
-# package-skill.sh for both ChatGPT and Claude.ai.
+# Backward-compatible name retained for existing repository instructions.
 
 set -euo pipefail
 

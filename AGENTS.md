@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-This repo contains a single portable skill in `skills/class-action-finder/`. Run `./install.sh` to install it into Claude's global skills directory (`~/.claude/skills/`). Use `./install.sh --codex` for Codex.
+This repo contains one portable skill for Claude, Codex, and ChatGPT in `skills/class-action-finder/`. Run `./install.sh --codex` to install it into Codex's global skills directory (`${CODEX_HOME:-$HOME/.codex}/skills/`) so it works across all projects. The default `./install.sh` target remains Claude Code.
 
 ## The skill
 
@@ -22,7 +22,7 @@ The skill reads these at runtime from its own `references/` directory:
 
 ## Persistent claim record
 
-Stored at `~/.claude/class-action-tracker.json` on each user's own machine (not committed). The filename kept the `tracker` name for backward compatibility with existing data — don't rename it.
+Stored at `${CODEX_HOME:-$HOME/.codex}/class-action-tracker.json` for Codex on each user's own machine (not committed). Claude Code keeps its existing `~/.claude/class-action-tracker.json`; neither platform's installer overwrites the other's tracker.
 
 ## Generated reports
 

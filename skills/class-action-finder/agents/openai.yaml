@@ -1,0 +1,7 @@
+interface:
+  display_name: "Class Action Finder"
+  short_description: "Find, verify, and track settlement claims"
+  default_prompt: "Use $class-action-finder to scan my connected email for class action settlement notices from the last year."
+
+policy:
+  allow_implicit_invocation: true

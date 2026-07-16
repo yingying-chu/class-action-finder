@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
 <title>Class Action Settlement Report — Sample</title>
 <style>
   :root {
@@ -125,8 +126,7 @@
     margin-right: 6px;
   }
 
-  .card a.link { color: #2563eb; font-size: 13px; text-decoration: none; }
-  .card a.link:hover { text-decoration: underline; }
+  .card .link { color: #2563eb; font-size: 13px; }
   .notes { font-size: 13px; color: var(--muted); margin-top: 10px; border-top: 1px dashed var(--border); padding-top: 10px; }
 
   .card.phishing { border-color: #fecaca; background: #fff5f5; }
@@ -166,7 +166,7 @@
 <div class="container">
 
   <section class="group">
-    <h2>Section 1 — Active Claims: Action Required</h2>
+    <h2>Section 1 — Active Claim Windows</h2>
 
     <div class="card">
       <div class="card-top">
@@ -183,7 +183,7 @@
       </div>
       <div>
         <span class="idbox">ID: SAMPLE-ID-0001</span><span class="idbox">PIN: 0000</span>
-        <a class="link" href="#" onclick="return false;">examplesettlement.com →</a>
+        <span class="link">examplesettlement.com · illustrative URL</span>
       </div>
       <div class="notes">CA residents get an automatic +$100 under CCPA. Deadline is firm — no extensions confirmed.</div>
     </div>
@@ -203,7 +203,7 @@
       </div>
       <div>
         <span class="idbox">ID: SAMPLE-ID-0002</span>
-        <a class="link" href="#" onclick="return false;">examplebreach.com →</a>
+        <span class="link">examplebreach.com · illustrative URL</span>
       </div>
       <div class="notes">Credit monitoring time can count toward the claim — track hours spent.</div>
     </div>
@@ -262,7 +262,7 @@
         <div><h3>"Claim Your $5,000 Settlement NOW"</h3><div class="sub">claims@xk7r-settle.xyz</div></div>
         <span class="confidence red">🔴 18% confident</span>
       </div>
-      <div class="notes">Requests a $25 "processing fee"; case name returns zero search results; sender domain is unrelated to any known administrator. Do not click any links — report as phishing in Gmail.</div>
+      <div class="notes">Requests a $25 "processing fee"; case name returns zero search results; sender domain is unrelated to any known administrator. Do not click any links — report it as phishing in your mail provider.</div>
     </div>
   </section>
 

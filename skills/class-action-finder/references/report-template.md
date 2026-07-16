@@ -2,6 +2,8 @@
 
 Use this as the **content guide** when writing `class-action-report-YYYY-MM-DD.html`. It defines what sections to include, what data belongs in each section, and what order to present it. Step 9 of the skill defines the visual HTML structure (cards, dark header, inline CSS); this file defines the content inside that structure.
 
+The HTML-safety rules in Step 9 apply to every section and the action panel. Escape all untrusted values, and never create a clickable link for an 🟠 or 🔴 entry.
+
 ---
 
 ## Header Block
@@ -16,9 +18,9 @@ Show at the top of the page:
 
 ---
 
-## Section 1 — Active Claims (Action Required)
+## Section 1 — Active Claim Windows
 
-One card per claim. Sort by soonest deadline first.
+One card per open claim window. Sort by soonest deadline first. A claim already recorded as filed remains here for deadline and documentation reference, but must not appear as a filing task in the "What To Do Next" panel.
 
 **Each card must include:**
 
@@ -33,7 +35,7 @@ One card per claim. Sort by soonest deadline first.
 | Your payout | Amount or range; "pro-rata, unknown" if not stated |
 | Total settlement pool | e.g., "$725M" |
 | Claim ID / PIN | Two separate monospace boxes — `claim_id` and `pin` from Step 7. Omit the PIN box entirely if none was extracted; don't show an empty one |
-| Claim URL | Clickable link |
+| Claim URL | Clickable only for verified 🟢/🟡 `https://` URLs; show 🟠 URLs as non-clickable text with a warning |
 | Notes | One sentence on anything notable (e.g., "CA residents get +$100 CCPA") |
 
 Include auto-enrolled cases here too (no form needed, but payout is pending).
@@ -107,7 +109,7 @@ One card per suspicious email. Move any email scoring 🔴 (<40%) here instead o
 | Confidence score | e.g., "🔴 18%" |
 | Red flags | List the specific signals that drove the low score |
 | Email date | |
-| Advice | Always include: "Do not click any links. Report as phishing in Gmail." |
+| Advice | Always include: "Do not click any links. Report it as phishing in your mail provider." |
 
 If no phishing emails were found, show: "No phishing emails detected in this scan."
 
@@ -116,6 +118,8 @@ If no phishing emails were found, show: "No phishing emails detected in this sca
 ## "What To Do Next" Panel
 
 A highlighted action panel at the bottom. List items sorted by soonest deadline first.
+
+Include filing actions only for unfiled 🟢/🟡 claims with a validated `https://` URL. Do not put already-filed, 🟠, or 🔴 claims in this panel as click-through actions.
 
 **Format:**
 
@@ -132,8 +136,8 @@ A highlighted action panel at the bottom. List items sorted by soonest deadline 
 ```
 
 Also include a reminder:
-- To log a filed claim: just tell Claude (e.g. "I already filed the [company] one")
-- To record a payout received: just tell Claude (e.g. "I got $47 from [company]")
+- To log a filed claim: just tell the assistant (e.g. "I already filed the [company] one")
+- To record a payout received: just tell the assistant (e.g. "I got $47 from [company]")
 
 ---
 
@@ -144,7 +148,7 @@ If a section has no entries, show a brief italicized note — never omit the sec
 - Section 1: "No active claims found in this scan."
 - Section 2: "No potential future claims found."
 - Section 3: "No expired claims found."
-- Section 4: "No previously filed claims on record. Tell Claude "I already filed [company]" to log it."
+- Section 4: `No previously filed claims on record. Say "I already filed [company]" to log it.`
 - Section 5: "No phishing emails detected in this scan."
 
 This keeps the report structure consistent across runs.

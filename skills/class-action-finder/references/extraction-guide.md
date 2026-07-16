@@ -10,8 +10,8 @@ These match the Gmail search queries but are NOT class action settlement emails:
 | Insurance claim settled | "Your property claim #12345 has been settled" | Skip |
 | Lease / rent dispute | Landlord-tenant settlement, HOA settlement | Skip |
 | Marketing language | "Settle in for savings", "settle your score" | Skip |
-| Law firm solicitation | "Were you harmed by X? Contact us" — seeking clients, not notifying class members | Skip |
-| News / newsletter | Article about a lawsuit but not addressed to a class member | Skip |
+| Law firm solicitation | "Were you harmed by X? Contact us" — recruiting plaintiffs for an investigation or new lawsuit | Skip |
+| News / newsletter | Article about a lawsuit but not a settlement notice or class-member-relevant case update | Skip |
 
 **Quick skip heuristic:** If the email does not say "you may be a class member" or "you are entitled to submit a claim" or "you received this notice because", it is almost certainly irrelevant.
 
@@ -38,7 +38,7 @@ Payouts appear in several formats — extract exactly what is stated:
 | Range | "between $25 and $250 depending on proof" | `$25–$250` |
 | Tier-based | "Tier 1: $25, Tier 2: up to $100 with receipts" | `$25–$100 (tiered)` |
 | Pro-rata unknown | "your share of the $85 million fund" with no per-claimant estimate | `pro-rata, unknown` |
-| Pro-rata estimable | "$85M fund, estimated 2M claimants" | `~$42 (estimated)` |
+| Stated estimate | "The administrator estimates payments of approximately $42" | `~$42 (administrator estimate)` |
 | No amount stated | Type B emails often don't have one | `unknown` |
 
 Never calculate or invent an amount not stated in the email or on the settlement website.
@@ -103,13 +103,15 @@ Administrators use inconsistent terminology for the same idea (a per-recipient t
 |---|---|---|
 | Claim form exists | Yes | No |
 | Specific deadline stated | Yes, future date | No, or "TBD" |
-| Sender | Settlement administrator | Law firm, news alert, advocacy org |
-| Subject | "File your claim by..." | "Potential class action" / "Investigation announced" |
-| Key verb | "You are entitled to submit" / "Claim your settlement" | "You may have a claim" / "We are investigating" |
-| Linked domain | claims.somecase.com | Law firm website |
+| Sender | Settlement administrator | Settlement administrator, court notice, or reputable class-member notice |
+| Subject | "File your claim by..." | "Proposed settlement" / "Settlement approval pending" |
+| Key verb | "You are entitled to submit" / "Claim your settlement" | "A settlement has been proposed" / "Claim process not yet open" |
+| Linked domain | claims.somecase.com | Court, administrator, or case-information website |
 | Claim ID present | Often yes | Almost never |
 
 **When ambiguous, default to Type B.** It is better to watch-list an item than to send the user to a claim form that doesn't exist yet.
+
+Generic law-firm recruitment ("we are investigating—contact us to join") and ordinary news coverage remain irrelevant. Type B requires a real proposed settlement or a case update plausibly directed to affected class members.
 
 ---
 
@@ -125,7 +127,7 @@ Read all messages in the thread. The most recent message has the most current de
 Use the English portions if present. If entirely in another language, note the language and attempt extraction from recognizable dates and URLs.
 
 **Settlement website behind a login wall:**
-If `WebFetch` returns a login page, note "website requires account login — verify manually" and keep the email-extracted data.
+If the web browser or fetch tool returns a login page, note "website requires account login — verify manually" and keep the email-extracted data.
 
 **Cy pres / no individual payout:**
 Some settlements pay no money to claimants and instead donate to charity. If the email says "cy pres" or "residual funds will be donated", record `individual_payout` as "$0 — cy pres distribution" and still list the case.
