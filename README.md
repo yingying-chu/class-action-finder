@@ -180,7 +180,11 @@ Email bodies, linked pages, and search results are treated as untrusted data, ne
 | 40–59% | 🟠 Uncertain | Verify manually before acting |
 | Below 40% | 🔴 Phishing risk | Do not open claim links |
 
-The skill never visits URLs from 🟠 or 🔴 notices.
+The skill never visits URLs from 🟠 or 🔴 notices. Anything scoring 🔴 goes in its own red-flagged section, and every report ends with a "What To Do Next" panel sorted by soonest deadline:
+
+<p align="center">
+  <img src="docs/screenshot-phishing-action.png" alt="Phishing alert section and What To Do Next action panel from a sample report" width="640">
+</p>
 
 ## Provider adaptation
 
@@ -197,13 +201,6 @@ Package the portable upload artifact after changing `SKILL.md`, `agents/openai.y
 
 ```bash
 ./scripts/package-skill.sh
-```
-
-Platform-named convenience wrappers run the same packager:
-
-```bash
-./scripts/package-for-codex-chatgpt.sh
-./scripts/package-for-claude-ai.sh
 ```
 
 Run the repository's end-to-end structural, install, preservation, and package checks:
@@ -229,8 +226,6 @@ install.sh
 scripts/
   check.sh
   package-skill.sh
-  package-for-codex-chatgpt.sh
-  package-for-claude-ai.sh
 dist/
   class-action-finder.skill
   class-action-finder.zip
@@ -250,6 +245,17 @@ Generated reports and tracker data are private runtime artifacts and are not com
 - Only sufficiently trusted settlement URLs are opened for deadline and payout verification.
 - Reports can contain private claim IDs or PINs. Store and share generated HTML/tracker files as sensitive personal records.
 
+## Run it automatically (scheduled scans)
+
+You don't have to remember to run this. Because it's triggered by plain language, **any agent that can run on a schedule can run it for you** — Claude Code routines/cron, a scheduled task, or any agent framework that supports the skill format and a timer. Point the schedule at a prompt like *"scan my email for class action settlements from the last 30 days"* and it runs unattended.
+
+Before you rely on that:
+
+- **Weekly beats daily.** Notices trickle in and deadlines are weeks or months out, so a daily scan mostly produces empty reports. Once a week (or monthly) catches everything with far less noise.
+- **Confirm the scheduled run can reach your mail.** The big one: it needs your email integration connected *and authorized in the environment where the schedule runs*. Interactive auth doesn't always carry into a background run — **do one manual run inside the scheduled setup first**, then automate.
+- **Send yourself the result.** A report nobody opens is a scan that didn't happen — use your scheduler's completion notification (push/email).
+- **Keep your record current.** Tell the skill what you've filed so each scheduled report stays focused on what's genuinely new.
+
 ## Customize
 
 The reusable logic lives in one place:
@@ -260,3 +266,18 @@ The reusable logic lives in one place:
 - Edit [`report-template.md`](skills/class-action-finder/references/report-template.md) for report content and styling guidance.
 
 After any of those changes, rebuild and commit both files in `dist/`: the `.zip` for Claude and the identical `.skill` archive for ChatGPT.
+
+## Fork it, make it yours
+
+It's just one `SKILL.md` and a few reference guides — easy to fork and bend to your needs. **Please do.** Some ideas:
+
+- **Add first-class support for your email provider.** It's already provider-adaptive (Step 4 in [`SKILL.md`](skills/class-action-finder/SKILL.md)); if you use Outlook, Proton, Fastmail, etc., tune the searches for it and send the improvement back.
+- **Tweak the phishing scoring** in [`phishing-guide.md`](skills/class-action-finder/references/phishing-guide.md) — add administrator domains you trust, or adjust the weights.
+- **Restyle the report.** [`report-template.md`](skills/class-action-finder/references/report-template.md) and Step 9 define the HTML.
+- **Localize it** for settlements and claim-notice conventions in your country.
+
+To contribute back: fork, make your change, and open a pull request — or just open an issue. No contribution is too small, and adapting it purely for yourself is completely fine too.
+
+## License
+
+[MIT](LICENSE) — use, modify, and redistribute freely, for any purpose, including commercially; just keep the copyright notice.

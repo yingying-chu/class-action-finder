@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-# Backward-compatible wrapper. Portable .skill archives are now built by
-# package-skill.sh for both ChatGPT and Claude.ai.
-
-set -euo pipefail
-
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-exec "$REPO_ROOT/scripts/package-skill.sh"

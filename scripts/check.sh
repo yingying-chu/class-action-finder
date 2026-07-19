@@ -37,10 +37,7 @@ fi
 
 bash -n \
   "$REPO_ROOT/install.sh" \
-  "$REPO_ROOT/scripts/package-skill.sh" \
-  "$REPO_ROOT/scripts/package-for-claude-ai.sh" \
-  "$REPO_ROOT/scripts/package-for-codex-chatgpt.sh" \
-  "$REPO_ROOT/scripts/package-for-Codex-ai.sh"
+  "$REPO_ROOT/scripts/package-skill.sh"
 
 mkdir -p "$TMP_ROOT/unrelated-cwd"
 mkdir -p "$TMP_ROOT/claude-home/.claude/skills/other-skill"
