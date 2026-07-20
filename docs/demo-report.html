@@ -23,12 +23,72 @@
     --red-bg: #fee2e2;
   }
   * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
   body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     background: var(--bg);
     color: var(--text);
   }
+
+  /* Left navigation — pure CSS anchor links, no JavaScript (CSP-safe) */
+  .sidenav {
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    width: 220px;
+    background: linear-gradient(180deg, var(--header-bg), var(--header-bg2));
+    padding: 24px 12px;
+    overflow-y: auto;
+  }
+  .sidenav .nav-title {
+    color: #6d7284;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0 12px 10px;
+  }
+  .sidenav a {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    color: #b8bccc;
+    text-decoration: none;
+    font-size: 13.5px;
+    padding: 9px 12px;
+    border-radius: 8px;
+    margin-bottom: 2px;
+  }
+  .sidenav a:hover { background: rgba(255,255,255,0.08); color: #fff; }
+  .sidenav .count {
+    background: rgba(255,255,255,0.14);
+    color: #fff;
+    border-radius: 999px;
+    padding: 1px 8px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .sidenav .count.alert { background: #7f1d1d; color: #fecaca; }
+  .sidenav .nav-sep { border-top: 1px solid rgba(255,255,255,0.1); margin: 10px 12px; }
+
+  .page { margin-left: 220px; }
+  section.group, .action-panel, header { scroll-margin-top: 16px; }
+
+  @media (max-width: 900px) {
+    .sidenav {
+      position: static;
+      width: auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      padding: 10px 12px;
+      overflow: visible;
+    }
+    .sidenav .nav-title, .sidenav .nav-sep { display: none; }
+    .sidenav a { padding: 6px 10px; }
+    .page { margin-left: 0; }
+  }
+
   .container { max-width: 920px; margin: 0 auto; padding: 0 20px 48px; }
   header {
     background: linear-gradient(135deg, var(--header-bg), var(--header-bg2));
@@ -148,7 +208,21 @@
 </style>
 </head>
 <body>
-<header>
+<nav class="sidenav" aria-label="Report sections">
+  <div class="nav-title">Jump to</div>
+  <a href="#top">Overview</a>
+  <div class="nav-sep"></div>
+  <a href="#section-1">Active claims <span class="count">3</span></a>
+  <a href="#section-2">Watch list <span class="count">2</span></a>
+  <a href="#section-3">Expired <span class="count">1</span></a>
+  <a href="#section-4">Already filed <span class="count">4</span></a>
+  <a href="#section-5">Phishing <span class="count alert">1</span></a>
+  <div class="nav-sep"></div>
+  <a href="#next-steps">What to do next</a>
+</nav>
+
+<div class="page">
+<header id="top">
   <div class="inner">
     <span class="badge-demo">SAMPLE REPORT · ILLUSTRATIVE DATA</span>
     <h1>Class Action Settlement Report</h1>
@@ -165,7 +239,7 @@
 
 <div class="container">
 
-  <section class="group">
+  <section class="group" id="section-1">
     <h2>Section 1 — Active Claim Windows</h2>
 
     <div class="card">
@@ -209,7 +283,7 @@
     </div>
   </section>
 
-  <section class="group">
+  <section class="group" id="section-2">
     <h2>Section 2 — Watch List: No Action Yet</h2>
     <div class="card">
       <div class="card-top">
@@ -227,12 +301,12 @@
     </div>
   </section>
 
-  <section class="group">
+  <section class="group" id="section-3">
     <h2>Section 3 — Expired / Already Closed</h2>
     <div class="empty">No expired claims found in this scan.</div>
   </section>
 
-  <section class="group">
+  <section class="group" id="section-4">
     <h2>Section 4 — Already Filed</h2>
     <div class="card filed">
       <div class="card-top">
@@ -255,7 +329,7 @@
     </div>
   </section>
 
-  <section class="group">
+  <section class="group" id="section-5">
     <h2>Section 5 — Phishing Alerts: Do Not Click</h2>
     <div class="card phishing">
       <div class="card-top">
@@ -266,7 +340,7 @@
     </div>
   </section>
 
-  <div class="action-panel">
+  <div class="action-panel" id="next-steps">
     <h2>What To Do Next</h2>
     <div class="action-item">
       <span class="co">ExampleApp</span> — <span class="dl">deadline Jul 2, 2026 (2 days)</span><br>
@@ -282,6 +356,7 @@
     </div>
   </div>
 
+</div>
 </div>
 </body>
 </html>

@@ -162,6 +162,7 @@ For Type A emails with a `claim_url` and confidence 🟢/🟡, open or fetch the
 Create `class-action-report-YYYY-MM-DD.html`. On a local runtime, write it under `output/` relative to this skill's directory; on a hosted runtime, return it as a downloadable artifact. Use self-contained HTML (inline CSS, no external dependencies) and `references/report-template.md` as the content guide, rendered as styled HTML rather than raw markdown tables. Requirements:
 
 - Dark header bar with report date, scan period, and badge counts
+- **A fixed left navigation bar** so long reports don't require endless scrolling: pure CSS anchor links only (the CSP forbids JavaScript). Give each of the five sections and the "What To Do Next" panel an `id`, link to them from the nav with each section's count in a small pill, add `html { scroll-behavior: smooth; }` and `scroll-margin-top` on the targets, and offset the main content with a left margin. Below ~900px viewport width, collapse the sidebar into a wrapped horizontal link bar at the top via a media query.
 - One card per claim (not a `<table>`): company, case, color-coded confidence (🟢/🟡/🟠/🔴), deadline pill (red/urgent if ≤ 14 days away), payout, claim ID and PIN each in their own monospace box (show PIN only if extracted), and a distinct "✅ Already filed" badge when `already_filed` is true
 - Make a verified claim URL clickable only for 🟢/🟡 entries. Show 🟠 URLs as non-clickable text with a verification warning. Never render a 🔴 URL.
 - A "What To Do Next" action panel at the bottom, sorted by soonest deadline
@@ -255,7 +256,7 @@ After a "mark as filed" or "record a payout":
    - Find the claim's card by company name (same fuzzy matching).
    - Update the matching open-claim card with the "✅ Already filed on [date]" badge or received-payout info.
    - Remove any filing action for that claim from the "What To Do Next" panel.
-   - Add or update the corresponding Section 4 card and increment the Filed count only if the claim was not already counted there. Keep the Active count unchanged while the claim window remains open; Active means an open claim window, not an unfiled task.
+   - Add or update the corresponding Section 4 card and increment the Filed count only if the claim was not already counted there — in both the header badges and the left-nav count pills. Keep the Active count unchanged while the claim window remains open; Active means an open claim window, not an unfiled task.
    - Keep all unrelated content byte-for-byte unchanged — this is a targeted edit, not a re-render.
    - Save over the same file.
 3. Confirm according to the runtime:

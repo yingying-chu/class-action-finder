@@ -6,6 +6,22 @@ The HTML-safety rules in Step 9 apply to every section and the action panel. Esc
 
 ---
 
+## Left Navigation
+
+A fixed sidebar (see Step 9 for the layout rules) with anchor links, in this order:
+
+1. Overview → the header block
+2. Active claims → Section 1, with its count in a pill
+3. Watch list → Section 2, with count
+4. Expired → Section 3, with count
+5. Already filed → Section 4, with count
+6. Phishing → Section 5, with count styled as an alert (red) when > 0
+7. What to do next → the action panel
+
+Counts must match the header badges. Pure anchor links only — no JavaScript.
+
+---
+
 ## Header Block
 
 Show at the top of the page:
