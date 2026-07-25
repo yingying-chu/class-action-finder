@@ -177,15 +177,18 @@ A full scan is cheap, and the thing it finds is money you'd otherwise leave on t
 
 **What a run costs.** A scan reads your matching emails, verifies each notice against public records, scores it for phishing, and renders a report. A typical scan (~100 threads matched, ~25 read in full, ~10 public-record checks) costs roughly:
 
-| Model | Cost per typical scan\* | Best for |
-|---|---|---|
-| **Opus** | ~$1.40 | Deepest reasoning, highest-stakes review |
-| **Sonnet** | ~$0.35 | The everyday sweet spot |
-| **Haiku** | ~$0.12 | Frequent/scheduled scans |
+| Provider | Model | Cost per typical scan\* | Best for |
+|---|---|---|---|
+| Anthropic | **Opus** | ~$1.40 | Deepest reasoning, highest-stakes review |
+| Anthropic | **Sonnet** | ~$0.35 | The everyday sweet spot |
+| Anthropic | **Haiku** | ~$0.12 | Frequent/scheduled scans |
+| OpenAI | **GPT-5.6 Sol** | ~$0.70 | Frontier capability for difficult or ambiguous notices |
+| OpenAI | **GPT-5.6 Terra** | ~$0.35 | Balanced intelligence and cost |
+| OpenAI | **GPT-5.6 Luna** | ~$0.14 | Cost-sensitive, high-volume scans |
 
 Recording a filing or payout ("I filed the X claim") costs a fraction of a cent — it just reads and updates one small file.
 
-<sub>\*Estimated, with prompt caching on (the default). Cost scales with how many settlement emails you actually have and the date window — a light scan runs cheaper, a year of a busy inbox runs a few times higher. Run one scan and check `/cost` in Claude Code for your exact number.</sub>
+<sub>\*Estimated API-equivalent token cost, with prompt caching on. OpenAI estimates use its published GPT-5.6 [Sol](https://developers.openai.com/api/docs/models/gpt-5.6-sol), [Terra](https://developers.openai.com/api/docs/models/gpt-5.6-terra), and [Luna](https://developers.openai.com/api/docs/models/gpt-5.6-luna) rates as of July 2026. Actual subscription charges may not be metered per scan. Cost scales with how many settlement emails you have, the date window, tool calls, and reasoning effort — a light scan runs cheaper, while a year of a busy inbox can run a few times higher. Where available, check the client or API usage report for your exact cost.</sub>
 
 **What you get for it.** Class action payouts are commonly **$5–$100+ per claim**, and some run into the hundreds. One caught deadline you'd otherwise have missed pays for *years* of weekly scans. Beyond the direct payout, each run also:
 
