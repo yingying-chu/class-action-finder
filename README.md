@@ -16,6 +16,8 @@ The same `skills/class-action-finder/` source supports all three platforms witho
 
 <p align="center"><sub>Illustrative data — <a href="docs/demo-report.html">view the live HTML demo</a></sub></p>
 
+> **Costs cents, finds dollars.** A typical scan runs ~$0.12–$1.40 depending on the model, against class action payouts of $5–$100+ per claim. One caught deadline pays for years of scans. [See the full cost & value breakdown ↓](#what-a-scan-costs--and-what-you-get-back)
+
 ## What the skill does
 
 1. **Find** — searches for settlement and claim notices, classifies them, checks public sources, extracts deadlines and claim details, and creates a five-section report.
@@ -168,6 +170,31 @@ Show all my filed claims and payouts.
 ```
 
 The bare `/class-action-finder` or `$class-action-finder` invocation starts the default one-year scan; listing the tracker requires an explicit request such as “show my filed claims.”
+
+## What a scan costs — and what you get back
+
+A full scan is cheap, and the thing it finds is money you'd otherwise leave on the table. Here's the honest math.
+
+**What a run costs.** A scan reads your matching emails, verifies each notice against public records, scores it for phishing, and renders a report. A typical scan (~100 threads matched, ~25 read in full, ~10 public-record checks) costs roughly:
+
+| Model | Cost per typical scan\* | Best for |
+|---|---|---|
+| **Opus** | ~$1.40 | Deepest reasoning, highest-stakes review |
+| **Sonnet** | ~$0.35 | The everyday sweet spot |
+| **Haiku** | ~$0.12 | Frequent/scheduled scans |
+
+Recording a filing or payout ("I filed the X claim") costs a fraction of a cent — it just reads and updates one small file.
+
+<sub>\*Estimated, with prompt caching on (the default). Cost scales with how many settlement emails you actually have and the date window — a light scan runs cheaper, a year of a busy inbox runs a few times higher. Run one scan and check `/cost` in Claude Code for your exact number.</sub>
+
+**What you get for it.** Class action payouts are commonly **$5–$100+ per claim**, and some run into the hundreds. One caught deadline you'd otherwise have missed pays for *years* of weekly scans. Beyond the direct payout, each run also:
+
+- **Catches expiring claim windows** before they close — the single most valuable output, because a missed deadline is money gone for good.
+- **Filters out phishing** dressed up as settlement notices, so you don't hand a scammer your details chasing a payout that was never real.
+- **Remembers what you've filed**, so you're not re-reading the same notices or double-filing.
+- **Replaces an hour of manual inbox archaeology** with a two-minute report — the time saved alone outvalues the tokens.
+
+In short: a few cents to a dollar per scan, against payouts and avoided losses measured in tens to hundreds of dollars. The tokens aren't the cost — a missed deadline is.
 
 ## Phishing safeguards
 
