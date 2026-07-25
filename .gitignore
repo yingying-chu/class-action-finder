@@ -4,8 +4,8 @@
 # Local Claude Code settings — machine-specific, not part of the distributed skills
 .claude/
 
-# Generated scan reports — personal data, regenerated on every run
-skills/class-action-finder/output/*.html
-skills/class-action-finder/output/*.json
+# Generated scan reports — personal data, local only, never committed or pushed.
+# Ignore everything under output/ (any file type) except the .gitkeep placeholder.
+skills/class-action-finder/output/*
 !skills/class-action-finder/output/.gitkeep
 

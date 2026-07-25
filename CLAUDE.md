@@ -26,7 +26,7 @@ Stored at `~/.claude/class-action-tracker.json` on each user's own machine (not 
 
 ## Generated reports
 
-Written to `skills/class-action-finder/output/` — relative to the skill's own installed directory, never the user's cwd or Desktop/Documents. That folder is gitignored (`*.html`, `*.json`) except for a `.gitkeep`, so reports stay local and the repo doesn't accumulate personal scan data.
+Written to `skills/class-action-finder/output/` — relative to the skill's own installed directory, never the user's cwd or Desktop/Documents. The whole folder is gitignored (everything under `output/` except a `.gitkeep`), so a generated report is **local-only and can never be committed or pushed to the origin repo** — this holds for anyone who clones or forks the project, not just the maintainer. Reports stay on the machine that ran the scan.
 
 ## Mail tools (Gmail-first, provider-adaptive)
 

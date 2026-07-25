@@ -35,6 +35,8 @@ First identify the runtime:
 
 Every relative path in this skill (`references/...`, `output/...`) is relative to **this skill's own directory**, never the user's current working directory. On a local runtime, reports must not land in whatever folder the user happened to have open.
 
+The skill's `output/` folder holds **personal, local-only reports**: they are private data and must never be committed to version control or pushed to any remote. When the skill lives inside a git repository (for example a checkout of this project), that repository's `.gitignore` must exclude everything under `output/` except a `.gitkeep` placeholder, so a generated report can never reach the origin repo. Never stage or commit generated `output/` files.
+
 On Claude.ai, ChatGPT, or another hosted runtime, do not claim that a generated file will persist across future chats. At the end of any record-changing operation, return the complete updated `class-action-tracker.json` as a downloadable artifact and tell the user to keep it and upload it in a future chat if persistent cross-chat tracking is needed.
 
 On a local runtime, if its tracker does not exist but another supported local runtime's tracker does, ask whether to import it before starting with an empty record. Validate the source against the schema below, copy the data into the current runtime's tracker only after approval, and never delete or overwrite the source file.
