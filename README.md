@@ -129,12 +129,20 @@ Codex stores local runtime data at:
 
 If `CODEX_HOME` is set, both paths use that directory instead of `~/.codex`.
 
+For every local runtime, the report goes into the `output/` directory that belongs to the skill copy being run — never the caller's current working directory or an unrelated repository. When running directly from this checkout, that is:
+
+```text
+skills/class-action-finder/output/class-action-report-YYYY-MM-DD.html
+```
+
+After installation, it is the installed skill's `output/` directory shown above under Claude Code or Codex. The repository excludes generated files under `skills/class-action-finder/output/` from Git, so personal reports remain local.
+
 ### ChatGPT
 
 ChatGPT supports uploaded Skills on eligible accounts and workspaces.
 
 1. Download [`class-action-finder.skill`](https://raw.githubusercontent.com/yingying-chu/yy-class-action-finder/main/dist/class-action-finder.skill).
-2. In ChatGPT, open **Profile → Skills → Create → Upload from your computer**.
+2. In the ChatGPT sidebar, open **Plugins → Skills → Create → Upload from your computer**.
 3. Install or connect the **Gmail** or **Outlook Email** app and authorize read access.
 4. Start a chat and say: `Use $class-action-finder to scan my email for class action settlements.`
 
@@ -175,7 +183,7 @@ The bare `/class-action-finder` or `$class-action-finder` invocation starts the 
 
 A full scan is cheap, and the thing it finds is money you'd otherwise leave on the table. Here's the honest math.
 
-**What a run costs.** A scan reads your matching emails, verifies each notice against public records, scores it for phishing, and renders a report. A typical scan (~100 threads matched, ~25 read in full, ~10 public-record checks) costs roughly:
+**What a run costs.** A scan reads your matching emails, verifies each notice against public records, scores it for phishing, and renders a report. A typical scan (~100 overlapping raw search hits across four searches, de-duplicated to ~25 unique threads read in full, with ~10 public-record checks) costs roughly:
 
 | Provider | Model | Cost per typical scan\* | Best for |
 |---|---|---|---|

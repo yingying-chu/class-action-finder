@@ -17,6 +17,15 @@ Start at a baseline of 50%. Apply the signals below. The final score determines 
 
 Always use the runtime's web search capability for the case name + "settlement" or company name + "class action" to check for news coverage or court records. This is the single most reliable signal.
 
+### Mandatory phishing blockers
+
+Apply these before the additive score. Either condition forces the final score below 40% (🔴), regardless of copied case details or other positive signals:
+
+- The notice asks the recipient to pay a fee to file, process, release, or expedite a settlement claim.
+- The notice asks the recipient to reply with, email, or enter a full SSN, bank-account number, or credit-card number through a link supplied in the notice.
+
+Do not open, render, or recommend the notice's links. Move it to Phishing Alerts and explain the blocker. A notice that merely describes an independently verified administrator's optional payment-delivery choices or tax-document process is not automatically blocked; verify that process through an independently found court or administrator source rather than the email link.
+
 ---
 
 ## Green Flags — Add to Score
@@ -39,8 +48,8 @@ Maximum addable: +105 (score can exceed 100 — cap at 100)
 
 | Signal | Points | How to detect |
 |---|---|---|
-| Requests payment to "process" or "expedite" the claim | −40 | "Pay $X processing fee" — legitimate settlements are free to file |
-| Requests SSN, bank account number, or credit card | −35 | Any financial account detail request is a major red flag |
+| Requests payment to "process" or "expedite" the claim | Mandatory 🔴 | Legitimate settlements are free to file; apply the blocker above |
+| Requests a full SSN, bank account number, or credit card through the notice | Mandatory 🔴 | Apply the blocker above; independently verify any legitimate tax or payment-delivery process |
 | Case name not findable in any news, legal database, or court record via web search | −25 | Unverifiable cases are almost always fabricated |
 | Sender domain is random characters or unrelated to settlements | −20 | e.g., `noreply@xk7r2claim.com` vs `notices@epiqsystems.com` |
 | Claim URL domain is newly registered or completely unrelated to the defendant | −20 | Domain doesn't mention defendant or case |

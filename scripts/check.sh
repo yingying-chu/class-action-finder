@@ -29,7 +29,19 @@ done
 
 grep -q '^name: class-action-finder$' "$SKILL_DIR/SKILL.md"
 grep -q '^description:' "$SKILL_DIR/SKILL.md"
+grep -q 'Company name only — a possible match, never an automatic match' \
+  "$SKILL_DIR/SKILL.md"
+grep -q 'forces the final score below 40% (🔴)' \
+  "$SKILL_DIR/references/phishing-guide.md"
+grep -q 'the `output/` directory that belongs to the skill copy being run' \
+  "$REPO_ROOT/README.md"
+grep -q 'Plugins → Skills → Create → Upload from your computer' \
+  "$REPO_ROOT/README.md"
+grep -q 'de-duplicated to ~25 unique threads read in full' \
+  "$REPO_ROOT/README.md"
 grep -q 'Content-Security-Policy' "$REPO_ROOT/docs/demo-report.html"
+grep -q '82 emails processed (inbox: 72, spam: 6, promotions: 4)' \
+  "$REPO_ROOT/docs/demo-report.html"
 if grep -Eiq '<script| on[a-z]+=' "$REPO_ROOT/docs/demo-report.html"; then
   echo "Demo report contains a script or inline event handler." >&2
   exit 1
@@ -87,35 +99,51 @@ if "$REPO_ROOT/install.sh" --unknown >/dev/null 2>&1; then
   exit 1
 fi
 
-"$REPO_ROOT/scripts/package-skill.sh" >/dev/null
-unzip -tq "$REPO_ROOT/dist/class-action-finder.skill" >/dev/null
-unzip -tq "$REPO_ROOT/dist/class-action-finder.zip" >/dev/null
-cmp "$REPO_ROOT/dist/class-action-finder.skill" \
-  "$REPO_ROOT/dist/class-action-finder.zip"
+TRACKED_SKILL="$REPO_ROOT/dist/class-action-finder.skill"
+TRACKED_ZIP="$REPO_ROOT/dist/class-action-finder.zip"
+unzip -tq "$TRACKED_SKILL" >/dev/null
+unzip -tq "$TRACKED_ZIP" >/dev/null
+cmp "$TRACKED_SKILL" "$TRACKED_ZIP"
 
-cp "$REPO_ROOT/dist/class-action-finder.skill" \
+mkdir -p "$TMP_ROOT/tracked-unpacked"
+unzip -q "$TRACKED_SKILL" -d "$TMP_ROOT/tracked-unpacked"
+diff -ru -x output "$SKILL_DIR" \
+  "$TMP_ROOT/tracked-unpacked/class-action-finder"
+
+GENERATED_DIST="$TMP_ROOT/generated-dist"
+PACKAGE_DIST_DIR="$GENERATED_DIST" \
+  "$REPO_ROOT/scripts/package-skill.sh" >/dev/null
+GENERATED_SKILL="$GENERATED_DIST/class-action-finder.skill"
+GENERATED_ZIP="$GENERATED_DIST/class-action-finder.zip"
+unzip -tq "$GENERATED_SKILL" >/dev/null
+unzip -tq "$GENERATED_ZIP" >/dev/null
+cmp "$GENERATED_SKILL" "$GENERATED_ZIP"
+
+cp "$GENERATED_SKILL" \
   "$TMP_ROOT/known-good.skill"
-cp "$REPO_ROOT/dist/class-action-finder.zip" \
+cp "$GENERATED_ZIP" \
   "$TMP_ROOT/known-good.zip"
-if ZIP_BIN=false "$REPO_ROOT/scripts/package-skill.sh" >/dev/null 2>&1; then
+if PACKAGE_DIST_DIR="$GENERATED_DIST" ZIP_BIN=false \
+  "$REPO_ROOT/scripts/package-skill.sh" >/dev/null 2>&1; then
   echo "Packager unexpectedly succeeded with a failing ZIP command." >&2
   exit 1
 fi
 cmp "$TMP_ROOT/known-good.skill" \
-  "$REPO_ROOT/dist/class-action-finder.skill"
+  "$GENERATED_SKILL"
 cmp "$TMP_ROOT/known-good.zip" \
-  "$REPO_ROOT/dist/class-action-finder.zip"
+  "$GENERATED_ZIP"
 
 mkdir -p "$TMP_ROOT/unpacked"
-unzip -q "$REPO_ROOT/dist/class-action-finder.skill" -d "$TMP_ROOT/unpacked"
+unzip -q "$GENERATED_SKILL" -d "$TMP_ROOT/unpacked"
 diff -ru -x output "$SKILL_DIR" \
   "$TMP_ROOT/unpacked/class-action-finder"
 
-if unzip -Z1 "$REPO_ROOT/dist/class-action-finder.skill" |
-  grep -q '/output/'; then
-  echo "Packaged archive unexpectedly contains runtime output files." >&2
-  exit 1
-fi
+for archive in "$TRACKED_SKILL" "$GENERATED_SKILL"; do
+  if unzip -Z1 "$archive" | grep -q '/output/'; then
+    echo "Packaged archive unexpectedly contains runtime output files." >&2
+    exit 1
+  fi
+done
 
 if [ -f "$HOME/.codex/skills/.system/skill-creator/scripts/quick_validate.py" ]; then
   python3 "$HOME/.codex/skills/.system/skill-creator/scripts/quick_validate.py" \

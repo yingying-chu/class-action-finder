@@ -55,6 +55,17 @@ If it doesn't exist, treat it as `{"filed_claims": [], "watch_list": []}` and cr
 
 Before using an existing or uploaded tracker, parse it and verify that the root is an object containing `filed_claims` and `watch_list` arrays. If parsing or validation fails, do not overwrite it; report the problem and ask whether the user wants help repairing a copy. On local runtimes, write every valid update atomically through a temporary file in the same directory followed by rename. **Always write the complete file (both arrays) on every update — partial writes corrupt it.**
 
+## Settlement identity matching
+
+Never treat a fuzzy company-name match by itself as proof that two claims are the same settlement. Match in this order:
+
+1. Same non-empty `claim_id` or other settlement-specific identifier.
+2. Same normalized case name or case number.
+3. Same validated settlement-site hostname plus the same company.
+4. Company name only — a possible match, never an automatic match.
+
+When only the company matches, keep the claim actionable during a scan and note that the tracker contains a possibly related filing. For an interactive record or refresh operation, show the possible matches and ask which case the user means. This prevents one filed case against a repeat defendant from hiding a different open settlement.
+
 ---
 
 # PART A — Scan email and build the report
@@ -151,7 +162,7 @@ For each Type A / B thread (not 🔴), extract. Write `"unknown"` for anything n
 | `confidence` | e.g. "🟢 91% — Epiq sender, Reuters article, no payment request" |
 | `notes` | One sentence on anything notable |
 
-**Cross-reference memory:** if `company` fuzzy-matches an entry in `filed_claims` (ignore "Inc."/"LLC"/"Corp." and capitalization), set `already_filed: true` and carry over the filed date and claim ID.
+**Cross-reference memory:** apply **Settlement identity matching** above. Set `already_filed: true` and carry over the filed date and claim ID only when a settlement-specific identifier, normalized case/case number, or validated settlement hostname establishes the match. A fuzzy company-only match is not enough; keep the claim actionable and add a note that a possibly related filing exists in the tracker.
 
 **If `already_filed` is true:** still include the claim in Section 1 while its deadline hasn't passed (the user may still need documentation or a payout check), but mark it with a distinct "✅ Already filed on [date]" badge — separate from the confidence score — so it doesn't read as a pending action. Exclude it from the "What To Do Next" claim-filing actions. It may also appear in Section 4, where the tracker-specific filing and payout details are shown.
 
@@ -203,15 +214,15 @@ If intent is unclear, ask one question before reading or writing.
 
 1. Read the memory file.
 2. Collect missing required fields (ask only for what wasn't given): company/case name (required); claim ID (optional, `null` if absent); PIN/access code (optional, `null` if absent); date filed (required — default to today if the user says "today"/"just now"); expected payout (optional, `"unknown"` if absent); claim URL (optional); notes (optional).
-3. Duplicate check: if `company` fuzzy-matches an existing `filed_claims` entry, ask whether to update it or add a new one (same company can have multiple cases).
-4. If the same company is in `watch_list`, remove it there — it's now filed, not just watched. Mention the move in your confirmation.
+3. Duplicate check: apply **Settlement identity matching**. Update only a confirmed same-settlement entry. If only the company matches, show the possible entries and ask whether to update one or add a separate case.
+4. Remove a `watch_list` entry only when it matches the same settlement identity — not merely the same company. Mention the move in your confirmation.
 5. Add the entry to `filed_claims` (see [schema](#file-format-reference)), then write the complete file.
 6. Confirm what was recorded. **Then do Part C** — offer to reflect it in the latest report.
 
 ## Record a payout
 
 1. Read the memory file.
-2. Find the matching `filed_claims` entry by fuzzy company match (ignore legal suffixes, capitalization, abbreviations like "FB" → "Facebook"). If none, offer to create a filed entry first — some settlements pay out with no claim form.
+2. Find the matching `filed_claims` entry using **Settlement identity matching**. Company abbreviations and normalized legal suffixes may identify candidates, but if more than one case is possible, show them and ask which one paid. If none match, offer to create a filed entry first — some settlements pay out with no claim form.
 3. Ask for missing info: amount received (required); date received (required — default today; "last week" → today minus 7); payment method (optional).
 4. Update `actual_payout`, `payout_date`, `payment_method`; write the complete file.
 5. Compare actual vs. expected and tell the user (above range: "more than estimated"; within: "matched the estimate"; below: "less — normal for pro-rata when many file"; expected unknown: just confirm). **Then do Part C.**
@@ -255,7 +266,7 @@ After a "mark as filed" or "record a payout":
 1. Find the most recent `output/class-action-report-*.html` in this skill's directory, or the current conversation's generated report artifact on a hosted runtime. If none exists, skip — tell the user the record is updated and will appear in the next scan. On a hosted runtime, attach the complete updated tracker and remind the user that future chats need that file uploaded unless their environment provides persistent skill storage.
 2. If a report exists, offer: *"Want me to update your latest report to show this?"* If yes:
    - Read that HTML file.
-   - Find the claim's card by company name (same fuzzy matching).
+   - Find the claim's card using **Settlement identity matching**. If the report has multiple possible cards and no settlement-specific field resolves them, ask which case to update instead of editing either one.
    - Update the matching open-claim card with the "✅ Already filed on [date]" badge or received-payout info.
    - Remove any filing action for that claim from the "What To Do Next" panel.
    - Add or update the corresponding Section 4 card and increment the Filed count only if the claim was not already counted there — in both the header badges and the left-nav count pills. Keep the Active count unchanged while the claim window remains open; Active means an open claim window, not an unfiled task.
@@ -314,4 +325,4 @@ Always write the **complete file** (both arrays) on every update — partial wri
 - **Report for today already exists:** a full re-scan overwrites it; a Part C refresh edits it in place.
 - **Auto-enrolled payout (no claim form):** record a `filed_claims` entry with `filed_date: null`, note "auto-enrolled".
 - **Installment payments:** record each in `notes`, update `actual_payout` to the running total.
-- **Same company, multiple cases:** when a fuzzy match is ambiguous, show the matches and ask which to update.
+- **Same company, multiple cases:** never infer that one filed claim covers the others. Use settlement-specific identifiers; when only the company matches, keep scan results actionable and ask which case to update during interactive operations.
