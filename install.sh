@@ -56,8 +56,15 @@ for skill in "$REPO_ROOT"/skills/*/; do
     echo "  Updating $skill_name..."
 
     # Reports are private runtime data. Preserve them when refreshing the
-    # installed skill from this repository.
-    if [ -d "$dest/output" ]; then
+    # installed skill from this repository. If the user has redirected output/
+    # to another location via a symlink (e.g. so reports land in a project
+    # checkout), keep the symlink itself rather than copying its contents into
+    # a fresh real directory.
+    if [ -L "$dest/output" ]; then
+      link_target=$(readlink "$dest/output")
+      rm -rf "$staged/output"
+      ln -s "$link_target" "$staged/output"
+    elif [ -d "$dest/output" ]; then
       mkdir -p "$staged/output"
       cp -R "$dest/output"/. "$staged/output"/
     fi
