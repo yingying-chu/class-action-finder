@@ -43,8 +43,8 @@ Choose the platform where you want to run the skill. Installing for one platform
 Clone the repository and run the default installer:
 
 ```bash
-git clone https://github.com/yingying-chu/yy-class-action-finder.git
-cd yy-class-action-finder
+git clone https://github.com/yingying-chu/class-action-finder.git
+cd class-action-finder
 ./install.sh
 ```
 
@@ -77,7 +77,7 @@ Claude Code stores its runtime data at:
 
 No terminal is required:
 
-1. Download [`class-action-finder.zip`](https://raw.githubusercontent.com/yingying-chu/yy-class-action-finder/main/dist/class-action-finder.zip).
+1. Download [`class-action-finder.zip`](https://raw.githubusercontent.com/yingying-chu/class-action-finder/main/dist/class-action-finder.zip).
 2. Ensure **Code execution and file creation** is enabled.
 3. Open **Customize → Skills**, click **+ → Create skill → Upload a skill**, and upload the ZIP.
 4. Connect Gmail or another searchable mail integration.
@@ -141,7 +141,7 @@ After installation, it is the installed skill's `output/` directory shown above 
 
 ChatGPT supports uploaded Skills on eligible accounts and workspaces.
 
-1. Download [`class-action-finder.skill`](https://raw.githubusercontent.com/yingying-chu/yy-class-action-finder/main/dist/class-action-finder.skill).
+1. Download [`class-action-finder.skill`](https://raw.githubusercontent.com/yingying-chu/class-action-finder/main/dist/class-action-finder.skill).
 2. In the ChatGPT sidebar, open **Plugins → Skills → Create → Upload from your computer**.
 3. Install or connect the **Gmail** or **Outlook Email** app and authorize read access.
 4. Start a chat and say: `Use $class-action-finder to scan my email for class action settlements.`
