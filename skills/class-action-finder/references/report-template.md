@@ -1,24 +1,25 @@
 # Report Template
 
-Use this as the **content guide** when writing `class-action-report-YYYY-MM-DD.html`. It defines what sections to include, what data belongs in each section, and what order to present it. Step 9 of the skill defines the visual HTML structure (cards, dark header, inline CSS); this file defines the content inside that structure.
+Use this as the **content guide** when writing `class-action-report-YYYY-MM-DD.html`. It defines what sections to include, what data belongs in each section, and what order to present it. Step 9 of the skill defines the visual HTML structure (editorial hero, email funnel, action queue, cards, and inline CSS); this file defines the content inside that structure.
 
-The HTML-safety rules in Step 9 apply to every section and the action panel. Escape all untrusted values, and never create a clickable link for an 🟠 or 🔴 entry.
+The HTML-safety rules in Step 9 apply to every section and the action queue. Escape all untrusted values, and never create a clickable link for an 🟠 or 🔴 entry.
 
 ---
 
-## Left Navigation
+## Overview and Status Navigation
 
-A fixed sidebar (see Step 9 for the layout rules) with anchor links, in this order:
+Start with a bright editorial hero followed by a horizontal anchor/status strip. Do not use a black admin-style header or ornamental rings/circles.
 
-1. Overview → the header block
-2. Active claims → Section 1, with its count in a pill
-3. Watch list → Section 2, with count
-4. Expired → Section 3, with count
-5. Already filed → Section 4, with count
-6. Phishing → Section 5, with count styled as an alert (red) when > 0
-7. What to do next → the action panel
+The status strip links to:
 
-Counts must match the header badges. Pure anchor links only — no JavaScript.
+1. Action required → the action queue
+2. Watching → Section 2
+3. Filed → Section 4
+4. Paid → the paid subsection within Section 4
+5. Expired → Section 3
+6. Security alerts → Section 5
+
+Counts must match the underlying cards. The Paid count is a subset of Filed, and Security alerts equals the number of 🔴 cards. Use pure anchor links only — no JavaScript.
 
 ---
 
@@ -26,11 +27,16 @@ Counts must match the header badges. Pure anchor links only — no JavaScript.
 
 Show at the top of the page:
 
-- Report title: "Class Action Settlement Report"
-- Generated date (today's date)
-- Period scanned (date range from Step 1)
-- Counts: active claims, filed/auto-enrolled, watch list, expired, phishing alerts
-- Emails processed: total, broken down by inbox / spam / promotions
+- Product label: "Class Action Finder"
+- Generated date (today's date) and period scanned
+- A direct headline such as: "[N] claims could be worth [ACTIONABLE VALUE]."
+- A one-sentence priority cue naming the nearest actionable deadline
+- Actionable potential value, calculated exactly as Step 9 specifies. If amounts are ranges, show the summed range; if some are unknown, append `+ unknown`.
+- A compact value breakdown by actionable claim. Keep it textual or use simple proportional horizontal bars scaled against the largest known upper bound; always print the numeric ranges directly.
+- Email funnel: emails processed → relevant settlement notices → verified unique cases → action-required claims
+- Optional provider coverage line: inbox / spam / promotions counts, and any unsupported folder
+
+The email funnel is a count transformation, not a proportional value chart. Render rectangular labeled stages with arrows so a small verified count is not visually exaggerated.
 
 ---
 
@@ -55,6 +61,8 @@ One card per open claim window. Sort by soonest deadline first. A claim already 
 | Notes | One sentence on anything notable (e.g., "CA residents get +$100 CCPA") |
 
 Include auto-enrolled cases here too (no form needed, but payout is pending).
+
+When an active card has `already_filed: true`, keep it in this section for reference, show the filed badge prominently, and give it no filing CTA.
 
 ---
 
@@ -131,13 +139,28 @@ If no phishing emails were found, show: "No phishing emails detected in this sca
 
 ---
 
-## "What To Do Next" Panel
+## "What To Do Next" Action Queue
 
-A highlighted action panel at the bottom. List items sorted by soonest deadline first.
+Place this immediately after the hero and status strip, before Section 1. List items sorted by soonest deadline first. Every action must be visually separated into its own row or card so the action, deadline, value, and CTA cannot blur together.
 
 Include filing actions only for unfiled 🟢/🟡 claims with a validated `https://` URL. Do not put already-filed, 🟠, or 🔴 claims in this panel as click-through actions.
 
-**Format:**
+**Each action item contains:**
+
+| Field | Notes |
+|---|---|
+| Step number | Sequential, deadline order |
+| Action verb | Usually "Submit claim"; never imply the assistant submitted it |
+| Company / case | |
+| Why act | One short sentence about eligibility and verification |
+| Deadline | Include days remaining; visually urgent at ≤14 days |
+| Estimated value | The individual payout range or "unknown" |
+| Confidence | Score and level |
+| CTA | `Open claim form` for a validated 🟢/🟡 URL |
+
+Use `Open claim form`, not `File verified claim`: the link only opens the external form. A lower-confidence entry that is not eligible for a clickable URL must not appear here; its card should instead explain what must be verified.
+
+**Equivalent text structure:**
 
 ```
 [Company] — Deadline [DATE]:
@@ -151,9 +174,24 @@ Include filing actions only for unfiled 🟢/🟡 claims with a validated `https
   Monitor [URL] for distribution updates.
 ```
 
+Payout-monitoring reminders belong in Section 4 rather than the filing-action queue unless there is a concrete time-sensitive redemption action.
+
 Also include a reminder:
 - To log a filed claim: just tell the assistant (e.g. "I already filed the [company] one")
 - To record a payout received: just tell the assistant (e.g. "I got $47 from [company]")
+
+---
+
+## Section 4 Status Presentation
+
+Within Section 4, present awaiting-payout claims first and paid claims second. Each row/card must make the lifecycle state obvious:
+
+- `Filed · awaiting payout`
+- `Auto-enrolled · awaiting payout`
+- `Paid [date]`
+- `Action needed · redeem payment`
+
+Show filed date, claim ID and PIN, expected payout, actual payout, payout date, and payment method when known. These records remain visible across future scans through the tracker, even though they are excluded from the filing-action queue and the actionable-value total.
 
 ---
 

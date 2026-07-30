@@ -2,361 +2,488 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
-<title>Class Action Settlement Report — Sample</title>
+<title>Class Action Finder — Sample Report</title>
 <style>
   :root {
-    --bg: #f4f5f7;
-    --card-bg: #ffffff;
-    --header-bg: #14161f;
-    --header-bg2: #1f2333;
-    --text: #1c1e26;
-    --muted: #6b7280;
-    --border: #e5e7eb;
-    --green: #16a34a;
-    --green-bg: #dcfce7;
-    --yellow: #b45309;
-    --yellow-bg: #fef3c7;
-    --orange: #c2410c;
-    --orange-bg: #ffedd5;
-    --red: #dc2626;
-    --red-bg: #fee2e2;
+    --page: #f7f7f4;
+    --surface: #ffffff;
+    --text: #20231f;
+    --muted: #6e746c;
+    --line: #dfe3dc;
+    --accent: #22664f;
+    --accent-soft: #dceee5;
+    --accent-2: #8a55bd;
+    --hero-a: #e0f1e8;
+    --hero-b: #eee4f7;
+    --hero-c: #f4ead4;
+    --danger: #b52d32;
+    --danger-soft: #fbe4e5;
+    --warning: #9a5b0b;
+    --warning-soft: #fff0cf;
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
   body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    background: var(--bg);
+    background: var(--page);
     color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    line-height: 1.45;
   }
-
-  /* Left navigation — pure CSS anchor links, no JavaScript (CSP-safe) */
-  .sidenav {
-    position: fixed;
-    top: 0; left: 0; bottom: 0;
-    width: 220px;
-    background: linear-gradient(180deg, var(--header-bg), var(--header-bg2));
-    padding: 24px 12px;
-    overflow-y: auto;
+  a { color: inherit; }
+  .hero {
+    background: linear-gradient(118deg, var(--hero-a), var(--hero-b) 54%, var(--hero-c));
+    border-bottom: 1px solid rgba(32,35,31,.12);
   }
-  .sidenav .nav-title {
-    color: #6d7284;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    padding: 0 12px 10px;
+  .hero-inner,
+  .content {
+    width: min(1080px, calc(100% - 40px));
+    margin: 0 auto;
   }
-  .sidenav a {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 8px;
-    color: #b8bccc;
-    text-decoration: none;
-    font-size: 13.5px;
-    padding: 9px 12px;
-    border-radius: 8px;
-    margin-bottom: 2px;
-  }
-  .sidenav a:hover { background: rgba(255,255,255,0.08); color: #fff; }
-  .sidenav .count {
-    background: rgba(255,255,255,0.14);
-    color: #fff;
-    border-radius: 999px;
-    padding: 1px 8px;
-    font-size: 11px;
-    font-weight: 600;
-  }
-  .sidenav .count.alert { background: #7f1d1d; color: #fecaca; }
-  .sidenav .nav-sep { border-top: 1px solid rgba(255,255,255,0.1); margin: 10px 12px; }
-
-  .page { margin-left: 220px; }
-  section.group, .action-panel, header { scroll-margin-top: 16px; }
-
-  @media (max-width: 900px) {
-    .sidenav {
-      position: static;
-      width: auto;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-      padding: 10px 12px;
-      overflow: visible;
-    }
-    .sidenav .nav-title, .sidenav .nav-sep { display: none; }
-    .sidenav a { padding: 6px 10px; }
-    .page { margin-left: 0; }
-  }
-
-  .container { max-width: 920px; margin: 0 auto; padding: 0 20px 48px; }
-  header {
-    background: linear-gradient(135deg, var(--header-bg), var(--header-bg2));
-    color: #fff;
-    padding: 32px 20px;
-    margin-bottom: 28px;
-  }
-  header .inner { max-width: 920px; margin: 0 auto; }
-  header .badge-demo {
-    display: inline-block;
-    background: rgba(255,255,255,0.15);
-    border: 1px solid rgba(255,255,255,0.3);
-    padding: 3px 10px;
-    border-radius: 999px;
-    font-size: 12px;
-    letter-spacing: 0.04em;
-    margin-bottom: 12px;
-  }
-  header h1 { margin: 0 0 6px; font-size: 24px; }
-  header .meta { color: #b8bccc; font-size: 14px; margin-bottom: 20px; }
-  .badges { display: flex; gap: 10px; flex-wrap: wrap; }
-  .badge {
-    background: rgba(255,255,255,0.08);
-    border: 1px solid rgba(255,255,255,0.15);
-    border-radius: 10px;
-    padding: 10px 14px;
-    font-size: 13px;
-    min-width: 96px;
-  }
-  .badge .num { font-size: 20px; font-weight: 700; display: block; }
-  .badge .label { color: #b8bccc; }
-
-  section.group { margin-bottom: 32px; }
-  .group h2 {
-    font-size: 15px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--muted);
-    margin: 0 0 12px;
-  }
-
-  .card {
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 18px 20px;
-    margin-bottom: 12px;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
-  }
+  .hero-inner { padding: 26px 0 22px; }
+  .topline,
+  .hero-main,
+  .section-head,
   .card-top {
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    align-items: flex-start;
-    gap: 12px;
+    gap: 16px;
     flex-wrap: wrap;
-    margin-bottom: 8px;
+  }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .brand-mark {
+    display: grid;
+    width: 30px;
+    height: 30px;
+    place-items: center;
+    border-radius: 8px;
+    background: var(--text);
+    color: var(--surface);
+  }
+  .demo-label,
+  .meta,
+  .small {
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .demo-label { letter-spacing: .05em; text-transform: uppercase; }
+  .hero-main {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(240px, .6fr);
+    align-items: end;
+    margin-top: 40px;
+  }
+  .eyebrow,
+  .field-label,
+  .action-verb {
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+  }
+  .hero h1 {
+    max-width: 620px;
+    margin: 8px 0 12px;
+    font-size: clamp(34px, 6vw, 56px);
+    line-height: 1.02;
+    letter-spacing: -.045em;
+  }
+  .hero-copy > p:last-child {
+    max-width: 600px;
+    margin: 0;
+    color: var(--muted);
+  }
+  .value-ledger {
+    padding: 16px 0 2px 26px;
+    border-left: 1px solid rgba(32,35,31,.18);
+  }
+  .value-ledger > strong {
+    display: block;
+    margin: 4px 0 14px;
+    font-size: 36px;
+    letter-spacing: -.03em;
+  }
+  .value-line {
+    display: grid;
+    grid-template-columns: 92px minmax(70px, 1fr) 92px;
+    gap: 8px;
+    align-items: center;
+    margin-top: 8px;
+    font-size: 11px;
+  }
+  .track {
+    height: 7px;
+    overflow: hidden;
+    border-radius: 2px;
+    background: rgba(32,35,31,.1);
+  }
+  .fill {
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  }
+  .email-funnel {
+    display: grid;
+    grid-template-columns: minmax(110px, 1fr) auto minmax(90px, .7fr) auto minmax(90px, .7fr) auto minmax(90px, .7fr);
+    gap: 10px;
+    align-items: center;
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px solid rgba(32,35,31,.14);
+  }
+  .funnel-stage {
+    padding: 9px 12px;
+    background: rgba(255,255,255,.46);
+    border-left: 3px solid rgba(34,102,79,.55);
+  }
+  .funnel-stage strong { display: block; font-size: 20px; }
+  .funnel-stage span { color: var(--muted); font-size: 11px; }
+  .arrow { color: var(--muted); }
+  .coverage { margin: 14px 0 0; color: var(--muted); font-size: 12px; }
+
+  .status-nav {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    background: rgba(255,255,255,.96);
+    border-bottom: 1px solid var(--line);
+  }
+  .status-nav a {
+    padding: 11px 8px;
+    text-align: center;
+    text-decoration: none;
+    border-right: 1px solid var(--line);
+    font-size: 11px;
+  }
+  .status-nav a:last-child { border-right: 0; }
+  .status-nav a:first-child { background: var(--accent-soft); }
+  .status-nav strong {
+    display: block;
+    font-size: 17px;
+  }
+  .content { padding: 28px 0 54px; }
+  section,
+  #action-queue { scroll-margin-top: 80px; }
+  .section-block {
+    margin-top: 34px;
+    padding-top: 28px;
+    border-top: 1px solid var(--line);
+  }
+  .section-head { align-items: flex-start; margin-bottom: 4px; }
+  .section-head h2 { margin: 4px 0 0; font-size: 22px; }
+  .section-head p { margin: 0; color: var(--muted); font-size: 12px; }
+
+  .action-row {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) 132px 124px 164px;
+    gap: 16px;
+    align-items: center;
+    padding: 22px 0;
+    border-top: 1px solid var(--line);
+  }
+  .step {
+    display: grid;
+    width: 38px;
+    height: 38px;
+    place-items: center;
+    border-radius: 8px;
+    background: var(--accent-soft);
+    font-weight: 700;
+  }
+  .action-row h3 { margin: 4px 0; font-size: 17px; }
+  .action-row p { margin: 0; color: var(--muted); font-size: 12px; }
+  .action-data {
+    padding-left: 14px;
+    border-left: 1px solid var(--line);
+  }
+  .action-data strong { display: block; margin: 3px 0; }
+  .urgent { color: var(--danger); }
+  .button {
+    display: inline-flex;
+    justify-content: center;
+    padding: 9px 13px;
+    border-radius: 8px;
+    background: var(--text);
+    color: var(--surface);
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+  .button.secondary {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--line);
+  }
+
+  .cards { display: grid; gap: 12px; margin-top: 14px; }
+  .card {
+    padding: 18px 20px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--surface);
   }
   .card h3 { margin: 0; font-size: 17px; }
-  .card .sub { color: var(--muted); font-size: 13px; margin-top: 2px; }
-
-  .confidence {
-    font-size: 12px;
-    font-weight: 600;
-    padding: 4px 10px;
+  .sub { margin-top: 3px; color: var(--muted); font-size: 13px; }
+  .confidence,
+  .status {
+    display: inline-flex;
+    padding: 4px 9px;
     border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
     white-space: nowrap;
   }
-  .confidence.green { color: var(--green); background: var(--green-bg); }
-  .confidence.yellow { color: var(--yellow); background: var(--yellow-bg); }
-  .confidence.orange { color: var(--orange); background: var(--orange-bg); }
-  .confidence.red { color: var(--red); background: var(--red-bg); }
-
-  .row { display: flex; gap: 24px; flex-wrap: wrap; margin: 12px 0; font-size: 14px; }
-  .field .k { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 2px; }
-  .field .v { font-weight: 600; }
-
-  .pill-deadline {
+  .green { background: var(--accent-soft); color: var(--accent); }
+  .yellow { background: var(--warning-soft); color: var(--warning); }
+  .red { background: var(--danger-soft); color: var(--danger); }
+  .fields {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .field-value { margin-top: 3px; font-weight: 700; }
+  .ids { margin-top: 14px; }
+  code {
     display: inline-block;
-    padding: 3px 10px;
-    border-radius: 999px;
+    margin: 0 5px 5px 0;
+    padding: 4px 8px;
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    background: var(--page);
     font-size: 12px;
-    font-weight: 600;
   }
-  .pill-deadline.urgent { background: var(--red-bg); color: var(--red); }
-  .pill-deadline.normal { background: #eef2ff; color: #4338ca; }
-
-  .idbox {
-    display: inline-block;
-    font-family: "SF Mono", Menlo, monospace;
-    background: #f1f2f5;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 3px 8px;
+  .notes {
+    margin-top: 12px;
+    padding-top: 11px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
     font-size: 12px;
-    margin-right: 6px;
+  }
+  .filed-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) repeat(3, minmax(110px, .7fr));
+    gap: 16px;
+    align-items: center;
+    padding: 17px 0;
+    border-top: 1px solid var(--line);
+  }
+  .filed-row h3 { margin: 0 0 3px; font-size: 16px; }
+  .filed-row p { margin: 0; color: var(--muted); font-size: 12px; }
+  .filed-row .field-label { display: block; margin-bottom: 3px; }
+  .phishing { border-color: #efc4c6; background: #fff8f8; }
+  .empty { color: var(--muted); font-size: 13px; font-style: italic; }
+  .reminder {
+    margin-top: 20px;
+    padding: 14px 16px;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-soft);
+    font-size: 13px;
   }
 
-  .card .link { color: #2563eb; font-size: 13px; }
-  .notes { font-size: 13px; color: var(--muted); margin-top: 10px; border-top: 1px dashed var(--border); padding-top: 10px; }
-
-  .card.phishing { border-color: #fecaca; background: #fff5f5; }
-  .card.filed .card-top { align-items: center; }
-  .check { color: var(--green); font-weight: 700; }
-
-  .empty { color: var(--muted); font-style: italic; font-size: 14px; }
-
-  .action-panel {
-    background: #ecfdf5;
-    border: 1px solid #a7f3d0;
-    border-radius: 12px;
-    padding: 20px 22px;
+  @media (max-width: 900px) {
+    .hero-main { grid-template-columns: 1fr; }
+    .value-ledger {
+      padding: 18px 0 0;
+      border-top: 1px solid rgba(32,35,31,.18);
+      border-left: 0;
+    }
+    .status-nav { position: static; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .action-row { grid-template-columns: 40px minmax(0, 1fr); }
+    .action-data,
+    .action-row .button {
+      grid-column: 2;
+      padding-left: 0;
+      border-left: 0;
+    }
+    .action-row .button { justify-self: start; }
   }
-  .action-panel h2 { margin-top: 0; color: #065f46; }
-  .action-item { margin-bottom: 14px; font-size: 14px; }
-  .action-item .co { font-weight: 700; }
-  .action-item .dl { color: var(--red); font-weight: 600; }
+  @media (max-width: 650px) {
+    .hero-inner, .content { width: min(100% - 28px, 1080px); }
+    .email-funnel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .arrow { display: none; }
+    .fields, .filed-row { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 <body>
-<nav class="sidenav" aria-label="Report sections">
-  <div class="nav-title">Jump to</div>
-  <a href="#top">Overview</a>
-  <div class="nav-sep"></div>
-  <a href="#section-1">Active claims <span class="count">2</span></a>
-  <a href="#section-2">Watch list <span class="count">1</span></a>
-  <a href="#section-3">Expired <span class="count">0</span></a>
-  <a href="#section-4">Already filed <span class="count">2</span></a>
-  <a href="#section-5">Phishing <span class="count alert">1</span></a>
-  <div class="nav-sep"></div>
-  <a href="#next-steps">What to do next</a>
-</nav>
-
-<div class="page">
-<header id="top">
-  <div class="inner">
-    <span class="badge-demo">SAMPLE REPORT · ILLUSTRATIVE DATA</span>
-    <h1>Class Action Settlement Report</h1>
-    <div class="meta">Generated Jun 30, 2026 · Period scanned: Jul 2025 – Jun 2026 · 82 emails processed (inbox: 72, spam: 6, promotions: 4)</div>
-    <div class="badges">
-      <div class="badge"><span class="num">2</span><span class="label">Active</span></div>
-      <div class="badge"><span class="num">2</span><span class="label">Filed</span></div>
-      <div class="badge"><span class="num">1</span><span class="label">Watch list</span></div>
-      <div class="badge"><span class="num">0</span><span class="label">Expired</span></div>
-      <div class="badge"><span class="num">1</span><span class="label">Phishing</span></div>
+<header class="hero" id="top">
+  <div class="hero-inner">
+    <div class="topline">
+      <div class="brand"><span class="brand-mark">CA</span>Class Action Finder</div>
+      <span class="demo-label">Sample report · illustrative data</span>
     </div>
+    <div class="hero-main">
+      <div class="hero-copy">
+        <span class="eyebrow">Your inbox found money</span>
+        <h1>2 claims could be worth up to $30,000.</h1>
+        <p>Start with ExampleApp. Its verified claim window closes in 2 days.</p>
+      </div>
+      <div class="value-ledger">
+        <span class="field-label">Actionable potential value</span>
+        <strong>$25–$30,000</strong>
+        <div class="value-line">
+          <span>ExampleApp</span>
+          <div class="track"><div class="fill" style="width:50%"></div></div>
+          <span>$25–$10K</span>
+        </div>
+        <div class="value-line">
+          <span>SampleCorp</span>
+          <div class="track"><div class="fill" style="width:100%"></div></div>
+          <span>$0–$20K</span>
+        </div>
+      </div>
+    </div>
+    <div class="email-funnel" aria-label="82 emails processed, 6 settlement notices found, 5 cases verified, 2 claims need action">
+      <div class="funnel-stage"><strong>82</strong><span>Emails processed</span></div>
+      <span class="arrow">→</span>
+      <div class="funnel-stage"><strong>6</strong><span>Notices found</span></div>
+      <span class="arrow">→</span>
+      <div class="funnel-stage"><strong>5</strong><span>Cases verified</span></div>
+      <span class="arrow">→</span>
+      <div class="funnel-stage"><strong>2</strong><span>Need action</span></div>
+    </div>
+    <p class="coverage">Generated Jun 30, 2026 · Period scanned: Jul 2025 – Jun 2026 · 82 emails processed (inbox: 72, spam: 6, promotions: 4)</p>
   </div>
 </header>
 
-<div class="container">
+<nav class="status-nav" aria-label="Report sections">
+  <a href="#action-queue"><strong>2</strong>Action required</a>
+  <a href="#section-2"><strong>1</strong>Watching</a>
+  <a href="#section-4"><strong>2</strong>Filed</a>
+  <a href="#paid"><strong>1</strong>Paid</a>
+  <a href="#section-3"><strong>0</strong>Expired</a>
+  <a href="#section-5"><strong>1</strong>Security alert</a>
+</nav>
 
-  <section class="group" id="section-1">
-    <h2>Section 1 — Active Claim Windows</h2>
+<main class="content">
+  <section id="action-queue">
+    <div class="section-head">
+      <div><span class="eyebrow">Priority queue</span><h2>What to do next</h2></div>
+      <p>Sorted by deadline</p>
+    </div>
+    <article class="action-row">
+      <span class="step">1</span>
+      <div><span class="action-verb">Submit claim</span><h3>ExampleApp</h3><p>Claim website and settlement administrator verified.</p></div>
+      <div class="action-data"><span class="field-label">Deadline</span><strong class="urgent">Jul 2, 2026</strong><p>2 days left</p></div>
+      <div class="action-data"><span class="field-label">Value</span><strong>$25–$10,000</strong><p>92% confidence</p></div>
+      <span class="button">Open claim form</span>
+    </article>
+    <article class="action-row">
+      <span class="step">2</span>
+      <div><span class="action-verb">Check details, then submit</span><h3>SampleCorp</h3><p>Confirm documented-loss eligibility before completing the form.</p></div>
+      <div class="action-data"><span class="field-label">Deadline</span><strong>Sep 14, 2026</strong><p>76 days left</p></div>
+      <div class="action-data"><span class="field-label">Value</span><strong>Up to $20,000</strong><p>96% confidence</p></div>
+      <span class="button secondary">Open claim details</span>
+    </article>
+    <div class="reminder">After submitting, tell the assistant “I already filed the ExampleApp one.” It will move out of this queue and into Filed &amp; tracking.</div>
+  </section>
 
-    <div class="card">
-      <div class="card-top">
-        <div>
-          <h3>ExampleApp — Security Breach Settlement</h3>
-          <div class="sub">20XX data breach exposed encrypted account data</div>
+  <section class="section-block" id="section-1">
+    <div class="section-head">
+      <div><span class="eyebrow">Section 1</span><h2>Active claim windows</h2></div>
+      <p>Open cases, including filed claims still awaiting resolution</p>
+    </div>
+    <div class="cards">
+      <article class="card">
+        <div class="card-top">
+          <div><h3>ExampleApp — Security Breach Settlement</h3><div class="sub">A data breach exposed encrypted account data.</div></div>
+          <span class="confidence green">🟢 92% verified</span>
         </div>
-        <span class="confidence green">🟢 92% confident</span>
-      </div>
-      <div class="row">
-        <div class="field"><div class="k">Deadline</div><div class="v"><span class="pill-deadline urgent">Jul 2, 2026 · 2 days left</span></div></div>
-        <div class="field"><div class="k">Your payout</div><div class="v">$25–$10,000</div></div>
-        <div class="field"><div class="k">Total pool</div><div class="v">$24.45M</div></div>
-      </div>
-      <div>
-        <span class="idbox">ID: SAMPLE-ID-0001</span><span class="idbox">PIN: 0000</span>
-        <span class="link">examplesettlement.com · illustrative URL</span>
-      </div>
-      <div class="notes">CA residents get an automatic +$100 under CCPA. Deadline is firm — no extensions confirmed.</div>
-    </div>
-
-    <div class="card">
-      <div class="card-top">
-        <div>
-          <h3>SampleCorp — Data Security Incident</h3>
-          <div class="sub">20XX breach exposed personal records</div>
+        <div class="fields">
+          <div><span class="field-label">Deadline</span><div class="field-value urgent">Jul 2, 2026 · 2 days</div></div>
+          <div><span class="field-label">Your payout</span><div class="field-value">$25–$10,000</div></div>
+          <div><span class="field-label">Total pool</span><div class="field-value">$24.45M</div></div>
         </div>
-        <span class="confidence green">🟢 96% confident</span>
-      </div>
-      <div class="row">
-        <div class="field"><div class="k">Deadline</div><div class="v"><span class="pill-deadline normal">Sep 14, 2026</span></div></div>
-        <div class="field"><div class="k">Your payout</div><div class="v">up to $20,000 (documented losses)</div></div>
-        <div class="field"><div class="k">Total pool</div><div class="v">$425M</div></div>
-      </div>
-      <div>
-        <span class="idbox">ID: SAMPLE-ID-0002</span>
-        <span class="link">examplebreach.com · illustrative URL</span>
-      </div>
-      <div class="notes">Credit monitoring time can count toward the claim — track hours spent.</div>
-    </div>
-  </section>
-
-  <section class="group" id="section-2">
-    <h2>Section 2 — Watch List: No Action Yet</h2>
-    <div class="card">
-      <div class="card-top">
-        <div>
-          <h3>SampleTech — Mobile Data Practices</h3>
-          <div class="sub">Mobile app allegedly transferred usage data without clear consent</div>
+        <div class="ids"><code>ID: SAMPLE-ID-0001</code><code>PIN: 0000</code></div>
+        <div class="notes">California residents may receive an additional CCPA payment. Illustrative claim link disabled.</div>
+      </article>
+      <article class="card">
+        <div class="card-top">
+          <div><h3>SampleCorp — Data Security Incident</h3><div class="sub">A data incident exposed personal records.</div></div>
+          <span class="confidence green">🟢 96% verified</span>
         </div>
-        <span class="confidence yellow">🟡 78% confident</span>
-      </div>
-      <div class="row">
-        <div class="field"><div class="k">Status</div><div class="v">Awaiting final approval — Jun 23, 2026</div></div>
-        <div class="field"><div class="k">Estimated payout</div><div class="v">pro-rata, unknown</div></div>
-      </div>
-      <div class="notes">No claim form needed — eligible users are paid automatically if the settlement is approved.</div>
+        <div class="fields">
+          <div><span class="field-label">Deadline</span><div class="field-value">Sep 14, 2026</div></div>
+          <div><span class="field-label">Your payout</span><div class="field-value">Up to $20,000</div></div>
+          <div><span class="field-label">Total pool</span><div class="field-value">$425M</div></div>
+        </div>
+        <div class="ids"><code>ID: SAMPLE-ID-0002</code></div>
+        <div class="notes">Documented losses and time spent may affect the payout. Illustrative claim link disabled.</div>
+      </article>
     </div>
   </section>
 
-  <section class="group" id="section-3">
-    <h2>Section 3 — Expired / Already Closed</h2>
-    <div class="empty">No expired claims found in this scan.</div>
-  </section>
-
-  <section class="group" id="section-4">
-    <h2>Section 4 — Already Filed</h2>
-    <div class="card filed">
-      <div class="card-top">
-        <div><h3>SampleHealth Group — Antitrust</h3><div class="sub">Filed pre-2021</div></div>
-        <span class="confidence green">Pending ⏳</span>
-      </div>
-      <div class="row">
-        <div class="field"><div class="k">Expected</div><div class="v">pro-rata share of a large fund</div></div>
-        <div class="field"><div class="k">Status</div><div class="v">Checks issued May 2026</div></div>
-      </div>
+  <section class="section-block" id="section-2">
+    <div class="section-head">
+      <div><span class="eyebrow">Section 2</span><h2>Watching</h2></div>
+      <p>No action yet</p>
     </div>
-    <div class="card filed">
-      <div class="card-top">
-        <div><h3>SampleSocial — Internet Tracking</h3><div class="sub">Filed date unknown</div></div>
-        <span class="confidence green"><span class="check">✅</span> Paid</span>
-      </div>
-      <div class="row">
-        <div class="field"><div class="k">Received</div><div class="v">$12.50 via direct deposit</div></div>
-      </div>
+    <div class="cards">
+      <article class="card">
+        <div class="card-top">
+          <div><h3>SampleTech — Mobile Data Practices</h3><div class="sub">A mobile app allegedly transferred usage data without clear consent.</div></div>
+          <span class="confidence yellow">🟡 78% likely</span>
+        </div>
+        <div class="fields">
+          <div><span class="field-label">Status</span><div class="field-value">Awaiting final approval</div></div>
+          <div><span class="field-label">Estimated payout</span><div class="field-value">Pro-rata, unknown</div></div>
+          <div><span class="field-label">Action</span><div class="field-value">None yet</div></div>
+        </div>
+      </article>
     </div>
   </section>
 
-  <section class="group" id="section-5">
-    <h2>Section 5 — Phishing Alerts: Do Not Click</h2>
-    <div class="card phishing">
-      <div class="card-top">
-        <div><h3>"Claim Your $5,000 Settlement NOW"</h3><div class="sub">claims@xk7r-settle.xyz</div></div>
-        <span class="confidence red">🔴 18% confident</span>
-      </div>
-      <div class="notes">Requests a $25 "processing fee"; case name returns zero search results; sender domain is unrelated to any known administrator. Do not click any links — report it as phishing in your mail provider.</div>
-    </div>
+  <section class="section-block" id="section-3">
+    <div class="section-head"><div><span class="eyebrow">Section 3</span><h2>Expired</h2></div></div>
+    <p class="empty">No expired claims found in this scan.</p>
   </section>
 
-  <div class="action-panel" id="next-steps">
-    <h2>What To Do Next</h2>
-    <div class="action-item">
-      <span class="co">ExampleApp</span> — <span class="dl">deadline Jul 2, 2026 (2 days)</span><br>
-      Visit examplesettlement.com · ID SAMPLE-ID-0001 · PIN 0000
+  <section class="section-block" id="section-4">
+    <div class="section-head">
+      <div><span class="eyebrow">Section 4 · Your tracker</span><h2>Filed &amp; tracking</h2></div>
+      <p>Remembered across future scans</p>
     </div>
-    <div class="action-item">
-      <span class="co">SampleCorp</span> — deadline Sep 14, 2026<br>
-      Visit examplebreach.com · ID SAMPLE-ID-0002
-    </div>
-    <div class="action-item">
-      <span class="co">SampleHealth Group</span> — watch for payment<br>
-      Checks issued May 2026 — check your mail this week.
-    </div>
-  </div>
+    <article class="filed-row">
+      <div><h3>SampleHealth Group — Antitrust</h3><p>Filed before 2021</p></div>
+      <div><span class="field-label">Claim ID</span><strong>Not recorded</strong></div>
+      <div><span class="field-label">Expected</span><strong>Pro-rata</strong></div>
+      <div><span class="field-label">Status</span><strong>Awaiting payout</strong></div>
+    </article>
+    <article class="filed-row" id="paid">
+      <div><h3>SampleSocial — Internet Tracking</h3><p>Filed date unknown</p></div>
+      <div><span class="field-label">Claim ID</span><strong>SAMPLE-PAID-1</strong></div>
+      <div><span class="field-label">Received</span><strong>$12.50</strong></div>
+      <div><span class="field-label">Status</span><span class="status green">Paid · direct deposit</span></div>
+    </article>
+  </section>
 
-</div>
-</div>
+  <section class="section-block" id="section-5">
+    <div class="section-head">
+      <div><span class="eyebrow">Section 5</span><h2>Security alerts</h2></div>
+      <p>Do not click</p>
+    </div>
+    <div class="cards">
+      <article class="card phishing">
+        <div class="card-top">
+          <div><h3>“Claim Your $5,000 Settlement NOW”</h3><div class="sub">claims@xk7r-settle.xyz</div></div>
+          <span class="confidence red">🔴 18% · phishing risk</span>
+        </div>
+        <div class="notes">Requests a processing fee; the case name has no verifiable record; the sender domain is unrelated to a known administrator. Do not click any links. Report it as phishing in your mail provider.</div>
+      </article>
+    </div>
+  </section>
+</main>
 </body>
 </html>

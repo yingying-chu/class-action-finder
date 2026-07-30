@@ -42,6 +42,11 @@ grep -q 'de-duplicated to ~25 unique threads read in full' \
 grep -q 'Content-Security-Policy' "$REPO_ROOT/docs/demo-report.html"
 grep -q '82 emails processed (inbox: 72, spam: 6, promotions: 4)' \
   "$REPO_ROOT/docs/demo-report.html"
+grep -q 'class="email-funnel"' "$REPO_ROOT/docs/demo-report.html"
+grep -q 'Actionable potential value' "$REPO_ROOT/docs/demo-report.html"
+grep -q 'Open claim form' "$REPO_ROOT/docs/demo-report.html"
+grep -q 'Filed &amp; tracking' "$REPO_ROOT/docs/demo-report.html"
+grep -q 'email funnel' "$SKILL_DIR/SKILL.md"
 if grep -Eiq '<script| on[a-z]+=' "$REPO_ROOT/docs/demo-report.html"; then
   echo "Demo report contains a script or inline event handler." >&2
   exit 1

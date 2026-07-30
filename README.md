@@ -208,15 +208,17 @@ Every scan produces the same five-section report:
 
 The report also includes:
 
-- a fixed section navigator;
+- an at-a-glance actionable payout range;
+- an email funnel from messages processed to claims requiring action;
+- a sticky status navigator for action required, watching, filed, paid, expired, and security alerts;
 - urgent-deadline highlighting;
 - separate Claim ID and PIN fields;
 - an **Already filed** badge that is distinct from legitimacy scoring;
 - inbox, spam, and promotions coverage counts; and
-- a **What To Do Next** panel ordered by the nearest deadline.
+- a clearly separated **What To Do Next** queue ordered by the nearest deadline.
 
 <p align="center">
-  <img src="docs/screenshot-phishing-action.png" alt="Phishing warning and What To Do Next panel" width="680">
+  <img src="docs/screenshot-phishing-action.png" alt="Filed claim tracking and phishing warning" width="680">
 </p>
 
 ---
