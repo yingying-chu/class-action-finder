@@ -166,13 +166,22 @@ The mail step is provider-adaptive. Gmail uses four purpose-built queries. Other
 
 ## Quick start
 
-A bare invocation scans the previous 12 months:
+Choose the mode by what you say. A bare invocation defaults to **Notice Scan**; the skill does not scan ordinary purchase confirmations unless you explicitly ask for purchases, receipts, orders, or subscriptions.
+
+| What you say | Mode | Default behavior |
+|---|---|---|
+| `$class-action-finder` or `Scan my email for class action settlements.` | **Notice Scan** | Search the previous 365 days for direct settlement notices, including spam and promotions where the provider supports them |
+| `Scan my purchases for class actions.` | **Purchase Match** | Review the previous 12 months, capped at 100 purchase emails, 25 merchant/product pairs, and 30 public-source searches |
+| `Scan both my settlement notices and purchase confirmations.` | **Combined** | Run both for one year — the most expensive path, so the skill says so before starting |
+| `I filed my ExampleApp claim today.` | **Record only** | Update the tracker without scanning the mailbox |
+
+Copy and use the notice-scan prompt:
 
 ```text
 Scan my email for class action settlements.
 ```
 
-Specify another date range when needed:
+Override its one-year default when needed:
 
 ```text
 Use $class-action-finder to scan the last 6 months.
@@ -180,12 +189,20 @@ Scan all settlement notices from 2024.
 Check whether I missed any settlement deadlines this year.
 ```
 
-Match purchases separately when you want discovery beyond legal notices:
+Copy and use the Purchase Match prompt:
+
+```text
+Scan my purchases for class actions.
+```
+
+Narrow the merchant, product, or date range when useful:
 
 ```text
 Check whether anything I bought from ExampleStore matches an open class action.
-Scan my purchase confirmations from the last 12 months for possible settlements.
+Scan my purchase confirmations from 2024 for possible settlements.
 ```
+
+Naming a merchant is the better first move: it shrinks the search space, so the 100-message budget reaches much further back than it would in a broad sweep. Ask for a period longer than 12 months and the scan runs as consecutive 12-month segments, each with its own budget, rather than pretending one capped pass covered several years.
 
 Naming a merchant is the better first move: it shrinks the search space, so the 100-message budget reaches much further back than it would in a broad sweep. A broad scan defaults to the last 12 months; ask for a longer period and it runs as consecutive 12-month segments, each with its own budget, rather than pretending one capped pass covered several years.
 

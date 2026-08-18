@@ -33,6 +33,10 @@ grep -q 'Company name only — a possible match, never an automatic match' \
   "$SKILL_DIR/SKILL.md"
 grep -q '# PART D — Match purchase confirmations to possible settlements' \
   "$SKILL_DIR/SKILL.md"
+grep -q 'A bare `/class-action-finder`, `$class-action-finder`, or skill-name invocation is not ambiguous' \
+  "$SKILL_DIR/SKILL.md"
+grep -q 'settlement notices from the last year' \
+  "$SKILL_DIR/agents/openai.yaml"
 grep -q 'Never put those values into a web search or report' \
   "$SKILL_DIR/SKILL.md"
 grep -q '## Purchase Confirmation Extraction' \
@@ -56,6 +60,8 @@ grep -q 'Open claim form' "$REPO_ROOT/docs/demo-report.html"
 grep -q 'Filed &amp; tracking' "$REPO_ROOT/docs/demo-report.html"
 grep -q 'Purchase matches to review' "$REPO_ROOT/docs/demo-report.html"
 grep -q '🧾 Purchase match' "$REPO_ROOT/docs/demo-report.html"
+grep -q 'Scan my purchases for class actions' "$REPO_ROOT/README.md"
+grep -q 'Default behavior' "$REPO_ROOT/README.md"
 grep -q 'email funnel' "$SKILL_DIR/SKILL.md"
 if grep -Eiq '<script| on[a-z]+=' "$REPO_ROOT/docs/demo-report.html"; then
   echo "Demo report contains a script or inline event handler." >&2
