@@ -183,9 +183,11 @@ Check whether I missed any settlement deadlines this year.
 Match purchases separately when you want discovery beyond legal notices:
 
 ```text
-Scan my purchase confirmations from the last three years for possible settlements.
 Check whether anything I bought from ExampleStore matches an open class action.
+Scan my purchase confirmations from the last 12 months for possible settlements.
 ```
+
+Naming a merchant is the better first move: it shrinks the search space, so the 100-message budget reaches much further back than it would in a broad sweep. A broad scan defaults to the last 12 months; ask for a longer period and it runs as consecutive 12-month segments, each with its own budget, rather than pretending one capped pass covered several years.
 
 Purchase Match keeps settlement legitimacy separate from purchase eligibility. It reports strong and possible matches for review and only moves a case into the filing queue after the material eligibility facts are confirmed.
 
