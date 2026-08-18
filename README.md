@@ -171,7 +171,7 @@ Choose the mode by what you say. A bare invocation defaults to **Notice Scan**; 
 | What you say | Mode | Default behavior |
 |---|---|---|
 | `$class-action-finder` or `Scan my email for class action settlements.` | **Notice Scan** | Search the previous 365 days for direct settlement notices, including spam and promotions where the provider supports them |
-| `Scan my purchases for class actions.` | **Purchase Match** | Review the previous 12 months, capped at 100 purchase emails, 25 merchant/product pairs, and 30 public-source searches |
+| `Scan my purchases for class actions.` | **Purchase Match** | Measure how many receipts the previous 12 months hold, then scan them all or ask how you want to sample; capped at 100 emails per segment, 25 merchant/product pairs, and 30 public-source searches |
 | `Scan both my settlement notices and purchase confirmations.` | **Combined** | Run both for one year — the most expensive path, so the skill says so before starting |
 | `I filed my ExampleApp claim today.` | **Record only** | Update the tracker without scanning the mailbox |
 
@@ -202,7 +202,9 @@ Check whether anything I bought from ExampleStore matches an open class action.
 Scan my purchase confirmations from 2024 for possible settlements.
 ```
 
-Naming a merchant is the better first move: it shrinks the search space, so the 100-message budget reaches much further back than it would in a broad sweep. Ask for a period longer than 12 months and the scan runs as consecutive 12-month segments, each with its own budget, rather than pretending one capped pass covered several years.
+Naming a merchant is the better first move: it shrinks the search space, so the 100-message budget covers that merchant completely instead of sampling your whole mailbox.
+
+For a broad scan, the skill **measures before it reads**. A count-only probe (cheap, no message bodies) establishes how many purchase confirmations actually exist in the range. If they fit under the cap, it scans them all. If they don't, it stops and tells you the real numbers — how many there are, what fraction one pass would cover, and what full coverage would cost — and lets you choose between full coverage, a recent sample, or naming a merchant. A sample is a fine answer; it just has to be your answer rather than a silent default.
 
 Naming a merchant is the better first move: it shrinks the search space, so the 100-message budget reaches much further back than it would in a broad sweep. A broad scan defaults to the last 12 months; ask for a longer period and it runs as consecutive 12-month segments, each with its own budget, rather than pretending one capped pass covered several years.
 
@@ -321,11 +323,25 @@ Claude.ai and ChatGPT return the HTML report and updated tracker as downloadable
 
 **Typical notice-scan workload:** roughly 100 overlapping raw search hits across four searches, de-duplicated to ~25 unique threads read in full, with about 10 public-record checks.
 
-**Purchase Match workload:** a broad scan defaults to the last 12 months and is capped at 100 purchase emails, 25 merchant/product pairs, and 30 public-source searches, stopping early if the 8 highest-priority products come back empty. Its cost varies more than a notice scan because each plausible product may require separate public-source checks. Narrow merchant or product requests are cheaper and more precise.
+**Purchase Match workload:** a broad scan defaults to the last 12 months and is capped at 100 purchase emails per segment, 25 merchant/product pairs, and 30 public-source searches, stopping early if the 8 highest-priority products come back empty. Its cost varies more than a notice scan because each plausible product may require separate public-source checks. Narrow merchant or product requests are cheaper and more precise.
+
+### The cap applies after the search, not to your mailbox
+
+The 100 is not 100 out of every email you have. Search runs on the mail server first — that part is free and consumes no tokens — and the cap applies to what *matched*. Only the matched messages get read in full, and only that costs anything:
+
+```text
+10,000 emails in the last year
+   │  server-side search for receipts — free
+   ▼
+~800 purchase confirmations matched
+   │  newest 100 returned
+   ▼
+100 messages read in full  ← the only step that costs tokens
+```
 
 ### Cost is bounded, so coverage is what degrades
 
-Cost follows the number of matching emails actually read, not the width of the date range — and the caps put a ceiling on it:
+Because the cap sits at the end, cost stops climbing once matches exceed it — and coverage falls instead:
 
 | Matching emails in range | Actually read | Cost | Coverage |
 |---|---|---|---|
@@ -334,6 +350,8 @@ Cost follows the number of matching emails actually read, not the width of the d
 | ~100 | 100 | at the ceiling | complete |
 | ~500 | **100** | **same as ~100** | 20% |
 | ~2000 | **100** | **same as ~100** | 5% |
+
+This is why the two scans behave so differently. Settlement notices are rare — a year usually matches well under 100, so the cap never binds and a notice scan is complete. Purchase confirmations are common, so for most mailboxes the cap always binds. Fixed-length segments don't rescue this on their own: if each segment still exceeds 100 matches, every segment is truncated identically and running more of them buys proportionally nothing. That is why Purchase Match measures the match count first and sizes segments from the measured density instead of a fixed period.
 
 Past the ceiling the price stops rising and coverage falls instead. This is also why widening the date range is not the lever it appears to be: mail search returns newest-first, so a 1-year and a 3-year request hand back **the same most-recent 100 messages**. To genuinely see more, name a merchant — which shrinks the search space so 100 messages reach further back — or run consecutive 12-month segments, each of which gets its own budget.
 

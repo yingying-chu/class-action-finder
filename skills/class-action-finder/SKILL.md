@@ -297,20 +297,36 @@ Use this path only when the user asks to check receipts, orders, subscriptions, 
 
 ## Step 1 — Determine purchase range and scope
 
-Parse any merchant, product, or date range the user supplies. A named merchant or product takes priority over a broad mailbox scan and should always be preferred — it is both cheaper and far more accurate.
+Parse any merchant, product, or date range the user supplies. A named merchant or product takes priority over a broad mailbox scan and should always be preferred — it is both cheaper and far more accurate. With no date range, use the previous **12 months** as the starting range; Step 2 decides whether that range is actually coverable.
 
-With no date range, scan the previous **12 months**. Do not silently promise a longer window: a broad scan is capped at 100 messages (Step 3), and because mail providers return results newest-first, a nominal multi-year window would in practice only cover the most recent few weeks of receipts. If the user asks for a longer period, run it as **separate 12-month segments**, one search pass per segment, and tell them how many segments you ran.
+## Step 2 — Measure receipt density before scanning anything
 
-State the real coverage before searching, e.g. "scanning the last 12 months of receipts, up to 100 messages — name a merchant if you want a specific one checked in depth."
+**Never start a broad purchase scan without measuring first.** A fixed window is not a coverage promise: mail providers return results newest-first under a 100-message cap, so in a mailbox with hundreds of receipts a 12-month request and a 3-year request both return the same most-recent 100. Segmenting by a fixed period does not fix this either — if each segment still exceeds 100 matches, every segment is truncated in exactly the same way, and running more segments buys proportionally nothing.
 
-## Step 2 — Load the tracker and reference guides
+Run the Step 4 queries **as a count-only probe**: request the match total (`resultSizeEstimate` or the provider's equivalent) without retrieving message bodies. This costs one search round-trip and no meaningful tokens. If the provider cannot report a total, request one page of result metadata and say the total is an estimate.
+
+Let `N` be the estimated match count for the range:
+
+**`N` ≤ 100 — scan it.** The range is fully coverable. Proceed and report complete coverage.
+
+**`N` > 100 — stop and put the choice to the user.** Compute the density (`N` ÷ months) and the segment length that would fit under the cap (`100` ÷ density, rounded down, floored at one week). Present the real options with their real costs, then wait for an answer:
+
+> "The last 12 months hold about **800** purchase confirmations — roughly 67 a month. A single pass reads only the newest 100, so about **12%** of them. Three ways forward: **(a)** full coverage needs about **8 segments** of ~6 weeks each, roughly **2M tokens**; **(b)** the most recent 100 only, roughly **250k tokens**, covering about the last 6 weeks; **(c)** name a merchant or product and I'll cover it completely for far less. Which?"
+
+Scale the numbers to the measured `N` — never print the example figures. If the user picks segmentation, size the segments from the measured density rather than a fixed period, and run each as its own search pass with its own budget.
+
+Choosing (b) is a legitimate answer, not a failure: recent purchases are the likeliest to fall inside an open class period. But it has to be **chosen**, not defaulted into silently.
+
+If the user does not answer, do not guess at the expensive option. Run (b), and label it as a sample in both the report and the summary.
+
+## Step 3 — Load the tracker and reference guides
 
 Part D needs the same context Part A does. If Part A has not already run in this conversation:
 
-1. Read the runtime's tracker file (resolved under **Runtime and paths**). Hold `filed_claims` and `watch_list` in memory — Step 9 cross-references both so an already-filed or already-watched settlement isn't re-presented as a new discovery.
-2. Read `references/extraction-guide.md` (Purchase Confirmation Extraction section) and `references/phishing-guide.md`. Read `references/report-template.md` too, since Step 10 writes or updates a report.
+1. Read the runtime's tracker file (resolved under **Runtime and paths**). Hold `filed_claims` and `watch_list` in memory — Step 10 cross-references both so an already-filed or already-watched settlement isn't re-presented as a new discovery.
+2. Read `references/extraction-guide.md` (Purchase Confirmation Extraction section) and `references/phishing-guide.md`. Read `references/report-template.md` too, since Step 11 writes or updates a report.
 
-## Step 3 — Search purchase email
+## Step 4 — Search purchase email
 
 Use the same connected mail provider and provider-adaptive behavior as Part A. Translate these purposes into the provider's supported syntax:
 
@@ -319,9 +335,11 @@ Use the same connected mail provider and provider-adaptive behavior as Part A. T
 | A | Purchase confirmations and receipts in the subject | `subject:("order confirmation" OR receipt OR "purchase confirmed" OR "thanks for your order") after:YYYY/MM/DD` |
 | B | Subscription or digital-service purchases | `subject:(subscription OR membership OR renewal) (confirmed OR receipt OR invoice) after:YYYY/MM/DD` |
 
-When the user names a merchant or product, include that term and prefer the narrower result set. Use at most 100 recent results for a broad scan. Fetch complete messages in batches of 10, de-duplicate repeated shipping, delivery, and invoice messages for the same order, and skip cancellations, refunds, declined payments, shipping-only updates, and messages that do not identify a product or service.
+When the user names a merchant or product, include that term and prefer the narrower result set. Use at most 100 results **per segment**, with the segment length set by Step 2 — one pass for a coverable range, or one pass per sized segment when the user chose full coverage. Fetch complete messages in batches of 10, de-duplicate repeated shipping, delivery, and invoice messages for the same order, and skip cancellations, refunds, declined payments, shipping-only updates, and messages that do not identify a product or service.
 
-## Step 4 — Extract minimal purchase evidence
+Carry the measured totals forward: the estimated match count `N` for the requested range and the number actually retrieved. Step 12 reports the resulting coverage fraction, and it must be computed from these numbers rather than assumed.
+
+## Step 5 — Extract minimal purchase evidence
 
 Follow `references/extraction-guide.md`. Extract only:
 
@@ -335,7 +353,7 @@ Follow `references/extraction-guide.md`. Extract only:
 
 Do not retain or use the buyer's name, street address, phone number, full order number, payment details, account number, or unrelated items. Never put those values into a web search or report. Hold purchase evidence in memory for this scan; do not persist the user's purchase history automatically.
 
-## Step 5 — Build a bounded product list
+## Step 6 — Build a bounded product list
 
 Normalize merchant suffixes and obvious product-name variants, then de-duplicate by merchant + product/service. Keep at most 25 distinct pairs in a broad scan, preferring entries with a specific product/model and a clear purchase date. If more remain, state that the scan sampled the 25 strongest candidates and offer to continue with another merchant or period.
 
@@ -345,7 +363,7 @@ Rank the surviving pairs before searching, highest first:
 2. Categories with a high base rate of consumer class actions — consumer electronics, appliances, vehicles and parts, supplements and packaged food, personal-care products, telecom and streaming subscriptions, financial and insurance services.
 3. Everything else.
 
-## Step 6 — Search for open settlements (bounded)
+## Step 7 — Search for open settlements (bounded)
 
 Work down the ranked list. For each pair, use web search with generic, non-personal queries such as:
 
@@ -363,11 +381,11 @@ Start with the first query only. Run the second **only if** the first returned a
 
 Look for a currently open claim process supported by an official settlement site, court source, recognized administrator, or reputable reporting. Ignore attorney solicitations, complaints with no settlement, unrelated cases against the same company, and claim windows that are already closed. Do not send email text, identifiers, addresses, or other personal data to web search.
 
-## Step 7 — Verify legitimacy and extract settlement criteria
+## Step 8 — Verify legitimacy and extract settlement criteria
 
 Apply `references/phishing-guide.md` to the public settlement and claim URL just as Part A does. Extract the covered product/service, model or plan, class period, geographic limits, proof-of-purchase requirement, payout, deadline, official case/settlement identity, and validated `https://` URL. If the settlement itself is 🟠 or 🔴, do not present it as a purchase opportunity or make its URL clickable; place a safety note in Security Alerts when appropriate.
 
-## Step 8 — Score eligibility match separately
+## Step 9 — Score eligibility match separately
 
 Assign one categorical eligibility level. Never turn this into the phishing/legitimacy percentage:
 
@@ -388,7 +406,7 @@ Ask once, in chat, and keep it to the material criteria only. Never ask for, or 
 
 Never infer the answer, and never upgrade a level based on anything found in an email body or web page rather than stated by the user.
 
-## Step 9 — Merge with notice findings safely
+## Step 10 — Merge with notice findings safely
 
 Set `discovery_sources` to `["purchase_confirmation"]` for a new lead. Apply **Settlement identity matching** before merging it with Part A or tracker data:
 
@@ -396,7 +414,7 @@ Set `discovery_sources` to `["purchase_confirmation"]` for a new lead. Apply **S
 - If only the company matches, keep separate findings. A company may face many unrelated class actions.
 - If the tracker confirms the same settlement was filed, show the filed badge and exclude it from filing actions.
 
-## Step 10 — Write or update the report
+## Step 11 — Write or update the report
 
 Part A and Part D share one report file per day, `class-action-report-YYYY-MM-DD.html`. Which of the three cases below applies decides whether you create it, merge into it, or rebuild it — **never blindly overwrite.**
 
@@ -404,11 +422,11 @@ Part A and Part D share one report file per day, `class-action-report-YYYY-MM-DD
 
 **Case 2 — Part D ran alone and today's report file already exists** (from an earlier Part A run today). Read the existing file and merge into it exactly as in Case 1. **Do not regenerate it** — a purchase scan has no settlement-notice data and would blank out Sections 1–5.
 
-**Case 3 — Part D ran alone and no report exists for today.** Write a new report containing the hero, status strip, action queue, Purchase Matches to Review, and all five sections. Sections 1, 2, 3 and 5 will be empty; use the Empty Section Rule wording from `references/report-template.md` and make the empty state say the reason explicitly — e.g. *"No settlement-notice scan has run today. Ask me to scan your email for settlement notices to fill this in."* Populate Section 4 from the tracker (Step 2), since that data exists independently of any scan. Show only the purchase funnel, and label the header period as a purchase scan so the report is not mistaken for a full audit.
+**Case 3 — Part D ran alone and no report exists for today.** Write a new report containing the hero, status strip, action queue, Purchase Matches to Review, and all five sections. Sections 1, 2, 3 and 5 will be empty; use the Empty Section Rule wording from `references/report-template.md` and make the empty state say the reason explicitly — e.g. *"No settlement-notice scan has run today. Ask me to scan your email for settlement notices to fill this in."* Populate Section 4 from the tracker (Step 3), since that data exists independently of any scan. Show only the purchase funnel, and label the header period as a purchase scan so the report is not mistaken for a full audit.
 
 In every case, the notice funnel and the purchase funnel stay separate, and the report header must state which scans produced it.
 
-## Step 11 — Report back and optionally remember
+## Step 12 — Report back and optionally remember
 
 Render unconfirmed `strong` and `possible` findings in **Purchase Matches to Review**, not in the filing-action queue. Each card must show:
 
@@ -424,9 +442,11 @@ Only a `confirmed` match may move to Section 1 and the action queue. Keep its `�
 
 For a purchase scan, show a compact funnel: `[purchase emails processed] → [unique products/services] → [verified open settlements] → [matches to review]`. If Parts A and D ran together, show both funnels with clear labels. Purchase matches do not count as settlement notices, verified notice cases, actionable claims, or actionable potential value until confirmed.
 
-Also state, in chat and in the report, how many product/service pairs were actually searched out of how many were found, and whether the sweep stopped early or hit the Step 6 ceiling.
+Also state, in chat and in the report, how many product/service pairs were actually searched out of how many were found, and whether the sweep stopped early or hit the Step 7 ceiling.
 
-After reporting, offer to add selected `strong` or `possible` cases to `watch_list` with `source: "purchase_confirmation"`, `discovery_sources: ["purchase_confirmation"]`, and `eligibility_match` set to the level from Step 8. Never add them automatically and never persist unrelated purchase records — store the case, not the receipt.
+**Report the measured coverage explicitly**, using the Step 2 estimate and the Step 4 retrieval count — for example: *"Read 100 of an estimated 800 purchase confirmations from the last 12 months (~12%), covering roughly the last 6 weeks."* When the range was fully coverable, say so plainly instead: *"Read all 74 purchase confirmations from the last 12 months."* Never describe a sampled scan with language that implies completeness, and never omit the fraction because it is unflattering — a user who believes a 12% sample was exhaustive will wrongly conclude they have no eligible purchases.
+
+After reporting, offer to add selected `strong` or `possible` cases to `watch_list` with `source: "purchase_confirmation"`, `discovery_sources: ["purchase_confirmation"]`, and `eligibility_match` set to the level from Step 9. Never add them automatically and never persist unrelated purchase records — store the case, not the receipt.
 
 ---
 
@@ -479,7 +499,7 @@ Always write the **complete file** (both arrays) on every update — partial wri
 - **Ambiguous Type A vs B:** default to B — better to watch-list than create false urgency.
 - **QR code only, no URL:** note "QR code in email — scan on your phone" in `notes`.
 - **Same case, multiple emails:** deduplicate by company/case, keep the most recent email's data.
-- **Report for today already exists:** a full Part A re-scan overwrites it; a Part C refresh and a Part D purchase scan both edit it in place (Part D Step 10). A purchase scan must never overwrite a notice report.
+- **Report for today already exists:** a full Part A re-scan overwrites it; a Part C refresh and a Part D purchase scan both edit it in place (Part D Step 11). A purchase scan must never overwrite a notice report.
 - **Auto-enrolled payout (no claim form):** record a `filed_claims` entry with `filed_date: null`, note "auto-enrolled".
 - **Installment payments:** record each in `notes`, update `actual_payout` to the running total.
 - **Same company, multiple cases:** never infer that one filed claim covers the others. Use settlement-specific identifiers; when only the company matches, keep scan results actionable and ask which case to update during interactive operations.

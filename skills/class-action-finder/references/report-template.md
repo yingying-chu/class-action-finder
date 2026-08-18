@@ -49,7 +49,9 @@ Show at the top of the page:
 
 Each funnel is a count transformation, not a proportional value chart. Render rectangular labeled stages with arrows so a small verified count is not visually exaggerated. If both scans ran, label both funnels and do not mix purchase confirmations into the settlement-notice count.
 
-**Capped stages must show the denominator.** A funnel's first stage is the most misleading one, because a capped count looks identical to a complete count. Use `100 of ~1,400 · capped` rather than `100`, and put one line beneath the funnel naming which limit applied — the 100-message result cap, the 25-pair product cap, the 30-search ceiling, or the early stop — plus how to go deeper. Where the provider gives no total, use `100 (result cap reached — true total unknown)`. Never print a bare number for a stage that was truncated.
+**Capped stages must show the denominator.** A funnel's first stage is the most misleading one, because a capped count looks identical to a complete count. For a purchase scan the denominator was measured in Part D Step 2, so it is always available: use `100 of ~800 · 12% sampled` rather than `100`. Put one line beneath the funnel naming which limit applied — the per-segment 100-message cap, the 25-pair product cap, the 30-search ceiling, or the early stop — the approximate time span actually covered, and how to go deeper. Where a provider genuinely cannot report a total, use `100 (result cap reached — true total unknown)`. Never print a bare number for a stage that was truncated.
+
+When a range was fully covered, show that too rather than leaving it ambiguous: `74 of 74 · complete`. A reader must be able to tell a complete scan from a sample at a glance, without reading the caption.
 
 ---
 
