@@ -130,35 +130,34 @@ Official setup references:
 
 ## Architecture
 
-Class Action Finder has four connected jobs:
+Class Action Finder has three connected jobs:
 
 1. **Find notices** and case updates in connected email.
 2. **Match purchases** to potentially relevant open settlements without treating a receipt as proof of eligibility.
-3. **Remember** filed claims, expected payouts, actual payouts, and watch-list items.
-4. **Refresh** the latest report after a filing or payout is recorded, without scanning email again.
+3. **Remember** filed claims, payouts, and watch-list items, then refresh the latest report after a record changes.
 
 ```text
 Connected mail
     │
-    ├── Settlement notices ── spam / promotions sweep
-    └── Purchase confirmations ── minimal product evidence
-            │
-            ▼
-    Fetch and de-duplicate messages
-            │
-            ▼
-    Classify ── Match public case ── Score legitimacy + eligibility
-            │
-            ▼
-    Extract deadlines, payouts, IDs, PINs, and claim URLs
-            │
-            ├──────────────┐
-            ▼              ▼
-      Tracker JSON     HTML report
-      filed + paid     actions + alerts
-            │              │
-            └── correction ┘
-                 refresh
+    ├── Direct notices
+    │     Search inbox, spam, and promotions
+    │     Verify case and score legitimacy
+    │     Extract deadlines, payouts, IDs, PINs, and claim URLs
+    │
+    └── Purchase confirmations
+          Extract merchant, product, and purchase date only
+          Search verified public settlement sources
+          Compare product, class period, and eligibility facts
+                  │
+                  ▼
+        Match settlement identity
+                  │
+            ┌─────┴─────┐
+            ▼           ▼
+      Tracker JSON   HTML report
+      filed + paid   actions + reviews + alerts
+            │           │
+            └─ refresh ─┘
 ```
 
 The mail step is provider-adaptive. Gmail uses four purpose-built queries. Other providers receive equivalent searches where their syntax allows it; unavailable spam or category coverage is called out instead of silently ignored.
@@ -207,8 +206,9 @@ When a newly recorded filing matches the latest report, the skill can update tha
 
 Every report keeps the same five lifecycle sections, plus a separate Purchase Matches to Review panel:
 
-| Section | What it contains |
+| Report area | What it contains |
 |---|---|
+| **Purchase Matches to Review** | Receipt-derived strong or possible matches that still need eligibility confirmation |
 | **Active Claim Windows** | Open claims sorted by deadline, with eligibility, payout, IDs, and verified links |
 | **Watch List** | Proposed settlements or relevant cases without an open claim form |
 | **Expired** | Claim windows that have already closed |
@@ -218,7 +218,7 @@ Every report keeps the same five lifecycle sections, plus a separate Purchase Ma
 The report also includes:
 
 - an at-a-glance actionable payout range;
-- an email funnel from messages processed to claims requiring action;
+- a notice-email funnel from messages processed to claims requiring action;
 - a separate purchase funnel when receipt matching runs;
 - a sticky status navigator for action required, purchase matches, watching, filed, paid, expired, and security alerts;
 - discovery badges that distinguish direct notices, purchase matches, and manually added records;
@@ -300,9 +300,11 @@ Claude.ai and ChatGPT return the HTML report and updated tracker as downloadable
 
 ## Cost and value
 
-**Typical workload:** roughly 100 overlapping raw search hits across four searches, de-duplicated to ~25 unique threads read in full, with about 10 public-record checks.
+**Typical notice-scan workload:** roughly 100 overlapping raw search hits across four searches, de-duplicated to ~25 unique threads read in full, with about 10 public-record checks.
 
-| Provider | Model | Estimated typical scan | Best fit |
+**Purchase Match workload:** a broad scan is capped at 100 purchase emails and 25 merchant/product pairs. Its cost varies more because each plausible product may require separate public-source checks. Narrow merchant or product requests are cheaper and more precise.
+
+| Provider | Model | Estimated typical notice scan | Best fit |
 |---|---|---:|---|
 | Anthropic | **Opus** | ~$1.40 | Deepest review for ambiguous notices |
 | Anthropic | **Sonnet** | ~$0.35 | Balanced everyday scanning |
@@ -311,7 +313,7 @@ Claude.ai and ChatGPT return the HTML report and updated tracker as downloadable
 | OpenAI | **GPT-5.6 Terra** | ~$0.35 | Balanced intelligence and cost |
 | OpenAI | **GPT-5.6 Luna** | ~$0.14 | Cost-sensitive, high-volume scans |
 
-These are API-equivalent token estimates with prompt caching, not guaranteed subscription charges. Actual cost varies with mailbox volume, date range, tool calls, and reasoning effort. OpenAI rates are based on the published [Sol](https://developers.openai.com/api/docs/models/gpt-5.6-sol), [Terra](https://developers.openai.com/api/docs/models/gpt-5.6-terra), and [Luna](https://developers.openai.com/api/docs/models/gpt-5.6-luna) pricing available in July 2026.
+These are API-equivalent token estimates for a notice scan with prompt caching, not guaranteed subscription charges. Purchase Match may cost more when it reaches the 25-product cap. Actual cost varies with mailbox volume, date range, tool calls, and reasoning effort. OpenAI rates are based on the published [Sol](https://developers.openai.com/api/docs/models/gpt-5.6-sol), [Terra](https://developers.openai.com/api/docs/models/gpt-5.6-terra), and [Luna](https://developers.openai.com/api/docs/models/gpt-5.6-luna) pricing available in July 2026.
 
 Recording a filing or payout only reads and updates one small tracker file. One recovered claim deadline can outweigh years of routine scans.
 
@@ -401,7 +403,7 @@ The workflow is intentionally small and forkable:
 
 | Change | File |
 |---|---|
-| Scan, record, or refresh behavior | [`SKILL.md`](skills/class-action-finder/SKILL.md) |
+| Notice scan, purchase matching, record, or refresh behavior | [`SKILL.md`](skills/class-action-finder/SKILL.md) |
 | Classification and field extraction | [`extraction-guide.md`](skills/class-action-finder/references/extraction-guide.md) |
 | Confidence scoring and administrator domains | [`phishing-guide.md`](skills/class-action-finder/references/phishing-guide.md) |
 | Report sections and presentation requirements | [`report-template.md`](skills/class-action-finder/references/report-template.md) |
