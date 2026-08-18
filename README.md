@@ -171,8 +171,8 @@ Choose the mode by what you say. A bare invocation defaults to **Notice Scan**; 
 | What you say | Mode | Default behavior |
 |---|---|---|
 | `$class-action-finder` or `Scan my email for class action settlements.` | **Notice Scan** | Search the previous 365 days for direct settlement notices, including spam and promotions where the provider supports them |
-| `Scan my purchases for class actions.` | **Purchase Match** | Review the previous three years, capped at 100 purchase emails and 25 merchant/product pairs |
-| `Scan both my settlement notices and purchase confirmations.` | **Combined** | Run Notice Scan for one year and Purchase Match for three years |
+| `Scan my purchases for class actions.` | **Purchase Match** | Review the previous 12 months, capped at 100 purchase emails, 25 merchant/product pairs, and 30 public-source searches |
+| `Scan both my settlement notices and purchase confirmations.` | **Combined** | Run both for one year — the most expensive path, so the skill says so before starting |
 | `I filed my ExampleApp claim today.` | **Record only** | Update the tracker without scanning the mailbox |
 
 Copy and use the notice-scan prompt:
@@ -201,6 +201,10 @@ Narrow the merchant, product, or date range when useful:
 Check whether anything I bought from ExampleStore matches an open class action.
 Scan my purchase confirmations from 2024 for possible settlements.
 ```
+
+Naming a merchant is the better first move: it shrinks the search space, so the 100-message budget reaches much further back than it would in a broad sweep. Ask for a period longer than 12 months and the scan runs as consecutive 12-month segments, each with its own budget, rather than pretending one capped pass covered several years.
+
+Naming a merchant is the better first move: it shrinks the search space, so the 100-message budget reaches much further back than it would in a broad sweep. A broad scan defaults to the last 12 months; ask for a longer period and it runs as consecutive 12-month segments, each with its own budget, rather than pretending one capped pass covered several years.
 
 Purchase Match keeps settlement legitimacy separate from purchase eligibility. It reports strong and possible matches for review and only moves a case into the filing queue after the material eligibility facts are confirmed.
 
@@ -317,7 +321,23 @@ Claude.ai and ChatGPT return the HTML report and updated tracker as downloadable
 
 **Typical notice-scan workload:** roughly 100 overlapping raw search hits across four searches, de-duplicated to ~25 unique threads read in full, with about 10 public-record checks.
 
-**Purchase Match workload:** a broad scan is capped at 100 purchase emails and 25 merchant/product pairs. Its cost varies more because each plausible product may require separate public-source checks. Narrow merchant or product requests are cheaper and more precise.
+**Purchase Match workload:** a broad scan defaults to the last 12 months and is capped at 100 purchase emails, 25 merchant/product pairs, and 30 public-source searches, stopping early if the 8 highest-priority products come back empty. Its cost varies more than a notice scan because each plausible product may require separate public-source checks. Narrow merchant or product requests are cheaper and more precise.
+
+### Cost is bounded, so coverage is what degrades
+
+Cost follows the number of matching emails actually read, not the width of the date range — and the caps put a ceiling on it:
+
+| Matching emails in range | Actually read | Cost | Coverage |
+|---|---|---|---|
+| ~20 | 20 | well under typical | complete |
+| ~60 | 60 | below typical | complete |
+| ~100 | 100 | at the ceiling | complete |
+| ~500 | **100** | **same as ~100** | 20% |
+| ~2000 | **100** | **same as ~100** | 5% |
+
+Past the ceiling the price stops rising and coverage falls instead. This is also why widening the date range is not the lever it appears to be: mail search returns newest-first, so a 1-year and a 3-year request hand back **the same most-recent 100 messages**. To genuinely see more, name a merchant — which shrinks the search space so 100 messages reach further back — or run consecutive 12-month segments, each of which gets its own budget.
+
+Every capped funnel stage is labelled with its denominator (`100 of ~1,400 · capped`) so a truncated scan is never presented as complete coverage.
 
 | Provider | Model | Estimated typical notice scan | Best fit |
 |---|---|---:|---|

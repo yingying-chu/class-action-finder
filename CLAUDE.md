@@ -14,9 +14,18 @@ Purchase Match is deliberately separate from direct-notice discovery. It uses a 
 ## Invocation defaults
 
 - A bare skill invocation or a generic request to scan email for class actions runs **Part A — Notice Scan** for the previous 365 days.
-- Purchase Match runs only when the user explicitly mentions purchases, receipts, orders, subscriptions, or something they bought; its default range is the previous three years.
-- A request for both paths runs both defaults unless the user supplies another range.
+- Purchase Match runs only when the user explicitly mentions purchases, receipts, orders, subscriptions, or something they bought; its default range is the previous 12 months. A longer period runs as consecutive 12-month segments — do not restore a multi-year single pass, since mail search returns newest-first under a 100-message cap and a wider window would return the same messages while implying broader coverage.
+- A request for both paths runs both defaults unless the user supplies another range, and announces the cost before starting.
 - Record commands update the tracker only and do not scan the mailbox.
+
+## Invariants worth protecting
+
+These encode bugs that were found and fixed; don't regress them.
+
+- **Parts A and D share one report file per day.** Part D Step 10 defines three merge cases. A purchase scan must never regenerate the file and blank out Sections 1–5.
+- **Part D loads the tracker itself** (Step 2), so it can run without Part A.
+- **Legitimacy and eligibility are separate judgments.** A 🟢 settlement can be a `possible` match; never collapse them into one score.
+- **Truncation must be visible.** The 100-message cap, the 25-pair limit, the 30-search ceiling, and the early stop all have to be stated in the report and the chat summary, and capped funnel stages must render with a denominator.
 
 It was previously two separate skills (`class-action-scanner` + `class-action-tracker`); they were merged so the record ↔ report loop lives in one place. If you see stale references to the old names anywhere, update them.
 

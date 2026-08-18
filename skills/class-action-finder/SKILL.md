@@ -21,7 +21,7 @@ The link between all three is a single tracker JSON file that both discovery pat
 | Invoking the skill by name with no scan mode or arguments | Default to **Part A — Notice Scan** for the previous 365 days |
 | Asking to scan / find / audit direct settlement notices in email | **Part A — Notice Scan** |
 | Asking to check receipts, orders, subscriptions, or purchases for possible settlements | **Part D — Purchase Match** |
-| Explicitly asking for both notices and purchase matching | Run **Part A** and **Part D**, using each part's own default date range unless the user supplies one |
+| Explicitly asking for both notices and purchase matching | Run **Part A first**, then **Part D**, each with its own default 12-month range unless the user supplies one. This is the most expensive path — say up front that it processes two mailbox sweeps plus web verification, and offer the notice scan alone if they'd rather start small. |
 | Telling you they filed a claim, received a payout, or want to watch/list their claims | **Part B — Record** |
 | (After a Part B record that matches a claim in the latest report) | **Part C — Refresh** the current report |
 
@@ -181,8 +181,9 @@ Create `class-action-report-YYYY-MM-DD.html`. On a local runtime, write it under
 
 - Start with a bright, editorial hero rather than a black admin-style header. Use a subtle warm/cool gradient, generous whitespace, and strong typography. The primary sentence must answer: **how many claims require action and what known payout range they could be worth**. Keep decoration functional — no ornamental rings, floating circles, or remote imagery.
 - In the hero, show the **actionable potential value** for unfiled 🟢/🟡 Type A claims only. Derive it conservatively from explicitly stated individual-payout amounts: sum known lower and upper bounds after de-duplication; treat an exact amount as the same lower/upper value and “up to $X” as `$0–$X`. Exclude already-filed, auto-enrolled, watch-list, expired, paid, 🟠, and 🔴 entries. If any included claim has an unknown/pro-rata amount, append `+ unknown` rather than inventing a number. If none has a numeric estimate, show “Value not yet known.”
+- **Every funnel stage that was capped must show its denominator.** A bare `100 purchase emails processed` reads as "you have 100 receipts" when it actually means "we stopped at 100." Whenever a stage hit a limit — the 100-message result cap, the 25-pair product cap, the 30-search ceiling, or the early stop — render it as `100 of ~1,400 · capped` with a visible marker, and add one line under the funnel naming the limit and how to widen it ("name a merchant or a shorter period to go deeper"). If the provider reports no total, say `100 (result cap reached — true total unknown)`. Only a stage that processed everything available may show a bare number.
 - For a Part A notice scan, add a compact, left-to-right **email funnel** inside the hero: `[emails processed] → [settlement notices] → [verified cases] → [need action]`. “Settlement notices” means relevant non-irrelevant messages after de-duplication; “verified cases” means unique 🟢/🟡 cases; “need action” must equal the number of items in the action queue. For Part D, use its separate purchase funnel; when both modes run, label and show both. Use labeled rectangular stages and arrows, not decorative circles or a misleading proportional chart.
-- Below the hero, add a pure-CSS anchor navigation/status strip for: Action required, Purchase matches, Watch list, Filed, Paid, Expired, and Security alerts. Every count must match the corresponding report data. Make the strip sticky on wide screens and wrapped/static below ~900px. Give the action queue, purchase-match review panel, and all five report sections stable `id` targets, add `html { scroll-behavior: smooth; }`, and use `scroll-margin-top` so anchored headings are not hidden.
+- Below the hero, add a pure-CSS anchor navigation/status strip for: Action required, **Active claims**, Purchase matches, Watch list, Filed, Paid, Expired, and Security alerts. Every strip entry must link to a real anchor and every count must match the corresponding report data. `Action required` points at the action queue and counts only unfiled 🟢/🟡 filing actions; `Active claims` points at Section 1 and counts every open claim window including already-filed and 🟠 ones — these two numbers legitimately differ, so label them so the difference reads as intentional. Make the strip sticky on wide screens and wrapped/static below ~900px. Give the action queue, the purchase-match review panel, all five report sections, **and the paid subsection inside Section 4** stable `id` targets, add `html { scroll-behavior: smooth; }`, and use `scroll-margin-top` so anchored headings are not hidden.
 - Put a clearly separated **“What to do next” action queue immediately after the overview**, sorted by soonest deadline. Each item must have its own row/card and explicitly state: the action verb, company/case, why the user should act, deadline/time remaining, estimated value, confidence, and one CTA. Use `Open claim form` for a validated 🟢/🟡 claim URL; clicking opens the form but never implies that the assistant submitted it. Exclude 🟠 entries from this queue and show their non-clickable safety notes in the relevant claim card instead. Already-filed claims never appear in this queue.
 - Put **“Purchase Matches to Review” immediately after the action queue**. This panel contains unconfirmed Part D findings only, uses `Check eligibility` rather than `Submit claim`, and shows the purchase evidence, matched class period, missing eligibility facts, settlement legitimacy, and eligibility-match level separately. Never include these unconfirmed findings in the actionable count or payout total.
 - One card per claim (not a `<table>`): company, case, color-coded confidence (🟢/🟡/🟠/🔴), deadline pill (red/urgent if ≤ 14 days away), payout, claim ID and PIN each in their own monospace box (show PIN only if extracted), and a distinct "✅ Already filed" badge when `already_filed` is true
@@ -226,7 +227,7 @@ If intent is unclear, ask one question before reading or writing.
 2. Collect missing required fields (ask only for what wasn't given): company/case name (required); claim ID (optional, `null` if absent); PIN/access code (optional, `null` if absent); date filed (required — default to today if the user says "today"/"just now"); expected payout (optional, `"unknown"` if absent); claim URL (optional); notes (optional).
 3. Duplicate check: apply **Settlement identity matching**. Update only a confirmed same-settlement entry. If only the company matches, show the possible entries and ask whether to update one or add a separate case.
 4. Remove a `watch_list` entry only when it matches the same settlement identity — not merely the same company. Mention the move in your confirmation.
-5. Add the entry to `filed_claims` (see [schema](#file-format-reference)), then write the complete file.
+5. Add the entry to `filed_claims` (see [schema](#file-format-reference)), then write the complete file. Set `discovery_sources` to `["manual"]` — or union in `settlement_notice` / `purchase_confirmation` if settlement identity ties it to a finding in the current report.
 6. Confirm what was recorded. **Then do Part C** — offer to reflect it in the latest report.
 
 ## Record a payout
@@ -296,9 +297,20 @@ Use this path only when the user asks to check receipts, orders, subscriptions, 
 
 ## Step 1 — Determine purchase range and scope
 
-Parse any merchant, product, or date range the user supplies. With no date range, scan the previous three years. Tell the user when the mail provider or result cap limits coverage. A named merchant or product takes priority over a broad mailbox scan.
+Parse any merchant, product, or date range the user supplies. A named merchant or product takes priority over a broad mailbox scan and should always be preferred — it is both cheaper and far more accurate.
 
-## Step 2 — Search purchase email
+With no date range, scan the previous **12 months**. Do not silently promise a longer window: a broad scan is capped at 100 messages (Step 3), and because mail providers return results newest-first, a nominal multi-year window would in practice only cover the most recent few weeks of receipts. If the user asks for a longer period, run it as **separate 12-month segments**, one search pass per segment, and tell them how many segments you ran.
+
+State the real coverage before searching, e.g. "scanning the last 12 months of receipts, up to 100 messages — name a merchant if you want a specific one checked in depth."
+
+## Step 2 — Load the tracker and reference guides
+
+Part D needs the same context Part A does. If Part A has not already run in this conversation:
+
+1. Read the runtime's tracker file (resolved under **Runtime and paths**). Hold `filed_claims` and `watch_list` in memory — Step 9 cross-references both so an already-filed or already-watched settlement isn't re-presented as a new discovery.
+2. Read `references/extraction-guide.md` (Purchase Confirmation Extraction section) and `references/phishing-guide.md`. Read `references/report-template.md` too, since Step 10 writes or updates a report.
+
+## Step 3 — Search purchase email
 
 Use the same connected mail provider and provider-adaptive behavior as Part A. Translate these purposes into the provider's supported syntax:
 
@@ -309,7 +321,7 @@ Use the same connected mail provider and provider-adaptive behavior as Part A. T
 
 When the user names a merchant or product, include that term and prefer the narrower result set. Use at most 100 recent results for a broad scan. Fetch complete messages in batches of 10, de-duplicate repeated shipping, delivery, and invoice messages for the same order, and skip cancellations, refunds, declined payments, shipping-only updates, and messages that do not identify a product or service.
 
-## Step 3 — Extract minimal purchase evidence
+## Step 4 — Extract minimal purchase evidence
 
 Follow `references/extraction-guide.md`. Extract only:
 
@@ -323,24 +335,39 @@ Follow `references/extraction-guide.md`. Extract only:
 
 Do not retain or use the buyer's name, street address, phone number, full order number, payment details, account number, or unrelated items. Never put those values into a web search or report. Hold purchase evidence in memory for this scan; do not persist the user's purchase history automatically.
 
-## Step 4 — Build a bounded product list
+## Step 5 — Build a bounded product list
 
 Normalize merchant suffixes and obvious product-name variants, then de-duplicate by merchant + product/service. Keep at most 25 distinct pairs in a broad scan, preferring entries with a specific product/model and a clear purchase date. If more remain, state that the scan sampled the 25 strongest candidates and offer to continue with another merchant or period.
 
-## Step 5 — Search for open settlements
+Rank the surviving pairs before searching, highest first:
 
-For each distinct pair, use web search with generic, non-personal queries such as:
+1. A merchant or product the user explicitly named.
+2. Categories with a high base rate of consumer class actions — consumer electronics, appliances, vehicles and parts, supplements and packaged food, personal-care products, telecom and streaming subscriptions, financial and insurance services.
+3. Everything else.
+
+## Step 6 — Search for open settlements (bounded)
+
+Work down the ranked list. For each pair, use web search with generic, non-personal queries such as:
 
 - `[merchant] [product] class action settlement claim`
 - `[product or service] settlement claim deadline`
 
+Start with the first query only. Run the second **only if** the first returned a plausible but unresolved lead — never both by default.
+
+**Search budget.** This step dominates the cost of a purchase scan, so it is capped:
+
+- Hard ceiling of **30 web searches** per purchase scan.
+- **Early stop:** if the 8 highest-ranked pairs all come back with no open settlement, stop the broad sweep. Report what was covered and offer to continue with a named merchant or a different period rather than grinding through the tail.
+- A pair the user explicitly named is exempt from the early stop, but still counts against the ceiling.
+- Whenever you stop early or hit the ceiling, **say so explicitly** in both the chat summary and the report — state how many pairs were searched out of how many were found. A truncated sweep must never read as complete coverage.
+
 Look for a currently open claim process supported by an official settlement site, court source, recognized administrator, or reputable reporting. Ignore attorney solicitations, complaints with no settlement, unrelated cases against the same company, and claim windows that are already closed. Do not send email text, identifiers, addresses, or other personal data to web search.
 
-## Step 6 — Verify legitimacy and extract settlement criteria
+## Step 7 — Verify legitimacy and extract settlement criteria
 
 Apply `references/phishing-guide.md` to the public settlement and claim URL just as Part A does. Extract the covered product/service, model or plan, class period, geographic limits, proof-of-purchase requirement, payout, deadline, official case/settlement identity, and validated `https://` URL. If the settlement itself is 🟠 or 🔴, do not present it as a purchase opportunity or make its URL clickable; place a safety note in Security Alerts when appropriate.
 
-## Step 7 — Score eligibility match separately
+## Step 8 — Score eligibility match separately
 
 Assign one categorical eligibility level. Never turn this into the phishing/legitimacy percentage:
 
@@ -353,7 +380,15 @@ Assign one categorical eligibility level. Never turn this into the phishing/legi
 
 Use language such as "possible match" or "likely match" until the level is `confirmed`. Do not say the user qualifies merely because the company appears in both the receipt and the lawsuit.
 
-## Step 8 — Merge with notice findings safely
+**Resolving a `strong` match to `confirmed`.** A receipt almost never states residence, proof-of-purchase status, or model variant, so `confirmed` is unreachable from email alone — the user has to supply the missing fact. After scoring, if any finding is `strong` and its settlement is open and 🟢/🟡, ask the user directly, in one batched question covering all such findings:
+
+> "Two purchase matches need one fact each to confirm eligibility: **[Case A]** covers buyers who lived in CA/NY — where were you in [year]? **[Case B]** requires the 128GB model — do you know which you bought?"
+
+Ask once, in chat, and keep it to the material criteria only. Never ask for, or accept into the report, the buyer's address, account number, or payment details — a state or a yes/no is enough. If the user answers and every material criterion is now satisfied, raise the level to `confirmed` and record which fact the user supplied in the finding's notes. If they don't answer, decline to answer, or are unsure, leave it at `strong` and report it under Purchase Matches to Review — an unanswered question is not a confirmation.
+
+Never infer the answer, and never upgrade a level based on anything found in an email body or web page rather than stated by the user.
+
+## Step 9 — Merge with notice findings safely
 
 Set `discovery_sources` to `["purchase_confirmation"]` for a new lead. Apply **Settlement identity matching** before merging it with Part A or tracker data:
 
@@ -361,7 +396,19 @@ Set `discovery_sources` to `["purchase_confirmation"]` for a new lead. Apply **S
 - If only the company matches, keep separate findings. A company may face many unrelated class actions.
 - If the tracker confirms the same settlement was filed, show the filed badge and exclude it from filing actions.
 
-## Step 9 — Report and optionally remember
+## Step 10 — Write or update the report
+
+Part A and Part D share one report file per day, `class-action-report-YYYY-MM-DD.html`. Which of the three cases below applies decides whether you create it, merge into it, or rebuild it — **never blindly overwrite.**
+
+**Case 1 — Part A already ran in this conversation.** Add the Purchase Matches to Review panel and the purchase funnel into the report you just wrote, as a targeted edit. Update the status-strip counts and both funnel labels. Leave Sections 1–5 and the action queue untouched unless a `confirmed` match earns a place in Section 1 and the action queue.
+
+**Case 2 — Part D ran alone and today's report file already exists** (from an earlier Part A run today). Read the existing file and merge into it exactly as in Case 1. **Do not regenerate it** — a purchase scan has no settlement-notice data and would blank out Sections 1–5.
+
+**Case 3 — Part D ran alone and no report exists for today.** Write a new report containing the hero, status strip, action queue, Purchase Matches to Review, and all five sections. Sections 1, 2, 3 and 5 will be empty; use the Empty Section Rule wording from `references/report-template.md` and make the empty state say the reason explicitly — e.g. *"No settlement-notice scan has run today. Ask me to scan your email for settlement notices to fill this in."* Populate Section 4 from the tracker (Step 2), since that data exists independently of any scan. Show only the purchase funnel, and label the header period as a purchase scan so the report is not mistaken for a full audit.
+
+In every case, the notice funnel and the purchase funnel stay separate, and the report header must state which scans produced it.
+
+## Step 11 — Report back and optionally remember
 
 Render unconfirmed `strong` and `possible` findings in **Purchase Matches to Review**, not in the filing-action queue. Each card must show:
 
@@ -377,7 +424,9 @@ Only a `confirmed` match may move to Section 1 and the action queue. Keep its `�
 
 For a purchase scan, show a compact funnel: `[purchase emails processed] → [unique products/services] → [verified open settlements] → [matches to review]`. If Parts A and D ran together, show both funnels with clear labels. Purchase matches do not count as settlement notices, verified notice cases, actionable claims, or actionable potential value until confirmed.
 
-After reporting, offer to add selected `strong` or `possible` cases to `watch_list` with `source: "purchase_confirmation"`. Never add them automatically and never persist unrelated purchase records.
+Also state, in chat and in the report, how many product/service pairs were actually searched out of how many were found, and whether the sweep stopped early or hit the Step 6 ceiling.
+
+After reporting, offer to add selected `strong` or `possible` cases to `watch_list` with `source: "purchase_confirmation"`, `discovery_sources: ["purchase_confirmation"]`, and `eligibility_match` set to the level from Step 8. Never add them automatically and never persist unrelated purchase records — store the case, not the receipt.
 
 ---
 
@@ -397,6 +446,7 @@ After reporting, offer to add selected `strong` or `possible` cases to `watch_li
       "actual_payout": "string or null",
       "payout_date": "YYYY-MM-DD or null",
       "payment_method": "string or null",
+      "discovery_sources": ["settlement_notice | purchase_confirmation | manual"],
       "notes": "string"
     }
   ],
@@ -406,12 +456,18 @@ After reporting, offer to add selected `strong` or `possible` cases to `watch_li
       "case": "string or null",
       "added_date": "YYYY-MM-DD",
       "source": "string",
+      "discovery_sources": ["settlement_notice | purchase_confirmation | manual"],
+      "eligibility_match": "confirmed | strong | possible | null",
       "estimated_payout": "string or 'unknown'",
       "notes": "string"
     }
   ]
 }
 ```
+
+**`discovery_sources`** is how a record earns its badge in the report — `settlement_notice` → `📩 Direct notice`, `purchase_confirmation` → `🧾 Purchase match`, `manual` → `✍️ Manually added`. It is an array because one settlement can be found more than one way; union the values when settlement identity links two findings. When the user tells you about a claim directly (Part B), record `["manual"]`. Treat a legacy record with no `discovery_sources` key as `["manual"]` — do not rewrite existing records just to add the field.
+
+**`eligibility_match`** applies only to `watch_list` entries added from a Part D purchase match; leave it `null` everywhere else. It is not a legitimacy score and must never be rendered as one.
 
 Always write the **complete file** (both arrays) on every update — partial writes corrupt it.
 
@@ -423,7 +479,7 @@ Always write the **complete file** (both arrays) on every update — partial wri
 - **Ambiguous Type A vs B:** default to B — better to watch-list than create false urgency.
 - **QR code only, no URL:** note "QR code in email — scan on your phone" in `notes`.
 - **Same case, multiple emails:** deduplicate by company/case, keep the most recent email's data.
-- **Report for today already exists:** a full re-scan overwrites it; a Part C refresh edits it in place.
+- **Report for today already exists:** a full Part A re-scan overwrites it; a Part C refresh and a Part D purchase scan both edit it in place (Part D Step 10). A purchase scan must never overwrite a notice report.
 - **Auto-enrolled payout (no claim form):** record a `filed_claims` entry with `filed_date: null`, note "auto-enrolled".
 - **Installment payments:** record each in `notes`, update `actual_payout` to the running total.
 - **Same company, multiple cases:** never infer that one filed claim covers the others. Use settlement-specific identifiers; when only the company matches, keep scan results actionable and ask which case to update during interactive operations.
