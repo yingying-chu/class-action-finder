@@ -115,6 +115,44 @@ Generic law-firm recruitment ("we are investigating—contact us to join") and o
 
 ---
 
+## Purchase Confirmation Extraction
+
+Use this section only for Part D purchase matching. A receipt proves that a transaction may have occurred; it does not prove that the buyer is a settlement class member.
+
+### Include
+
+- Order confirmations, store receipts, paid invoices, app-store receipts, and subscription or membership confirmations
+- Messages that explicitly name a merchant plus a product, model, plan, or service
+- A purchase/transaction date from the message; use the order date rather than shipping or delivery date when both appear
+
+### Skip
+
+- Shipping, delivery, or tracking updates when an order confirmation for the same purchase is already present
+- Cancellations, refunds, returns, declined payments, quotes, carts, and wishlist messages
+- Bank or credit-card transaction alerts that identify only an amount and merchant but no product/service
+- Marketplace summaries that do not reveal the actual item or service
+
+### Extract only minimal evidence
+
+| Field | Rule |
+|---|---|
+| `merchant` | Prefer the manufacturer/service provider when explicit; otherwise use the seller |
+| `product_service` | Preserve a stated model, plan, size, or variant that may affect eligibility |
+| `purchase_date` | Normalize to `YYYY-MM-DD`; never substitute shipment date without noting it |
+| `purchase_region` | State/country only if explicit and material; otherwise `unknown` |
+| `evidence_note` | One sentence describing the non-sensitive evidence that supports matching |
+
+Never extract into the finding or web query: buyer name, street address, phone, email address, full order or invoice number, account number, payment method, card digits, loyalty ID, unrelated basket items, or raw receipt text. Do not copy full email bodies into the report.
+
+### Normalize without over-merging
+
+- Remove obvious legal suffixes from merchant comparison (`Inc.`, `LLC`, `Ltd.`), but retain the displayed name in the report.
+- Treat model or plan variants as distinct until the verified settlement criteria show they belong to the same covered group.
+- De-duplicate shipping and receipt emails using the provider's thread/message relationship first. Use an order identifier only in memory for de-duplication, then discard it.
+- A merchant-only match is a lead, never an eligibility match. Require a related product/service or explicit category before searching or reporting.
+
+---
+
 ## Common Edge Cases
 
 **Multiple emails about the same case:**

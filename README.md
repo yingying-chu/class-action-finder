@@ -1,7 +1,7 @@
 <h1 align="center">Class Action Finder</h1>
 
 <p align="center">
-  <strong>Find settlement notices in your inbox, verify them, and remember every claim.</strong>
+  <strong>Find settlement notices, match purchases to open cases, and remember every claim.</strong>
 </p>
 
 <p align="center">
@@ -12,7 +12,7 @@
 
 ---
 
-> A portable AI skill that scans connected email for class action settlement notices, verifies each case against public sources, flags phishing, produces an actionable HTML report, and tracks claims and payouts over time.
+> A portable AI skill that scans connected email for class action settlement notices, checks purchase confirmations against potentially matching open settlements, verifies cases against public sources, flags phishing, produces an actionable HTML report, and tracks claims and payouts over time.
 
 The same source in `skills/class-action-finder/` runs on Claude, Codex, and ChatGPT. Gmail receives the fullest scan, including spam and promotions; other searchable mail providers are supported with any coverage gaps disclosed in the report.
 
@@ -132,33 +132,32 @@ Official setup references:
 
 Class Action Finder has three connected jobs:
 
-1. **Find** settlement notices and case updates in connected email.
-2. **Remember** filed claims, expected payouts, actual payouts, and watch-list items.
-3. **Refresh** the latest report after a filing or payout is recorded, without scanning email again.
+1. **Find notices** and case updates in connected email.
+2. **Match purchases** to potentially relevant open settlements without treating a receipt as proof of eligibility.
+3. **Remember** filed claims, payouts, and watch-list items, then refresh the latest report after a record changes.
 
 ```text
 Connected mail
     │
-    ├── Subject and body searches
-    ├── Spam / junk sweep
-    └── Promotions / bulk sweep
-            │
-            ▼
-    Fetch and de-duplicate threads
-            │
-            ▼
-    Classify ── Verify public case ── Score legitimacy
-            │
-            ▼
-    Extract deadlines, payouts, IDs, PINs, and claim URLs
-            │
-            ├──────────────┐
-            ▼              ▼
-      Tracker JSON     HTML report
-      filed + paid     actions + alerts
-            │              │
-            └── correction ┘
-                 refresh
+    ├── Direct notices
+    │     Search inbox, spam, and promotions
+    │     Verify case and score legitimacy
+    │     Extract deadlines, payouts, IDs, PINs, and claim URLs
+    │
+    └── Purchase confirmations
+          Extract merchant, product, and purchase date only
+          Search verified public settlement sources
+          Compare product, class period, and eligibility facts
+                  │
+                  ▼
+        Match settlement identity
+                  │
+            ┌─────┴─────┐
+            ▼           ▼
+      Tracker JSON   HTML report
+      filed + paid   actions + reviews + alerts
+            │           │
+            └─ refresh ─┘
 ```
 
 The mail step is provider-adaptive. Gmail uses four purpose-built queries. Other providers receive equivalent searches where their syntax allows it; unavailable spam or category coverage is called out instead of silently ignored.
@@ -181,6 +180,15 @@ Scan all settlement notices from 2024.
 Check whether I missed any settlement deadlines this year.
 ```
 
+Match purchases separately when you want discovery beyond legal notices:
+
+```text
+Scan my purchase confirmations from the last three years for possible settlements.
+Check whether anything I bought from ExampleStore matches an open class action.
+```
+
+Purchase Match keeps settlement legitimacy separate from purchase eligibility. It reports strong and possible matches for review and only moves a case into the filing queue after the material eligibility facts are confirmed.
+
 Update the tracker in normal language:
 
 ```text
@@ -196,10 +204,11 @@ When a newly recorded filing matches the latest report, the skill can update tha
 
 ## Report contents
 
-Every scan produces the same five-section report:
+Every report keeps the same five lifecycle sections, plus a separate Purchase Matches to Review panel:
 
-| Section | What it contains |
+| Report area | What it contains |
 |---|---|
+| **Purchase Matches to Review** | Receipt-derived strong or possible matches that still need eligibility confirmation |
 | **Active Claim Windows** | Open claims sorted by deadline, with eligibility, payout, IDs, and verified links |
 | **Watch List** | Proposed settlements or relevant cases without an open claim form |
 | **Expired** | Claim windows that have already closed |
@@ -209,8 +218,11 @@ Every scan produces the same five-section report:
 The report also includes:
 
 - an at-a-glance actionable payout range;
-- an email funnel from messages processed to claims requiring action;
-- a sticky status navigator for action required, watching, filed, paid, expired, and security alerts;
+- a notice-email funnel from messages processed to claims requiring action;
+- a separate purchase funnel when receipt matching runs;
+- a sticky status navigator for action required, purchase matches, watching, filed, paid, expired, and security alerts;
+- discovery badges that distinguish direct notices, purchase matches, and manually added records;
+- separate settlement-legitimacy and purchase-eligibility labels;
 - urgent-deadline highlighting;
 - separate Claim ID and PIN fields;
 - an **Already filed** badge that is distinct from legitimacy scoring;
@@ -278,6 +290,8 @@ Claude.ai and ChatGPT return the HTML report and updated tracker as downloadable
 
 - Email is read through the connected provider integration.
 - Email content is never copied into this repository.
+- Purchase matching sends only generic merchant/product search terms to the web—never names, addresses, order numbers, account details, payment details, or raw receipt text.
+- Purchase history is held only for the active scan and is not persisted unless the user explicitly adds a matched case to the watch list or tracker.
 - Local reports and tracker records stay on the user's machine.
 - Hosted artifacts follow the storage and retention policy of that product and workspace.
 - Reports may contain private claim IDs or PINs and should be handled as sensitive personal records.
@@ -286,9 +300,11 @@ Claude.ai and ChatGPT return the HTML report and updated tracker as downloadable
 
 ## Cost and value
 
-**Typical workload:** roughly 100 overlapping raw search hits across four searches, de-duplicated to ~25 unique threads read in full, with about 10 public-record checks.
+**Typical notice-scan workload:** roughly 100 overlapping raw search hits across four searches, de-duplicated to ~25 unique threads read in full, with about 10 public-record checks.
 
-| Provider | Model | Estimated typical scan | Best fit |
+**Purchase Match workload:** a broad scan is capped at 100 purchase emails and 25 merchant/product pairs. Its cost varies more because each plausible product may require separate public-source checks. Narrow merchant or product requests are cheaper and more precise.
+
+| Provider | Model | Estimated typical notice scan | Best fit |
 |---|---|---:|---|
 | Anthropic | **Opus** | ~$1.40 | Deepest review for ambiguous notices |
 | Anthropic | **Sonnet** | ~$0.35 | Balanced everyday scanning |
@@ -297,7 +313,7 @@ Claude.ai and ChatGPT return the HTML report and updated tracker as downloadable
 | OpenAI | **GPT-5.6 Terra** | ~$0.35 | Balanced intelligence and cost |
 | OpenAI | **GPT-5.6 Luna** | ~$0.14 | Cost-sensitive, high-volume scans |
 
-These are API-equivalent token estimates with prompt caching, not guaranteed subscription charges. Actual cost varies with mailbox volume, date range, tool calls, and reasoning effort. OpenAI rates are based on the published [Sol](https://developers.openai.com/api/docs/models/gpt-5.6-sol), [Terra](https://developers.openai.com/api/docs/models/gpt-5.6-terra), and [Luna](https://developers.openai.com/api/docs/models/gpt-5.6-luna) pricing available in July 2026.
+These are API-equivalent token estimates for a notice scan with prompt caching, not guaranteed subscription charges. Purchase Match may cost more when it reaches the 25-product cap. Actual cost varies with mailbox volume, date range, tool calls, and reasoning effort. OpenAI rates are based on the published [Sol](https://developers.openai.com/api/docs/models/gpt-5.6-sol), [Terra](https://developers.openai.com/api/docs/models/gpt-5.6-terra), and [Luna](https://developers.openai.com/api/docs/models/gpt-5.6-luna) pricing available in July 2026.
 
 Recording a filing or payout only reads and updates one small tracker file. One recovered claim deadline can outweigh years of routine scans.
 
@@ -387,7 +403,7 @@ The workflow is intentionally small and forkable:
 
 | Change | File |
 |---|---|
-| Scan, record, or refresh behavior | [`SKILL.md`](skills/class-action-finder/SKILL.md) |
+| Notice scan, purchase matching, record, or refresh behavior | [`SKILL.md`](skills/class-action-finder/SKILL.md) |
 | Classification and field extraction | [`extraction-guide.md`](skills/class-action-finder/references/extraction-guide.md) |
 | Confidence scoring and administrator domains | [`phishing-guide.md`](skills/class-action-finder/references/phishing-guide.md) |
 | Report sections and presentation requirements | [`report-template.md`](skills/class-action-finder/references/report-template.md) |

@@ -4,6 +4,14 @@ Use this as the **content guide** when writing `class-action-report-YYYY-MM-DD.h
 
 The HTML-safety rules in Step 9 apply to every section and the action queue. Escape all untrusted values, and never create a clickable link for an 🟠 or 🔴 entry.
 
+Keep three independent concepts visually distinct:
+
+- **Discovery source:** `📩 Direct notice`, `🧾 Purchase match`, or `✍️ Manually added`
+- **Settlement legitimacy:** the existing 🟢/🟡/🟠/🔴 score
+- **Purchase eligibility:** `confirmed`, `strong`, or `possible` when Part D applies
+
+A source badge is never a confidence badge. A legitimate settlement can still be a weak match for the user's purchase.
+
 ---
 
 ## Overview and Status Navigation
@@ -13,11 +21,12 @@ Start with a bright editorial hero followed by a horizontal anchor/status strip.
 The status strip links to:
 
 1. Action required → the action queue
-2. Watching → Section 2
-3. Filed → Section 4
-4. Paid → the paid subsection within Section 4
-5. Expired → Section 3
-6. Security alerts → Section 5
+2. Purchase matches → the Purchase Matches to Review panel
+3. Watching → Section 2
+4. Filed → Section 4
+5. Paid → the paid subsection within Section 4
+6. Expired → Section 3
+7. Security alerts → Section 5
 
 Counts must match the underlying cards. The Paid count is a subset of Filed, and Security alerts equals the number of 🔴 cards. Use pure anchor links only — no JavaScript.
 
@@ -33,10 +42,32 @@ Show at the top of the page:
 - A one-sentence priority cue naming the nearest actionable deadline
 - Actionable potential value, calculated exactly as Step 9 specifies. If amounts are ranges, show the summed range; if some are unknown, append `+ unknown`.
 - A compact value breakdown by actionable claim. Keep it textual or use simple proportional horizontal bars scaled against the largest known upper bound; always print the numeric ranges directly.
-- Email funnel: emails processed → relevant settlement notices → verified unique cases → action-required claims
+- Notice funnel when Part A ran: emails processed → relevant settlement notices → verified unique cases → action-required claims
+- Purchase funnel when Part D ran: purchase emails processed → unique products/services → verified open settlements → matches to review
 - Optional provider coverage line: inbox / spam / promotions counts, and any unsupported folder
 
-The email funnel is a count transformation, not a proportional value chart. Render rectangular labeled stages with arrows so a small verified count is not visually exaggerated.
+Each funnel is a count transformation, not a proportional value chart. Render rectangular labeled stages with arrows so a small verified count is not visually exaggerated. If both scans ran, label both funnels and do not mix purchase confirmations into the settlement-notice count.
+
+---
+
+## Purchase Matches to Review
+
+Place this panel immediately after the action queue and before Section 1. Keep it present with an empty-state note when Part D ran and produced no matches. Unconfirmed purchase matches do not count toward Action required or actionable potential value.
+
+**Each card must include:**
+
+| Field | Notes |
+|---|---|
+| Source badge | Always `🧾 Purchase match`; add `📩 Direct notice` too only after settlement-identity matching |
+| Purchase evidence | Merchant, product/service, and purchase date only; no order, address, account, or payment identifiers |
+| Covered class | Product/model/service, class period, and geography from a verified source |
+| Settlement legitimacy | Existing 🟢/🟡 score and rationale |
+| Eligibility match | `Strong` or `Possible`, displayed separately from legitimacy |
+| Missing facts | State exactly what still needs confirmation |
+| Deadline and payout | Only values supported by the verified settlement source |
+| CTA | `Check eligibility`, linked only to a validated 🟢/🟡 official information page |
+
+Do not use `Submit claim` in this panel. A `confirmed` purchase match may move to Section 1 and the action queue, but it keeps the `🧾 Purchase match` badge and a note that it was not discovered through a personalized legal notice.
 
 ---
 
@@ -59,6 +90,7 @@ One card per open claim window. Sort by soonest deadline first. A claim already 
 | Claim ID / PIN | Two separate monospace boxes — `claim_id` and `pin` from Step 7. Omit the PIN box entirely if none was extracted; don't show an empty one |
 | Claim URL | Clickable only for verified 🟢/🟡 `https://` URLs; show 🟠 URLs as non-clickable text with a warning |
 | Notes | One sentence on anything notable (e.g., "CA residents get +$100 CCPA") |
+| Discovery source | One or more source badges; keep them separate from confidence and filed status |
 
 Include auto-enrolled cases here too (no form needed, but payout is pending).
 
@@ -145,6 +177,8 @@ Place this immediately after the hero and status strip, before Section 1. List i
 
 Include filing actions only for unfiled 🟢/🟡 claims with a validated `https://` URL. Do not put already-filed, 🟠, or 🔴 claims in this panel as click-through actions.
 
+An unconfirmed Part D finding never enters this queue. Only `eligibility_match: confirmed` may enter; retain the `🧾 Purchase match` badge and explain that eligibility was confirmed from purchase evidence rather than a personalized notice.
+
 **Each action item contains:**
 
 | Field | Notes |
@@ -204,5 +238,7 @@ If a section has no entries, show a brief italicized note — never omit the sec
 - Section 3: "No expired claims found."
 - Section 4: `No previously filed claims on record. Say "I already filed [company]" to log it.`
 - Section 5: "No phishing emails detected in this scan."
+
+When Part D ran, also use: `No potentially matching open settlements found for the purchase confirmations reviewed.`
 
 This keeps the report structure consistent across runs.
