@@ -166,13 +166,22 @@ The mail step is provider-adaptive. Gmail uses four purpose-built queries. Other
 
 ## Quick start
 
-A bare invocation scans the previous 12 months:
+Choose the mode by what you say. A bare invocation defaults to **Notice Scan**; the skill does not scan ordinary purchase confirmations unless you explicitly ask for purchases, receipts, orders, or subscriptions.
+
+| What you say | Mode | Default behavior |
+|---|---|---|
+| `$class-action-finder` or `Scan my email for class action settlements.` | **Notice Scan** | Search the previous 365 days for direct settlement notices, including spam and promotions where the provider supports them |
+| `Scan my purchases for class actions.` | **Purchase Match** | Review the previous three years, capped at 100 purchase emails and 25 merchant/product pairs |
+| `Scan both my settlement notices and purchase confirmations.` | **Combined** | Run Notice Scan for one year and Purchase Match for three years |
+| `I filed my ExampleApp claim today.` | **Record only** | Update the tracker without scanning the mailbox |
+
+Copy and use the notice-scan prompt:
 
 ```text
 Scan my email for class action settlements.
 ```
 
-Specify another date range when needed:
+Override its one-year default when needed:
 
 ```text
 Use $class-action-finder to scan the last 6 months.
@@ -180,11 +189,17 @@ Scan all settlement notices from 2024.
 Check whether I missed any settlement deadlines this year.
 ```
 
-Match purchases separately when you want discovery beyond legal notices:
+Copy and use the Purchase Match prompt:
 
 ```text
-Scan my purchase confirmations from the last three years for possible settlements.
+Scan my purchases for class actions.
+```
+
+Narrow the merchant, product, or date range when useful:
+
+```text
 Check whether anything I bought from ExampleStore matches an open class action.
+Scan my purchase confirmations from 2024 for possible settlements.
 ```
 
 Purchase Match keeps settlement legitimacy separate from purchase eligibility. It reports strong and possible matches for review and only moves a case into the filing queue after the material eligibility facts are confirmed.
