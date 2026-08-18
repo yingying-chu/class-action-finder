@@ -171,7 +171,7 @@ Choose the mode by what you say. A bare invocation defaults to **Notice Scan**; 
 | What you say | Mode | Default behavior |
 |---|---|---|
 | `$class-action-finder` or `Scan my email for class action settlements.` | **Notice Scan** | Search the previous 365 days for direct settlement notices, including spam and promotions where the provider supports them |
-| `Scan my purchases for class actions.` | **Purchase Match** | Measure how many receipts the previous 12 months hold, then scan them all or ask how you want to sample; capped at 100 emails per segment, 25 merchant/product pairs, and 30 public-source searches |
+| `Scan my purchases for class actions.` | **Purchase Match** | Sweep the previous 12 months at the metadata level, then read in full only the receipts that need it; capped at 100 full reads per segment, 25 merchant/product pairs, and 30 public-source searches |
 | `Scan both my settlement notices and purchase confirmations.` | **Combined** | Run both for one year — the most expensive path, so the skill says so before starting |
 | `I filed my ExampleApp claim today.` | **Record only** | Update the tracker without scanning the mailbox |
 
@@ -323,35 +323,32 @@ Claude.ai and ChatGPT return the HTML report and updated tracker as downloadable
 
 **Typical notice-scan workload:** roughly 100 overlapping raw search hits across four searches, de-duplicated to ~25 unique threads read in full, with about 10 public-record checks.
 
-**Purchase Match workload:** a broad scan defaults to the last 12 months and is capped at 100 purchase emails per segment, 25 merchant/product pairs, and 30 public-source searches, stopping early if the 8 highest-priority products come back empty. Its cost varies more than a notice scan because each plausible product may require separate public-source checks. Narrow merchant or product requests are cheaper and more precise.
+**Purchase Match workload:** a broad scan defaults to the last 12 months. It sweeps every matching receipt at the metadata level, then reads in full only the ones whose product still needs identifying — capped at 100 full reads per segment, 25 merchant/product pairs, and 30 public-source searches, stopping early if the 8 highest-priority products come back empty. Narrow merchant or product requests remain cheaper and more precise.
 
-### The cap applies after the search, not to your mailbox
+### Where the cost actually is
 
-The 100 is not 100 out of every email you have. Search runs on the mail server first — that part is free and consumes no tokens — and the cap applies to what *matched*. Only the matched messages get read in full, and only that costs anything:
+Reading a message is roughly fifty times more expensive than looking at it. Server-side search is free, search results already carry sender, subject, date, and a snippet, and only full message retrieval costs real tokens:
 
 ```text
 10,000 emails in the last year
-   │  server-side search for receipts — free
+   │  server-side search — free
    ▼
 ~800 purchase confirmations matched
-   │  newest 100 returned
+   │  metadata sweep: sender + subject + snippet
+   │  ~40 tokens each → ~32k total
    ▼
-100 messages read in full  ← the only step that costs tokens
+~50 receipts whose product is still unclear
+   │  full read, plain text (not HTML)
+   │  ~800 tokens each → ~40k total
+   ▼
+complete coverage of all 800, for ~70k
 ```
 
-### Cost is bounded, so coverage is what degrades
+Two choices do most of the work here. Requesting **plain text instead of the default HTML body** avoids paying for layout, tracking pixels, and marketing markup to extract three fields. And **triaging on metadata first** means breadth costs almost nothing, so caps apply to the small set actually worth reading rather than to how much of your mailbox is visible.
 
-Because the cap sits at the end, cost stops climbing once matches exceed it — and coverage falls instead:
+The practical effect: coverage and cost are not the tradeoff they appear to be. A wide metadata sweep with narrow, plain-text reads is usually both broader *and* cheaper than a narrow sweep of full-HTML fetches.
 
-| Matching emails in range | Actually read | Cost | Coverage |
-|---|---|---|---|
-| ~20 | 20 | well under typical | complete |
-| ~60 | 60 | below typical | complete |
-| ~100 | 100 | at the ceiling | complete |
-| ~500 | **100** | **same as ~100** | 20% |
-| ~2000 | **100** | **same as ~100** | 5% |
-
-This is why the two scans behave so differently. Settlement notices are rare — a year usually matches well under 100, so the cap never binds and a notice scan is complete. Purchase confirmations are common, so for most mailboxes the cap always binds. Fixed-length segments don't rescue this on their own: if each segment still exceeds 100 matches, every segment is truncated identically and running more of them buys proportionally nothing. That is why Purchase Match measures the match count first and sizes segments from the measured density instead of a fixed period.
+Caps still exist, and when one binds the report says so with the denominator (`100 of ~800 · 12% sampled`) rather than presenting a sample as a complete scan.
 
 Past the ceiling the price stops rising and coverage falls instead. This is also why widening the date range is not the lever it appears to be: mail search returns newest-first, so a 1-year and a 3-year request hand back **the same most-recent 100 messages**. To genuinely see more, name a merchant — which shrinks the search space so 100 messages reach further back — or run consecutive 12-month segments, each of which gets its own budget.
 

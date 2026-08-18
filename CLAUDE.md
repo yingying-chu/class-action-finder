@@ -26,7 +26,8 @@ These encode bugs that were found and fixed; don't regress them.
 - **Part D loads the tracker itself** (Step 2), so it can run without Part A.
 - **Legitimacy and eligibility are separate judgments.** A 🟢 settlement can be a `possible` match; never collapse them into one score.
 - **Truncation must be visible.** The per-segment 100-message cap, the 25-pair limit, the 30-search ceiling, and the early stop all have to be stated in the report and the chat summary, and capped funnel stages must render with a denominator.
-- **Measure before scanning, and size segments from density.** Part D Step 2 probes the match count first. Fixed-length segments are not a fix on their own — if each segment still exceeds the cap, every segment truncates identically and more segments buy nothing. Sampling is an acceptable outcome; silently defaulting into it is not.
+- **Measure before scanning, and size segments from density.** Part D Step 2 probes the match count first. Fixed-length segments are not a fix on their own — if each segment still overflows a page, every segment truncates identically and more segments buy nothing. Sampling is an acceptable outcome; silently defaulting into it is not.
+- **Read mail economically** (see that section). Always request plain text rather than the default HTML body; triage on search metadata before retrieving anything; page through matches instead of treating page one as the result set. Caps apply to *full retrievals*, not to how many matches are visible. Reverting any of these silently multiplies cost several-fold while narrowing coverage.
 
 It was previously two separate skills (`class-action-scanner` + `class-action-tracker`); they were merged so the record ↔ report loop lives in one place. If you see stale references to the old names anywhere, update them.
 

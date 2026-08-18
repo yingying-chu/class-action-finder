@@ -59,6 +59,18 @@ If it doesn't exist, treat it as `{"filed_claims": [], "watch_list": []}` and cr
 
 Before using an existing or uploaded tracker, parse it and verify that the root is an object containing `filed_claims` and `watch_list` arrays. If parsing or validation fails, do not overwrite it; report the problem and ask whether the user wants help repairing a copy. On local runtimes, write every valid update atomically through a temporary file in the same directory followed by rename. **Always write the complete file (both arrays) on every update — partial writes corrupt it.**
 
+## Reading mail economically
+
+Nearly all of this skill's cost is message retrieval, and most of that cost is avoidable. Three rules apply to **every** mail read in Part A and Part D:
+
+**1. Ask for plain text, never rendered HTML.** Mail tools commonly default to returning the full message including its HTML body. For settlement notices and receipts — layout-heavy marketing HTML wrapped around a few useful facts — that body is often ten to fifty times larger than the plain-text equivalent and contains nothing extra that matters. Always request the provider's plain-text option explicitly (`messageFormat: PLAIN_TEXT` on Gmail's `get_thread`; the nearest equivalent elsewhere). Never accept the default when a plain-text option exists.
+
+**2. Triage on search metadata before retrieving anything.** Search results usually already carry sender, subject, date, and a snippet — enough to identify a merchant, recognize an administrator domain, or discard an obvious non-match, at a small fraction of the cost of the message body. Retrieve a full message only when the decision actually needs the body. A scan that fetches every match in full has confused *looking at* a message with *reading* it.
+
+**3. Page rather than truncate.** Per-request result limits are page sizes, not totals — mail search APIs paginate (Gmail's `pageSize` maxes at 50 but accepts a `pageToken`). Because metadata is cheap under rule 2, breadth should come from paging through matches at the metadata level, while depth stays selective. Do not treat one page of results as the whole result set, and do not describe a first page as though it were everything (see the coverage-reporting rules in Part A Step 9 and Part D Step 12).
+
+Together these mean coverage and cost are not the tradeoff they first appear to be: a wide metadata sweep plus a narrow set of plain-text reads is usually both broader and cheaper than a narrow sweep of full-HTML fetches.
+
 ## Settlement identity matching
 
 Never treat a fuzzy company-name match by itself as proof that two claims are the same settlement. Match in this order:
@@ -114,7 +126,7 @@ Find the connected mail app, connector, or MCP among the available tools. It nee
 | C | Same terms in the **spam / junk** folder | `in:spam (settlement OR "class action" OR "claim form" OR "claim deadline" OR "submit your claim") after:YYYY/MM/DD` |
 | D | Same terms in the **promotions / bulk** category | `category:promotions (settlement OR "class action" OR "claim form" OR "claim deadline" OR "submit your claim") after:YYYY/MM/DD` |
 
-Use `max_results: 50` (or the provider's nearest equivalent) per search.
+Request the provider's maximum page size per search (Gmail's `search_threads` accepts `pageSize` up to 50; other providers use their own parameter name — check the tool schema rather than assuming one). Since these results are metadata only, page further with the provider's continuation token when a search reports substantially more matches than one page returned, rather than treating the first page as the full result set.
 
 **4c. Adapt to the provider.**
 - **Gmail:** use the reference queries verbatim.
@@ -122,11 +134,13 @@ Use `max_results: 50` (or the provider's nearest equivalent) per search.
 - **Plain keyword search only (no folder/field operators):** run A and B as keyword + date searches across all mail; skip C/D if there's no spam or bulk folder, and **note in the report header that spam/promotions couldn't be searched**.
 - **No working mail search at all:** stop and tell the user which account is connected and that the scanner needs a searchable mail integration (Gmail is most complete).
 
-Collect the result identifiers from every search that ran and retain which search/folder surfaced each result. De-duplicate by thread ID when the provider exposes one; otherwise de-duplicate by message ID now and by company/case in Step 7. Sort by most recent and cap at 100 (older results rarely have open claim windows). Note in the report header how many came from spam vs. promotions vs. inbox (and which, if any, the provider didn't support).
+Collect the result identifiers from every search that ran and retain which search/folder surfaced each result. De-duplicate by thread ID when the provider exposes one; otherwise de-duplicate by message ID now and by company/case in Step 7. Sort by most recent. Keep all matches at the metadata level; cap **full retrievals** at 100 (older results rarely have open claim windows). Settlement notices are rare enough that a year of mail usually yields well under 100 survivors after Step 5's triage, so this cap normally never binds — if it does, report the coverage fraction as Step 9 requires. Note in the report header how many came from spam vs. promotions vs. inbox (and which, if any, the provider didn't support).
 
 ## Step 5 — Fetch and classify each thread
 
-For each result, call the same provider's full-message or full-thread retrieval tool. Process in batches of 10 to keep context manageable. Classify each using the extraction guide:
+First triage on the search metadata you already have (sender, subject, date, snippet) per **Reading mail economically**: discard obvious non-matches — marketing, newsletters, law-firm solicitations, account or insurance settlements — without retrieving anything.
+
+For each result that survives triage, call the provider's message retrieval tool **requesting plain text** (`messageFormat: PLAIN_TEXT` on Gmail's `get_thread`), never the default full-HTML form. Process in batches of 10 to keep context manageable. Classify each using the extraction guide:
 - **Type A (Active):** claim form open and deadline still in the future; a submission URL is usually present but is not required
 - **Type B (Potential):** a proposed settlement or class-member-relevant case update exists, but no claim form is open yet
 - **Suspect:** matches terms but has red flags — keep for phishing scoring
@@ -301,23 +315,21 @@ Parse any merchant, product, or date range the user supplies. A named merchant o
 
 ## Step 2 — Measure receipt density before scanning anything
 
-**Never start a broad purchase scan without measuring first.** A fixed window is not a coverage promise: mail providers return results newest-first under a 100-message cap, so in a mailbox with hundreds of receipts a 12-month request and a 3-year request both return the same most-recent 100. Segmenting by a fixed period does not fix this either — if each segment still exceeds 100 matches, every segment is truncated in exactly the same way, and running more segments buys proportionally nothing.
+**Never start a broad purchase scan without measuring first.** A fixed window is not a coverage promise: mail search returns results newest-first, so if only the first page is taken, a 12-month request and a 3-year request return the same most-recent messages. Segmenting by a fixed period does not fix that on its own — if each segment still overflows one page, every segment truncates identically and running more of them buys proportionally nothing.
 
-Run the Step 4 queries **as a count-only probe**: request the match total (`resultSizeEstimate` or the provider's equivalent) without retrieving message bodies. This costs one search round-trip and no meaningful tokens. If the provider cannot report a total, request one page of result metadata and say the total is an estimate.
+Run the Step 4 queries **as a count-only probe**: request the match total (`resultSizeEstimate` or the provider's equivalent) without retrieving message bodies. This costs one search round-trip and no meaningful tokens. If the provider cannot report a total, request one page of metadata and treat the total as an estimate.
 
-Let `N` be the estimated match count for the range:
+Let `N` be the estimated match count for the range. Under **Reading mail economically**, `N` governs only the cheap metadata sweep — it is *not* the number of messages that will be retrieved in full, and it should not be compared against the full-retrieval cap.
 
-**`N` ≤ 100 — scan it.** The range is fully coverable. Proceed and report complete coverage.
+**`N` ≤ ~1,000 — just scan it.** Page through the metadata for all `N` matches (roughly 40 tokens each) and let Step 4's triage decide the much smaller set worth retrieving in full. Report complete coverage. Most mailboxes land here, so most scans need no dialog at all: mention the count in passing and continue.
 
-**`N` > 100 — stop and put the choice to the user.** Compute the density (`N` ÷ months) and the segment length that would fit under the cap (`100` ÷ density, rounded down, floored at one week). Present the real options with their real costs, then wait for an answer:
+**`N` > ~1,000 — the metadata sweep itself is now material,** so state the measured numbers and let the user decide before spending:
 
-> "The last 12 months hold about **800** purchase confirmations — roughly 67 a month. A single pass reads only the newest 100, so about **12%** of them. Three ways forward: **(a)** full coverage needs about **8 segments** of ~6 weeks each, roughly **2M tokens**; **(b)** the most recent 100 only, roughly **250k tokens**, covering about the last 6 weeks; **(c)** name a merchant or product and I'll cover it completely for far less. Which?"
+> "The last 12 months hold about **3,000** purchase confirmations. Scanning all of them costs roughly **150k tokens** for the sweep plus whatever detail is needed. I can also do the most recent 12 weeks, or a merchant you name, for a fraction of that. Which?"
 
-Scale the numbers to the measured `N` — never print the example figures. If the user picks segmentation, size the segments from the measured density rather than a fixed period, and run each as its own search pass with its own budget.
+Scale every figure to the measured `N` — never print the example numbers. If the user prefers a narrower run, size segments from the measured density (`N` ÷ months) rather than a fixed period, and run each as its own pass.
 
-Choosing (b) is a legitimate answer, not a failure: recent purchases are the likeliest to fall inside an open class period. But it has to be **chosen**, not defaulted into silently.
-
-If the user does not answer, do not guess at the expensive option. Run (b), and label it as a sample in both the report and the summary.
+A narrower scan is a legitimate choice, not a failure: recent purchases are the likeliest to fall inside an open class period. But it has to be **chosen**, not defaulted into silently. If the user does not answer, run the most recent segment and label it a sample in both the report and the summary.
 
 ## Step 3 — Load the tracker and reference guides
 
@@ -335,7 +347,13 @@ Use the same connected mail provider and provider-adaptive behavior as Part A. T
 | A | Purchase confirmations and receipts in the subject | `subject:("order confirmation" OR receipt OR "purchase confirmed" OR "thanks for your order") after:YYYY/MM/DD` |
 | B | Subscription or digital-service purchases | `subject:(subscription OR membership OR renewal) (confirmed OR receipt OR invoice) after:YYYY/MM/DD` |
 
-When the user names a merchant or product, include that term and prefer the narrower result set. Use at most 100 results **per segment**, with the segment length set by Step 2 — one pass for a coverable range, or one pass per sized segment when the user chose full coverage. Fetch complete messages in batches of 10, de-duplicate repeated shipping, delivery, and invoice messages for the same order, and skip cancellations, refunds, declined payments, shipping-only updates, and messages that do not identify a product or service.
+When the user names a merchant or product, include that term and prefer the narrower result set.
+
+Per **Reading mail economically**, page through the matches at the **metadata level first**. Sender, subject, and snippet identify the merchant for most receipts and often the product too, at a small fraction of the cost of a message body. De-duplicate repeated shipping, delivery, and invoice messages for the same order here, and drop cancellations, refunds, declined payments, shipping-only updates, and messages that do not identify a product or service — all without retrieving anything.
+
+Retrieve full messages, **in plain text** (`messageFormat: PLAIN_TEXT`), only for the receipts whose product or model is still unclear from metadata and whose merchant or category is plausibly relevant to a consumer class action. Process those in batches of 10. Retrieving every match in full is what made this scan expensive enough to need a cap; do not reintroduce it.
+
+Use at most 100 **full retrievals** per segment, with the segment length set by Step 2. The metadata sweep is not subject to that limit.
 
 Carry the measured totals forward: the estimated match count `N` for the requested range and the number actually retrieved. Step 12 reports the resulting coverage fraction, and it must be computed from these numbers rather than assumed.
 
