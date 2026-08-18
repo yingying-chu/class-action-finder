@@ -18,12 +18,14 @@ The link between all three is a single tracker JSON file that both discovery pat
 
 | The user is… | Do this |
 |---|---|
+| Invoking the skill by name with no scan mode or arguments | Default to **Part A — Notice Scan** for the previous 365 days |
 | Asking to scan / find / audit direct settlement notices in email | **Part A — Notice Scan** |
 | Asking to check receipts, orders, subscriptions, or purchases for possible settlements | **Part D — Purchase Match** |
+| Explicitly asking for both notices and purchase matching | Run **Part A** and **Part D**, using each part's own default date range unless the user supplies one |
 | Telling you they filed a claim, received a payout, or want to watch/list their claims | **Part B — Record** |
 | (After a Part B record that matches a claim in the latest report) | **Part C — Refresh** the current report |
 
-If it's genuinely ambiguous, ask one short question before reading or writing anything.
+A bare `/class-action-finder`, `$class-action-finder`, or skill-name invocation is not ambiguous: default to Part A. A generic request to "scan my email for class actions" also means Part A and must not silently scan ordinary purchase confirmations. Enter Part D only when the user mentions purchases, receipts, orders, subscriptions, something they bought, or explicitly asks for both discovery paths. If another request is genuinely ambiguous, ask one short question before reading or writing anything.
 
 ## Runtime and paths
 

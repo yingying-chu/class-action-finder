@@ -1,7 +1,7 @@
 interface:
   display_name: "Class Action Finder"
   short_description: "Find notices, match purchases, and track claims"
-  default_prompt: "Use $class-action-finder to scan my connected email for settlement notices or match my purchase confirmations to possible open settlements."
+  default_prompt: "Use $class-action-finder to scan my connected email for class action settlement notices from the last year."
 
 policy:
   allow_implicit_invocation: true

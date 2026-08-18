@@ -11,6 +11,13 @@ This repo contains a single portable skill in `skills/class-action-finder/`. Run
 
 Purchase Match is deliberately separate from direct-notice discovery. It uses a source badge plus a categorical eligibility match, never treats a receipt as proof of class membership, never sends personal receipt details to web search, and does not persist purchase history automatically.
 
+## Invocation defaults
+
+- A bare skill invocation or a generic request to scan email for class actions runs **Part A — Notice Scan** for the previous 365 days.
+- Purchase Match runs only when the user explicitly mentions purchases, receipts, orders, subscriptions, or something they bought; its default range is the previous three years.
+- A request for both paths runs both defaults unless the user supplies another range.
+- Record commands update the tracker only and do not scan the mailbox.
+
 It was previously two separate skills (`class-action-scanner` + `class-action-tracker`); they were merged so the record ↔ report loop lives in one place. If you see stale references to the old names anywhere, update them.
 
 ## Reference files
