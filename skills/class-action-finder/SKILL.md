@@ -1,23 +1,25 @@
 ---
 name: class-action-finder
 description: >-
-  Find, track, and stay on top of class action settlements from the user's email. Use this skill whenever the user mentions class action settlements, legal notices, or settlement claims — for either of two jobs: (1) scanning their email for settlement notices and producing an actionable HTML report, or (2) recording and retrieving their own claim history. Trigger for scanning ("scan my email for settlements", "find class action claims in Gmail", "check if I'm eligible for settlement money", "did I miss any settlement deadlines", "am I owed money from any lawsuits"). Also trigger for personal record-keeping ("I filed my claim", "mark [company] as filed", "I got a $47 check from [company]", "add [company] to my watch list", "show my filed claims", "how much have I made from settlements"). Trigger when invoked as /class-action-finder, $class-action-finder, or by name, with or without arguments. Skip for form-filling help, opting out of a settlement, and general legal questions.
+  Find, verify, and track class action settlements from the user's email. Use for three jobs: (1) scan direct settlement notices and produce an actionable HTML report, (2) scan purchase confirmations or receipts and check the web for potentially matching open settlements, or (3) record and retrieve claim and payout history. Trigger for requests such as "scan my email for settlements", "did I miss a claim deadline", "check my purchases for class actions", "scan my receipts for settlements", "I filed my claim", "I got a payout", "add this case to my watch list", or "show my filed claims". Also trigger when invoked as /class-action-finder, $class-action-finder, or by name. Skip for form-filling help, opting out of a settlement, and general legal questions.
 ---
 
 # Class Action Finder
 
-One skill, two jobs that feed each other:
+One skill, three jobs that feed each other:
 
-1. **Scan** the user's email for class action settlement notices and produce a styled HTML report of what they can claim, what's expired, and what looks like phishing.
-2. **Remember** what they've filed and been paid — a small persistent record that the scan reads back, so each report already knows what's handled and stops nagging about it.
+1. **Scan notices** in the user's email and produce a styled HTML report of what they can claim, what's expired, and what looks like phishing.
+2. **Match purchases** from receipts and order confirmations to potentially relevant open settlements found on the web, without treating a purchase as proof of eligibility.
+3. **Remember** what they've filed and been paid — a small persistent record that both discovery paths read back, so each report already knows what's handled and stops nagging about it.
 
-The link between the two is a single tracker JSON file that the scan **reads** and the record commands **write**. Because the report is a rendered view of *(email findings + this memory)*, anything the user records carries forward into future scans when the runtime provides persistent storage — and can be reflected in the current report immediately (Part C) without re-scanning email.
+The link between all three is a single tracker JSON file that both discovery paths **read** and the record commands **write**. Because the report is a rendered view of *(email findings + this memory)*, anything the user records carries forward into future scans when the runtime provides persistent storage — and can be reflected in the current report immediately (Part C) without re-scanning email.
 
 ## First — decide what the user wants
 
 | The user is… | Do this |
 |---|---|
-| Asking to scan / find / audit their email for settlements | **Part A — Scan** |
+| Asking to scan / find / audit direct settlement notices in email | **Part A — Notice Scan** |
+| Asking to check receipts, orders, subscriptions, or purchases for possible settlements | **Part D — Purchase Match** |
 | Telling you they filed a claim, received a payout, or want to watch/list their claims | **Part B — Record** |
 | (After a Part B record that matches a claim in the latest report) | **Part C — Refresh** the current report |
 
@@ -68,7 +70,7 @@ When only the company matches, keep the claim actionable during a scan and note 
 
 ---
 
-# PART A — Scan email and build the report
+# PART A — Scan settlement notices and build the report
 
 ## Step 1 — Determine date range
 
@@ -161,6 +163,7 @@ For each Type A / B thread (not 🔴), extract. Write `"unknown"` for anything n
 | `type` | A or B |
 | `confidence` | e.g. "🟢 91% — Epiq sender, Reuters article, no payment request" |
 | `notes` | One sentence on anything notable |
+| `discovery_sources` | Set to `["settlement_notice"]`; Part D may add `purchase_confirmation` when both discovery paths find the same settlement |
 
 **Cross-reference memory:** apply **Settlement identity matching** above. Set `already_filed: true` and carry over the filed date and claim ID only when a settlement-specific identifier, normalized case/case number, or validated settlement hostname establishes the match. A fuzzy company-only match is not enough; keep the claim actionable and add a note that a possibly related filing exists in the tracker.
 
@@ -176,10 +179,12 @@ Create `class-action-report-YYYY-MM-DD.html`. On a local runtime, write it under
 
 - Start with a bright, editorial hero rather than a black admin-style header. Use a subtle warm/cool gradient, generous whitespace, and strong typography. The primary sentence must answer: **how many claims require action and what known payout range they could be worth**. Keep decoration functional — no ornamental rings, floating circles, or remote imagery.
 - In the hero, show the **actionable potential value** for unfiled 🟢/🟡 Type A claims only. Derive it conservatively from explicitly stated individual-payout amounts: sum known lower and upper bounds after de-duplication; treat an exact amount as the same lower/upper value and “up to $X” as `$0–$X`. Exclude already-filed, auto-enrolled, watch-list, expired, paid, 🟠, and 🔴 entries. If any included claim has an unknown/pro-rata amount, append `+ unknown` rather than inventing a number. If none has a numeric estimate, show “Value not yet known.”
-- Add a compact, left-to-right **email funnel** inside the hero: `[emails processed] → [settlement notices] → [verified cases] → [need action]`. “Settlement notices” means relevant non-irrelevant messages after de-duplication; “verified cases” means unique 🟢/🟡 cases; “need action” must equal the number of items in the action queue. Use labeled rectangular stages and arrows, not decorative circles or a misleading proportional chart.
-- Below the hero, add a pure-CSS anchor navigation/status strip for: Action required, Watch list, Filed, Paid, Expired, and Security alerts. Every count must match the corresponding report data. Make the strip sticky on wide screens and wrapped/static below ~900px. Give the action queue and all five report sections stable `id` targets, add `html { scroll-behavior: smooth; }`, and use `scroll-margin-top` so anchored headings are not hidden.
+- For a Part A notice scan, add a compact, left-to-right **email funnel** inside the hero: `[emails processed] → [settlement notices] → [verified cases] → [need action]`. “Settlement notices” means relevant non-irrelevant messages after de-duplication; “verified cases” means unique 🟢/🟡 cases; “need action” must equal the number of items in the action queue. For Part D, use its separate purchase funnel; when both modes run, label and show both. Use labeled rectangular stages and arrows, not decorative circles or a misleading proportional chart.
+- Below the hero, add a pure-CSS anchor navigation/status strip for: Action required, Purchase matches, Watch list, Filed, Paid, Expired, and Security alerts. Every count must match the corresponding report data. Make the strip sticky on wide screens and wrapped/static below ~900px. Give the action queue, purchase-match review panel, and all five report sections stable `id` targets, add `html { scroll-behavior: smooth; }`, and use `scroll-margin-top` so anchored headings are not hidden.
 - Put a clearly separated **“What to do next” action queue immediately after the overview**, sorted by soonest deadline. Each item must have its own row/card and explicitly state: the action verb, company/case, why the user should act, deadline/time remaining, estimated value, confidence, and one CTA. Use `Open claim form` for a validated 🟢/🟡 claim URL; clicking opens the form but never implies that the assistant submitted it. Exclude 🟠 entries from this queue and show their non-clickable safety notes in the relevant claim card instead. Already-filed claims never appear in this queue.
+- Put **“Purchase Matches to Review” immediately after the action queue**. This panel contains unconfirmed Part D findings only, uses `Check eligibility` rather than `Submit claim`, and shows the purchase evidence, matched class period, missing eligibility facts, settlement legitimacy, and eligibility-match level separately. Never include these unconfirmed findings in the actionable count or payout total.
 - One card per claim (not a `<table>`): company, case, color-coded confidence (🟢/🟡/🟠/🔴), deadline pill (red/urgent if ≤ 14 days away), payout, claim ID and PIN each in their own monospace box (show PIN only if extracted), and a distinct "✅ Already filed" badge when `already_filed` is true
+- Show discovery-source badges on every finding: `📩 Direct notice`, `🧾 Purchase match`, and/or `✍️ Manually added`. Treat a tracker-only record as manually added; if settlement identity links it to a notice or purchase match, union the badges. These badges explain where the lead came from; they are not legitimacy or eligibility scores.
 - Make a verified claim URL clickable only for 🟢/🟡 entries. Show 🟠 URLs as non-clickable text with a verification warning. Never render a 🔴 URL.
 - In Section 4, clearly separate awaiting-payout and paid claims. Show filed date, claim ID/PIN, expected payout, actual payout, payment method, and current status so the report preserves the user’s claim history.
 - All five sections must remain present even if empty; sort Section 1 by soonest deadline first. An active claim that is already filed still appears in Section 1 with its filed badge and in Section 4 for tracking, but never in the action queue.
@@ -280,6 +285,97 @@ After a "mark as filed" or "record a payout":
    - **Hosted runtime:** the current report and tracker artifacts are updated. Remind the user to keep the tracker and provide it to future chats unless the environment explicitly offers persistent skill storage.
 
 If the recorded claim isn't in the latest report at all (e.g. something email never surfaced), don't invent a card — just confirm it's saved in the tracker and will be cross-referenced the next time that tracker is available during a scan.
+
+---
+
+# PART D — Match purchase confirmations to possible settlements
+
+Use this path only when the user asks to check receipts, orders, subscriptions, or other purchase confirmations for potentially related class actions. A purchase is evidence of a transaction, **not proof of class membership**. Keep settlement legitimacy and user eligibility as two separate judgments.
+
+## Step 1 — Determine purchase range and scope
+
+Parse any merchant, product, or date range the user supplies. With no date range, scan the previous three years. Tell the user when the mail provider or result cap limits coverage. A named merchant or product takes priority over a broad mailbox scan.
+
+## Step 2 — Search purchase email
+
+Use the same connected mail provider and provider-adaptive behavior as Part A. Translate these purposes into the provider's supported syntax:
+
+| # | Purpose | Gmail reference query |
+|---|---|---|
+| A | Purchase confirmations and receipts in the subject | `subject:("order confirmation" OR receipt OR "purchase confirmed" OR "thanks for your order") after:YYYY/MM/DD` |
+| B | Subscription or digital-service purchases | `subject:(subscription OR membership OR renewal) (confirmed OR receipt OR invoice) after:YYYY/MM/DD` |
+
+When the user names a merchant or product, include that term and prefer the narrower result set. Use at most 100 recent results for a broad scan. Fetch complete messages in batches of 10, de-duplicate repeated shipping, delivery, and invoice messages for the same order, and skip cancellations, refunds, declined payments, shipping-only updates, and messages that do not identify a product or service.
+
+## Step 3 — Extract minimal purchase evidence
+
+Follow `references/extraction-guide.md`. Extract only:
+
+| Field | Meaning |
+|---|---|
+| `merchant` | Seller, manufacturer, or service provider |
+| `product_service` | Product, model, plan, or subscription name as stated |
+| `purchase_date` | Transaction date |
+| `purchase_region` | State/country only when explicitly available and relevant; otherwise `unknown` |
+| `evidence_note` | Short description such as "order confirmation names Model X" |
+
+Do not retain or use the buyer's name, street address, phone number, full order number, payment details, account number, or unrelated items. Never put those values into a web search or report. Hold purchase evidence in memory for this scan; do not persist the user's purchase history automatically.
+
+## Step 4 — Build a bounded product list
+
+Normalize merchant suffixes and obvious product-name variants, then de-duplicate by merchant + product/service. Keep at most 25 distinct pairs in a broad scan, preferring entries with a specific product/model and a clear purchase date. If more remain, state that the scan sampled the 25 strongest candidates and offer to continue with another merchant or period.
+
+## Step 5 — Search for open settlements
+
+For each distinct pair, use web search with generic, non-personal queries such as:
+
+- `[merchant] [product] class action settlement claim`
+- `[product or service] settlement claim deadline`
+
+Look for a currently open claim process supported by an official settlement site, court source, recognized administrator, or reputable reporting. Ignore attorney solicitations, complaints with no settlement, unrelated cases against the same company, and claim windows that are already closed. Do not send email text, identifiers, addresses, or other personal data to web search.
+
+## Step 6 — Verify legitimacy and extract settlement criteria
+
+Apply `references/phishing-guide.md` to the public settlement and claim URL just as Part A does. Extract the covered product/service, model or plan, class period, geographic limits, proof-of-purchase requirement, payout, deadline, official case/settlement identity, and validated `https://` URL. If the settlement itself is 🟠 or 🔴, do not present it as a purchase opportunity or make its URL clickable; place a safety note in Security Alerts when appropriate.
+
+## Step 7 — Score eligibility match separately
+
+Assign one categorical eligibility level. Never turn this into the phishing/legitimacy percentage:
+
+| Level | Rule | Report action |
+|---|---|---|
+| `confirmed` | Every explicit material criterion is supported by the purchase email or subsequently confirmed by the user | May enter Action required when the settlement is open and 🟢/🟡 |
+| `strong` | Product/service and purchase date match, but a secondary fact such as model variant, residence, or proof requirement remains unknown | Purchase Matches to Review; CTA is `Check eligibility` |
+| `possible` | The merchant and related product/category match, but an essential criterion is missing | Purchase Matches to Review; explain exactly what is missing |
+| `not_eligible` | An explicit date, product, geography, or other requirement conflicts | Omit from the report unless the user asked for rejected-match details |
+
+Use language such as "possible match" or "likely match" until the level is `confirmed`. Do not say the user qualifies merely because the company appears in both the receipt and the lawsuit.
+
+## Step 8 — Merge with notice findings safely
+
+Set `discovery_sources` to `["purchase_confirmation"]` for a new lead. Apply **Settlement identity matching** before merging it with Part A or tracker data:
+
+- If settlement-specific identity matches, keep one case and union the source badges. Direct-notice claim IDs, PINs, personalized deadlines, and filing instructions take precedence over generic web data.
+- If only the company matches, keep separate findings. A company may face many unrelated class actions.
+- If the tracker confirms the same settlement was filed, show the filed badge and exclude it from filing actions.
+
+## Step 9 — Report and optionally remember
+
+Render unconfirmed `strong` and `possible` findings in **Purchase Matches to Review**, not in the filing-action queue. Each card must show:
+
+- `🧾 Purchase match` source badge;
+- purchase product/service and date, without order or payment identifiers;
+- covered product and class period;
+- separate settlement-legitimacy and eligibility-match labels;
+- the exact missing or conflicting facts;
+- deadline and estimated payout when verified; and
+- `Check eligibility` linking only to a validated 🟢/🟡 official information page.
+
+Only a `confirmed` match may move to Section 1 and the action queue. Keep its `🧾 Purchase match` badge and state that it was discovered from a receipt rather than a personalized legal notice.
+
+For a purchase scan, show a compact funnel: `[purchase emails processed] → [unique products/services] → [verified open settlements] → [matches to review]`. If Parts A and D ran together, show both funnels with clear labels. Purchase matches do not count as settlement notices, verified notice cases, actionable claims, or actionable potential value until confirmed.
+
+After reporting, offer to add selected `strong` or `possible` cases to `watch_list` with `source: "purchase_confirmation"`. Never add them automatically and never persist unrelated purchase records.
 
 ---
 

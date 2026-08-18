@@ -4,9 +4,12 @@ This repo contains a single portable skill in `skills/class-action-finder/`. Run
 
 ## The skill
 
-`class-action-finder` does two jobs that feed each other, in one `SKILL.md`:
-- **Find** — scans the user's connected email for class action settlement notices and produces a styled HTML report (`SKILL.md` Part A)
+`class-action-finder` does three jobs that feed each other, in one `SKILL.md`:
+- **Find notices** — scans the user's connected email for direct class action settlement notices and produces a styled HTML report (`SKILL.md` Part A)
+- **Match purchases** — extracts minimal, non-sensitive evidence from purchase confirmations and checks public sources for potentially matching open settlements (`SKILL.md` Part D)
 - **Remember** — reads and writes a persistent record of what the user has filed and been paid (`SKILL.md` Part B), and can refresh the current report after a correction without re-scanning email (Part C)
+
+Purchase Match is deliberately separate from direct-notice discovery. It uses a source badge plus a categorical eligibility match, never treats a receipt as proof of class membership, never sends personal receipt details to web search, and does not persist purchase history automatically.
 
 It was previously two separate skills (`class-action-scanner` + `class-action-tracker`); they were merged so the record ↔ report loop lives in one place. If you see stale references to the old names anywhere, update them.
 
@@ -16,9 +19,9 @@ The skill reads these at runtime from its own `references/` directory:
 
 | File | Purpose |
 |---|---|
-| `extraction-guide.md` | How to classify emails, extract fields (incl. claim ID vs. PIN), skip irrelevant threads |
+| `extraction-guide.md` | How to classify notices and purchase confirmations, extract minimal fields (incl. claim ID vs. PIN), and skip irrelevant threads |
 | `phishing-guide.md` | Confidence scoring signals and known settlement administrator domains |
-| `report-template.md` | Content guide for the 5-section HTML report |
+| `report-template.md` | Content guide for the 5 lifecycle sections plus Purchase Matches review panel |
 
 ## Persistent claim record
 

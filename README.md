@@ -1,7 +1,7 @@
 <h1 align="center">Class Action Finder</h1>
 
 <p align="center">
-  <strong>Find settlement notices in your inbox, verify them, and remember every claim.</strong>
+  <strong>Find settlement notices, match purchases to open cases, and remember every claim.</strong>
 </p>
 
 <p align="center">
@@ -12,7 +12,7 @@
 
 ---
 
-> A portable AI skill that scans connected email for class action settlement notices, verifies each case against public sources, flags phishing, produces an actionable HTML report, and tracks claims and payouts over time.
+> A portable AI skill that scans connected email for class action settlement notices, checks purchase confirmations against potentially matching open settlements, verifies cases against public sources, flags phishing, produces an actionable HTML report, and tracks claims and payouts over time.
 
 The same source in `skills/class-action-finder/` runs on Claude, Codex, and ChatGPT. Gmail receives the fullest scan, including spam and promotions; other searchable mail providers are supported with any coverage gaps disclosed in the report.
 
@@ -130,24 +130,24 @@ Official setup references:
 
 ## Architecture
 
-Class Action Finder has three connected jobs:
+Class Action Finder has four connected jobs:
 
-1. **Find** settlement notices and case updates in connected email.
-2. **Remember** filed claims, expected payouts, actual payouts, and watch-list items.
-3. **Refresh** the latest report after a filing or payout is recorded, without scanning email again.
+1. **Find notices** and case updates in connected email.
+2. **Match purchases** to potentially relevant open settlements without treating a receipt as proof of eligibility.
+3. **Remember** filed claims, expected payouts, actual payouts, and watch-list items.
+4. **Refresh** the latest report after a filing or payout is recorded, without scanning email again.
 
 ```text
 Connected mail
     │
-    ├── Subject and body searches
-    ├── Spam / junk sweep
-    └── Promotions / bulk sweep
+    ├── Settlement notices ── spam / promotions sweep
+    └── Purchase confirmations ── minimal product evidence
             │
             ▼
-    Fetch and de-duplicate threads
+    Fetch and de-duplicate messages
             │
             ▼
-    Classify ── Verify public case ── Score legitimacy
+    Classify ── Match public case ── Score legitimacy + eligibility
             │
             ▼
     Extract deadlines, payouts, IDs, PINs, and claim URLs
@@ -181,6 +181,15 @@ Scan all settlement notices from 2024.
 Check whether I missed any settlement deadlines this year.
 ```
 
+Match purchases separately when you want discovery beyond legal notices:
+
+```text
+Scan my purchase confirmations from the last three years for possible settlements.
+Check whether anything I bought from ExampleStore matches an open class action.
+```
+
+Purchase Match keeps settlement legitimacy separate from purchase eligibility. It reports strong and possible matches for review and only moves a case into the filing queue after the material eligibility facts are confirmed.
+
 Update the tracker in normal language:
 
 ```text
@@ -196,7 +205,7 @@ When a newly recorded filing matches the latest report, the skill can update tha
 
 ## Report contents
 
-Every scan produces the same five-section report:
+Every report keeps the same five lifecycle sections, plus a separate Purchase Matches to Review panel:
 
 | Section | What it contains |
 |---|---|
@@ -210,7 +219,10 @@ The report also includes:
 
 - an at-a-glance actionable payout range;
 - an email funnel from messages processed to claims requiring action;
-- a sticky status navigator for action required, watching, filed, paid, expired, and security alerts;
+- a separate purchase funnel when receipt matching runs;
+- a sticky status navigator for action required, purchase matches, watching, filed, paid, expired, and security alerts;
+- discovery badges that distinguish direct notices, purchase matches, and manually added records;
+- separate settlement-legitimacy and purchase-eligibility labels;
 - urgent-deadline highlighting;
 - separate Claim ID and PIN fields;
 - an **Already filed** badge that is distinct from legitimacy scoring;
@@ -278,6 +290,8 @@ Claude.ai and ChatGPT return the HTML report and updated tracker as downloadable
 
 - Email is read through the connected provider integration.
 - Email content is never copied into this repository.
+- Purchase matching sends only generic merchant/product search terms to the web—never names, addresses, order numbers, account details, payment details, or raw receipt text.
+- Purchase history is held only for the active scan and is not persisted unless the user explicitly adds a matched case to the watch list or tracker.
 - Local reports and tracker records stay on the user's machine.
 - Hosted artifacts follow the storage and retention policy of that product and workspace.
 - Reports may contain private claim IDs or PINs and should be handled as sensitive personal records.

@@ -31,6 +31,14 @@ grep -q '^name: class-action-finder$' "$SKILL_DIR/SKILL.md"
 grep -q '^description:' "$SKILL_DIR/SKILL.md"
 grep -q 'Company name only — a possible match, never an automatic match' \
   "$SKILL_DIR/SKILL.md"
+grep -q '# PART D — Match purchase confirmations to possible settlements' \
+  "$SKILL_DIR/SKILL.md"
+grep -q 'Never put those values into a web search or report' \
+  "$SKILL_DIR/SKILL.md"
+grep -q '## Purchase Confirmation Extraction' \
+  "$SKILL_DIR/references/extraction-guide.md"
+grep -q '## Purchase Matches to Review' \
+  "$SKILL_DIR/references/report-template.md"
 grep -q 'forces the final score below 40% (🔴)' \
   "$SKILL_DIR/references/phishing-guide.md"
 grep -q 'the `output/` directory that belongs to the skill copy being run' \
@@ -46,6 +54,8 @@ grep -q 'class="email-funnel"' "$REPO_ROOT/docs/demo-report.html"
 grep -q 'Actionable potential value' "$REPO_ROOT/docs/demo-report.html"
 grep -q 'Open claim form' "$REPO_ROOT/docs/demo-report.html"
 grep -q 'Filed &amp; tracking' "$REPO_ROOT/docs/demo-report.html"
+grep -q 'Purchase matches to review' "$REPO_ROOT/docs/demo-report.html"
+grep -q '🧾 Purchase match' "$REPO_ROOT/docs/demo-report.html"
 grep -q 'email funnel' "$SKILL_DIR/SKILL.md"
 if grep -Eiq '<script| on[a-z]+=' "$REPO_ROOT/docs/demo-report.html"; then
   echo "Demo report contains a script or inline event handler." >&2

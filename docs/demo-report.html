@@ -155,7 +155,7 @@
     top: 0;
     z-index: 5;
     display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-columns: repeat(7, minmax(0, 1fr));
     background: rgba(255,255,255,.96);
     border-bottom: 1px solid var(--line);
   }
@@ -236,7 +236,8 @@
   .card h3 { margin: 0; font-size: 17px; }
   .sub { margin-top: 3px; color: var(--muted); font-size: 13px; }
   .confidence,
-  .status {
+  .status,
+  .source-badge {
     display: inline-flex;
     padding: 4px 9px;
     border-radius: 999px;
@@ -247,6 +248,7 @@
   .green { background: var(--accent-soft); color: var(--accent); }
   .yellow { background: var(--warning-soft); color: var(--warning); }
   .red { background: var(--danger-soft); color: var(--danger); }
+  .source-badge { margin-right: 6px; background: #eef0ed; color: var(--text); }
   .fields {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -360,6 +362,7 @@
 
 <nav class="status-nav" aria-label="Report sections">
   <a href="#action-queue"><strong>2</strong>Action required</a>
+  <a href="#purchase-matches"><strong>1</strong>Purchase match</a>
   <a href="#section-2"><strong>1</strong>Watching</a>
   <a href="#section-4"><strong>2</strong>Filed</a>
   <a href="#paid"><strong>1</strong>Paid</a>
@@ -390,6 +393,40 @@
     <div class="reminder">After submitting, tell the assistant “I already filed the ExampleApp one.” It will move out of this queue and into Filed &amp; tracking.</div>
   </section>
 
+  <section class="section-block" id="purchase-matches">
+    <div class="section-head">
+      <div><span class="eyebrow">Purchase discovery</span><h2>Purchase matches to review</h2></div>
+      <p>Not yet counted as an actionable claim</p>
+    </div>
+    <div class="email-funnel" aria-label="18 purchase emails processed, 12 unique products found, 2 open settlements verified, 1 match needs review">
+      <div class="funnel-stage"><strong>18</strong><span>Purchase emails</span></div>
+      <span class="arrow">→</span>
+      <div class="funnel-stage"><strong>12</strong><span>Unique products</span></div>
+      <span class="arrow">→</span>
+      <div class="funnel-stage"><strong>2</strong><span>Open settlements</span></div>
+      <span class="arrow">→</span>
+      <div class="funnel-stage"><strong>1</strong><span>Match to review</span></div>
+    </div>
+    <div class="cards">
+      <article class="card">
+        <div class="card-top">
+          <div>
+            <span class="source-badge">🧾 Purchase match</span>
+            <h3>ExampleHome — Model H Air Fryer Settlement</h3>
+            <div class="sub">A Jun 18, 2024 order confirmation names Model H; the settlement covers selected Model H variants purchased during 2023–2025.</div>
+          </div>
+          <span class="confidence green">🟢 91% legitimate</span>
+        </div>
+        <div class="fields">
+          <div><span class="field-label">Eligibility match</span><div class="field-value">Strong</div></div>
+          <div><span class="field-label">Still confirm</span><div class="field-value">Serial-number range</div></div>
+          <div><span class="field-label">Deadline / payout</span><div class="field-value">Oct 30, 2026 · up to $75</div></div>
+        </div>
+        <div class="notes">This is a possible match found from a receipt, not a personalized legal notice. <span class="button secondary">Check eligibility</span></div>
+      </article>
+    </div>
+  </section>
+
   <section class="section-block" id="section-1">
     <div class="section-head">
       <div><span class="eyebrow">Section 1</span><h2>Active claim windows</h2></div>
@@ -398,7 +435,7 @@
     <div class="cards">
       <article class="card">
         <div class="card-top">
-          <div><h3>ExampleApp — Security Breach Settlement</h3><div class="sub">A data breach exposed encrypted account data.</div></div>
+          <div><span class="source-badge">📩 Direct notice</span><h3>ExampleApp — Security Breach Settlement</h3><div class="sub">A data breach exposed encrypted account data.</div></div>
           <span class="confidence green">🟢 92% verified</span>
         </div>
         <div class="fields">
@@ -411,7 +448,7 @@
       </article>
       <article class="card">
         <div class="card-top">
-          <div><h3>SampleCorp — Data Security Incident</h3><div class="sub">A data incident exposed personal records.</div></div>
+          <div><span class="source-badge">📩 Direct notice</span><h3>SampleCorp — Data Security Incident</h3><div class="sub">A data incident exposed personal records.</div></div>
           <span class="confidence green">🟢 96% verified</span>
         </div>
         <div class="fields">
@@ -456,7 +493,7 @@
       <p>Remembered across future scans</p>
     </div>
     <article class="filed-row">
-      <div><h3>SampleHealth Group — Antitrust</h3><p>Filed before 2021</p></div>
+      <div><span class="source-badge">✍️ Manually added</span><h3>SampleHealth Group — Antitrust</h3><p>Filed before 2021</p></div>
       <div><span class="field-label">Claim ID</span><strong>Not recorded</strong></div>
       <div><span class="field-label">Expected</span><strong>Pro-rata</strong></div>
       <div><span class="field-label">Status</span><strong>Awaiting payout</strong></div>
