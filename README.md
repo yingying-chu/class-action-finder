@@ -302,7 +302,23 @@ Claude.ai and ChatGPT return the HTML report and updated tracker as downloadable
 
 **Typical notice-scan workload:** roughly 100 overlapping raw search hits across four searches, de-duplicated to ~25 unique threads read in full, with about 10 public-record checks.
 
-**Purchase Match workload:** a broad scan is capped at 100 purchase emails and 25 merchant/product pairs. Its cost varies more because each plausible product may require separate public-source checks. Narrow merchant or product requests are cheaper and more precise.
+**Purchase Match workload:** a broad scan defaults to the last 12 months and is capped at 100 purchase emails, 25 merchant/product pairs, and 30 public-source searches, stopping early if the 8 highest-priority products come back empty. Its cost varies more than a notice scan because each plausible product may require separate public-source checks. Narrow merchant or product requests are cheaper and more precise.
+
+### Cost is bounded, so coverage is what degrades
+
+Cost follows the number of matching emails actually read, not the width of the date range — and the caps put a ceiling on it:
+
+| Matching emails in range | Actually read | Cost | Coverage |
+|---|---|---|---|
+| ~20 | 20 | well under typical | complete |
+| ~60 | 60 | below typical | complete |
+| ~100 | 100 | at the ceiling | complete |
+| ~500 | **100** | **same as ~100** | 20% |
+| ~2000 | **100** | **same as ~100** | 5% |
+
+Past the ceiling the price stops rising and coverage falls instead. This is also why widening the date range is not the lever it appears to be: mail search returns newest-first, so a 1-year and a 3-year request hand back **the same most-recent 100 messages**. To genuinely see more, name a merchant — which shrinks the search space so 100 messages reach further back — or run consecutive 12-month segments, each of which gets its own budget.
+
+Every capped funnel stage is labelled with its denominator (`100 of ~1,400 · capped`) so a truncated scan is never presented as complete coverage.
 
 | Provider | Model | Estimated typical notice scan | Best fit |
 |---|---|---:|---|

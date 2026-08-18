@@ -21,14 +21,15 @@ Start with a bright editorial hero followed by a horizontal anchor/status strip.
 The status strip links to:
 
 1. Action required → the action queue
-2. Purchase matches → the Purchase Matches to Review panel
-3. Watching → Section 2
-4. Filed → Section 4
-5. Paid → the paid subsection within Section 4
-6. Expired → Section 3
-7. Security alerts → Section 5
+2. Active claims → Section 1
+3. Purchase matches → the Purchase Matches to Review panel
+4. Watching → Section 2
+5. Filed → Section 4
+6. Paid → the paid subsection within Section 4 (needs its own `id`)
+7. Expired → Section 3
+8. Security alerts → Section 5
 
-Counts must match the underlying cards. The Paid count is a subset of Filed, and Security alerts equals the number of 🔴 cards. Use pure anchor links only — no JavaScript.
+Counts must match the underlying cards. `Action required` counts only unfiled 🟢/🟡 filing actions; `Active claims` counts every open claim window in Section 1, including already-filed and 🟠 entries — so `Active claims` is normally the larger number. The Paid count is a subset of Filed, and Security alerts equals the number of 🔴 cards. Use pure anchor links only — no JavaScript.
 
 ---
 
@@ -47,6 +48,8 @@ Show at the top of the page:
 - Optional provider coverage line: inbox / spam / promotions counts, and any unsupported folder
 
 Each funnel is a count transformation, not a proportional value chart. Render rectangular labeled stages with arrows so a small verified count is not visually exaggerated. If both scans ran, label both funnels and do not mix purchase confirmations into the settlement-notice count.
+
+**Capped stages must show the denominator.** A funnel's first stage is the most misleading one, because a capped count looks identical to a complete count. Use `100 of ~1,400 · capped` rather than `100`, and put one line beneath the funnel naming which limit applied — the 100-message result cap, the 25-pair product cap, the 30-search ceiling, or the early stop — plus how to go deeper. Where the provider gives no total, use `100 (result cap reached — true total unknown)`. Never print a bare number for a stage that was truncated.
 
 ---
 
