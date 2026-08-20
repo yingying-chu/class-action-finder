@@ -16,7 +16,7 @@ A source badge is never a confidence badge. A legitimate settlement can still be
 
 ## Overview and Status Navigation
 
-Start with a bright editorial hero followed by a horizontal anchor/status strip. Do not use a black admin-style header or ornamental rings/circles.
+Start with a bright editorial hero followed by a horizontal anchor/status strip. Use the transparent mark from `assets/logo-mark.svg` beside a live-text product label, following Step 9's self-contained inline-SVG rule. Do not use a black admin-style header, the full wordmark on the gradient, or ornamental rings/circles.
 
 The status strip links to:
 

@@ -56,19 +56,21 @@
   .brand {
     display: inline-flex;
     align-items: center;
-    gap: 9px;
+    gap: 10px;
     font-size: 14px;
     font-weight: 700;
   }
   .brand-mark {
-    display: grid;
-    width: 30px;
-    height: 30px;
-    place-items: center;
-    border-radius: 8px;
-    background: var(--text);
-    color: var(--surface);
+    display: block;
+    width: 38px;
+    height: 38px;
+    padding: 4px;
+    border: 1px solid rgba(32,35,31,.1);
+    border-radius: 10px;
+    background: rgba(255,255,255,.52);
+    box-shadow: 0 5px 18px rgba(32,35,31,.07);
   }
+  .brand-name span { color: var(--accent); }
   .demo-label,
   .meta,
   .small {
@@ -315,6 +317,8 @@
     .hero-inner, .content { width: min(100% - 24px, 1080px); }
     .hero-inner { padding: 16px 0 18px; }
     .topline { align-items: flex-start; gap: 8px; }
+    .brand { gap: 8px; font-size: 13px; }
+    .brand-mark { width: 34px; height: 34px; padding: 3px; }
     .demo-label { max-width: 150px; text-align: right; line-height: 1.3; }
     .hero-main { margin-top: 22px; gap: 18px; }
     .hero h1 {
@@ -353,7 +357,19 @@
 <header class="hero" id="top">
   <div class="hero-inner">
     <div class="topline">
-      <div class="brand"><span class="brand-mark">CA</span>Class Action Finder</div>
+      <div class="brand" aria-label="Class Action Finder">
+        <svg class="brand-mark" viewBox="0 0 256 256" aria-hidden="true">
+          <path fill="#22664F" d="M39 84h178c13 0 23 10 23 23v105c0 13-10 23-23 23H39c-13 0-23-10-23-23V107c0-13 10-23 23-23Z"/>
+          <path fill="#F8F7F2" stroke="#22664F" stroke-width="12" d="M69 20h91l29 30v124H69z" stroke-linejoin="round"/>
+          <path fill="none" stroke="#22664F" stroke-width="11" d="M159 21v31h30M92 78h74M92 104h62M92 130h45" stroke-linecap="round" stroke-linejoin="round"/>
+          <path fill="#22664F" d="M16 112l103 69c5 4 13 4 18 0l103-69v100c0 13-10 23-23 23H39c-13 0-23-10-23-23Z"/>
+          <path fill="none" stroke="#F8F7F2" stroke-width="10" d="m30 216 73-57M226 216l-54-42" stroke-linecap="round" opacity=".9"/>
+          <circle cx="173" cy="164" r="50" fill="#F8F7F2" stroke="#22664F" stroke-width="14"/>
+          <path fill="none" stroke="#7A3EC8" stroke-width="17" d="m145 162 18 18 37-42" stroke-linecap="round" stroke-linejoin="round"/>
+          <path fill="none" stroke="#22664F" stroke-width="18" d="m209 201 30 30" stroke-linecap="round"/>
+        </svg>
+        <span class="brand-name">Class Action <span>Finder</span></span>
+      </div>
       <span class="demo-label">Sample report · illustrative data</span>
     </div>
     <div class="hero-main">

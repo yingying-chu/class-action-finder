@@ -41,6 +41,18 @@ The skill reads these at runtime from its own `references/` directory:
 | `phishing-guide.md` | Confidence scoring signals and known settlement administrator domains |
 | `report-template.md` | Content guide for the 5 lifecycle sections plus Purchase Matches review panel |
 
+## Brand assets
+
+The skill's `assets/` directory contains the production SVG logo set:
+
+| File | Purpose |
+|---|---|
+| `logo-mark.svg` | Transparent mark for generated report headers and light surfaces |
+| `app-icon.svg` | Green square icon for compact skill UI placements |
+| `logo-lockup.svg` | Horizontal wordmark for the repository README and large UI placements |
+
+Generated reports remain self-contained. Inline the trusted static artwork from `logo-mark.svg` into the HTML rather than linking to a local file or placing the full wordmark on the report gradient.
+
 ## Persistent claim record
 
 Stored on each user's own machine (not committed), per runtime:
@@ -61,6 +73,6 @@ The skill uses whichever connected mail app, connector, or MCP can search mail a
 
 ## Portable distribution (dist/)
 
-`dist/class-action-finder.zip` is checked in for Claude uploads, and the byte-identical `dist/class-action-finder.skill` is checked in for ChatGPT. **After editing `SKILL.md`, `agents/openai.yaml`, or a reference file, re-run `./scripts/package-skill.sh` and commit both artifacts** — otherwise the download links go stale.
+`dist/class-action-finder.zip` is checked in for Claude uploads, and the byte-identical `dist/class-action-finder.skill` is checked in for ChatGPT. **After editing `SKILL.md`, `agents/openai.yaml`, an asset, or a reference file, re-run `./scripts/package-skill.sh` and commit both artifacts** so the download links stay current.
 
 See README.md for setup instructions.

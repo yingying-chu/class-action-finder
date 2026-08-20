@@ -15,6 +15,9 @@ trap cleanup EXIT INT TERM
 required_files=(
   "$SKILL_DIR/SKILL.md"
   "$SKILL_DIR/agents/openai.yaml"
+  "$SKILL_DIR/assets/app-icon.svg"
+  "$SKILL_DIR/assets/logo-lockup.svg"
+  "$SKILL_DIR/assets/logo-mark.svg"
   "$SKILL_DIR/references/extraction-guide.md"
   "$SKILL_DIR/references/phishing-guide.md"
   "$SKILL_DIR/references/report-template.md"
@@ -36,6 +39,12 @@ grep -q '# PART D — Match purchase confirmations to possible settlements' \
 grep -q 'A bare `/class-action-finder`, `$class-action-finder`, or skill-name invocation is not ambiguous' \
   "$SKILL_DIR/SKILL.md"
 grep -q 'settlement notices from the last 12 months' \
+  "$SKILL_DIR/agents/openai.yaml"
+grep -q 'icon_small: "./assets/app-icon.svg"' \
+  "$SKILL_DIR/agents/openai.yaml"
+grep -q 'icon_large: "./assets/logo-lockup.svg"' \
+  "$SKILL_DIR/agents/openai.yaml"
+grep -q 'brand_color: "#22664F"' \
   "$SKILL_DIR/agents/openai.yaml"
 grep -q 'Never put those values into a web search or report' \
   "$SKILL_DIR/SKILL.md"
@@ -64,6 +73,9 @@ grep -q 'Content-Security-Policy' "$REPO_ROOT/docs/demo-report.html"
 grep -q '82 emails processed (inbox: 72, spam: 6, promotions: 4)' \
   "$REPO_ROOT/docs/demo-report.html"
 grep -q 'class="email-funnel"' "$REPO_ROOT/docs/demo-report.html"
+grep -q 'class="brand-mark"' "$REPO_ROOT/docs/demo-report.html"
+grep -q 'logo-lockup.svg' "$REPO_ROOT/README.md"
+grep -q 'assets/logo-mark.svg' "$SKILL_DIR/SKILL.md"
 grep -q 'href="#section-1"><strong>2</strong>Active claims' \
   "$REPO_ROOT/docs/demo-report.html"
 grep -q 'Actionable potential value' "$REPO_ROOT/docs/demo-report.html"

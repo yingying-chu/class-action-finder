@@ -1,6 +1,9 @@
 interface:
   display_name: "Class Action Finder"
   short_description: "Find notices, match purchases, and track claims"
+  icon_small: "./assets/app-icon.svg"
+  icon_large: "./assets/logo-lockup.svg"
+  brand_color: "#22664F"
   default_prompt: "Use $class-action-finder to scan my connected email for class action settlement notices from the last 12 months."
 
 policy:

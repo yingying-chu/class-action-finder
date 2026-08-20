@@ -1,4 +1,6 @@
-<h1 align="center">Class Action Finder</h1>
+<p align="center">
+  <img src="skills/class-action-finder/assets/logo-lockup.svg" alt="Class Action Finder" width="640">
+</p>
 
 <p align="center">
   <strong>Find the settlement notices you received and the cases your purchases might reveal.</strong>
@@ -347,6 +349,10 @@ class-action-finder/
 │       ├── SKILL.md
 │       ├── agents/
 │       │   └── openai.yaml
+│       ├── assets/
+│       │   ├── app-icon.svg
+│       │   ├── logo-lockup.svg
+│       │   └── logo-mark.svg
 │       ├── references/
 │       │   ├── extraction-guide.md
 │       │   ├── phishing-guide.md
@@ -371,7 +377,7 @@ class-action-finder/
 
 ## Development
 
-After editing `SKILL.md`, `agents/openai.yaml`, or a reference file, rebuild both portable artifacts:
+After editing `SKILL.md`, `agents/openai.yaml`, an asset, or a reference file, rebuild both portable artifacts:
 
 ```bash
 ./scripts/package-skill.sh
@@ -406,6 +412,7 @@ The workflow is intentionally small and forkable:
 | Classification and field extraction | [`extraction-guide.md`](skills/class-action-finder/references/extraction-guide.md) |
 | Confidence scoring and administrator domains | [`phishing-guide.md`](skills/class-action-finder/references/phishing-guide.md) |
 | Report sections and presentation requirements | [`report-template.md`](skills/class-action-finder/references/report-template.md) |
+| Logo mark, app icon, and wordmark | [`assets/`](skills/class-action-finder/assets/) |
 
 Useful extensions include provider-specific search tuning, localized settlement conventions, additional trusted administrator signals, or a different report style.
 
