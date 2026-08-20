@@ -18,18 +18,14 @@ A source badge is never a confidence badge. A legitimate settlement can still be
 
 Start with a bright editorial hero followed by a horizontal anchor/status strip. Use the transparent mark from `assets/logo-mark.svg` beside a live-text product label, following Step 9's self-contained inline-SVG rule. Do not use a black admin-style header, the full wordmark on the gradient, or ornamental rings/circles.
 
-The status strip links to:
+Keep the top status strip to four decision-oriented links:
 
 1. Action required → the action queue
-2. Active claims → Section 1
-3. Purchase matches → the Purchase Matches to Review panel
-4. Watching → Section 2
-5. Filed → Section 4
-6. Paid → the paid subsection within Section 4 (needs its own `id`)
-7. Expired → Section 3
-8. Security alerts → Section 5
+2. Purchase matches → the Purchase Matches to Review panel
+3. Filed claims → Section 4
+4. Security alerts → Section 5
 
-Counts must match the underlying cards. `Action required` counts only unfiled 🟢/🟡 filing actions; `Active claims` counts every open claim window in Section 1, including already-filed and 🟠 entries — so `Active claims` is normally the larger number. The Paid count is a subset of Filed, and Security alerts equals the number of 🔴 cards. Use pure anchor links only — no JavaScript.
+Counts must match the underlying cards. `Action required` counts only unfiled 🟢/🟡 filing actions, Filed includes its paid subset, and Security alerts equals the number of 🔴 cards. Active, Watching, Paid, and Expired remain clearly labeled in the report body but do not get separate top-level links. Keep the strip non-sticky and use pure anchor links only, with no JavaScript.
 
 ---
 
@@ -179,6 +175,8 @@ If no phishing emails were found, show: "No phishing emails detected in this sca
 ## "What To Do Next" Action Queue
 
 Place this immediately after the hero and status strip, before Section 1. List items sorted by soonest deadline first. Every action must be visually separated into its own row or card so the action, deadline, value, and CTA cannot blur together.
+
+Keep all action CTAs equal in width and height. On wide layouts, center each CTA vertically inside a dedicated action column. When the action row collapses at tablet or mobile widths, place the CTA on its own full grid row but cap the button at a compact width of roughly 220–260px and center it. Do not stretch a short CTA across the mobile viewport.
 
 Include filing actions only for unfiled 🟢/🟡 claims with a validated `https://` URL. Do not put already-filed, 🟠, or 🔴 claims in this panel as click-through actions.
 

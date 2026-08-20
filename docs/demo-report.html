@@ -153,11 +153,8 @@
   .coverage { margin: 14px 0 0; color: var(--muted); font-size: 12px; }
 
   .status-nav {
-    position: sticky;
-    top: 0;
-    z-index: 5;
     display: grid;
-    grid-template-columns: repeat(8, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     background: rgba(255,255,255,.96);
     border-bottom: 1px solid var(--line);
   }
@@ -174,7 +171,7 @@
     display: block;
     font-size: 17px;
   }
-  .content { padding: 28px 0 54px; }
+  .content { padding: 22px 0 54px; }
   section,
   #action-queue { scroll-margin-top: 80px; }
   .section-block {
@@ -226,6 +223,14 @@
     background: transparent;
     color: var(--text);
     border: 1px solid var(--line);
+  }
+  .action-row > .button {
+    width: 100%;
+    min-height: 38px;
+    align-items: center;
+    align-self: center;
+    justify-self: stretch;
+    text-align: center;
   }
 
   .cards { display: grid; gap: 12px; margin-top: 14px; }
@@ -303,7 +308,6 @@
       border-top: 1px solid rgba(32,35,31,.18);
       border-left: 0;
     }
-    .status-nav { position: static; grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .action-row { grid-template-columns: 40px minmax(0, 1fr); }
     .action-data,
     .action-row .button {
@@ -311,7 +315,11 @@
       padding-left: 0;
       border-left: 0;
     }
-    .action-row .button { justify-self: start; }
+    .action-row .button {
+      grid-column: 1 / -1;
+      width: min(100%, 260px);
+      justify-self: center;
+    }
   }
   @media (max-width: 650px) {
     .hero-inner, .content { width: min(100% - 24px, 1080px); }
@@ -335,17 +343,20 @@
     .funnel-stage { min-width: 0; padding: 8px 10px; }
     .funnel-stage strong { font-size: 18px; }
     .arrow { display: none; }
-    .status-nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .status-nav a { padding: 9px 6px; }
-    .status-nav strong { display: inline; margin-right: 4px; font-size: 14px; }
-    .content { padding-top: 22px; }
+    .status-nav { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .status-nav a { padding: 9px 4px; font-size: 10px; line-height: 1.25; }
+    .status-nav strong { display: block; margin: 0; font-size: 14px; }
+    .content { padding-top: 18px; }
     .section-block { margin-top: 26px; padding-top: 22px; }
     .section-head { gap: 6px; }
     .section-head h2 { font-size: 20px; }
     .action-row { grid-template-columns: 34px minmax(0, 1fr); gap: 10px; padding: 18px 0; }
     .step { width: 32px; height: 32px; }
-    .action-data, .action-row .button { grid-column: 2; }
-    .action-row .button { width: 100%; }
+    .action-data { grid-column: 2; }
+    .action-row .button {
+      grid-column: 1 / -1;
+      width: min(100%, 240px);
+    }
     .card { padding: 16px; }
     .card-top { align-items: flex-start; gap: 10px; }
     .fields, .filed-row { grid-template-columns: 1fr; }
@@ -408,13 +419,9 @@
 
 <nav class="status-nav" aria-label="Report sections">
   <a href="#action-queue"><strong>2</strong>Action required</a>
-  <a href="#section-1"><strong>2</strong>Active claims</a>
-  <a href="#purchase-matches"><strong>1</strong>Purchase match</a>
-  <a href="#section-2"><strong>1</strong>Watching</a>
-  <a href="#section-4"><strong>2</strong>Filed</a>
-  <a href="#paid"><strong>1</strong>Paid</a>
-  <a href="#section-3"><strong>0</strong>Expired</a>
-  <a href="#section-5"><strong>1</strong>Security alert</a>
+  <a href="#purchase-matches"><strong>1</strong>Purchase matches</a>
+  <a href="#section-4"><strong>2</strong>Filed claims</a>
+  <a href="#section-5"><strong>1</strong>Security alerts</a>
 </nav>
 
 <main class="content">

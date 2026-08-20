@@ -74,10 +74,19 @@ grep -q '82 emails processed (inbox: 72, spam: 6, promotions: 4)' \
   "$REPO_ROOT/docs/demo-report.html"
 grep -q 'class="email-funnel"' "$REPO_ROOT/docs/demo-report.html"
 grep -q 'class="brand-mark"' "$REPO_ROOT/docs/demo-report.html"
+grep -q 'grid-column: 1 / -1' "$REPO_ROOT/docs/demo-report.html"
+grep -q 'action-row > .button' "$REPO_ROOT/docs/demo-report.html"
+grep -q 'width: min(100%, 240px)' "$REPO_ROOT/docs/demo-report.html"
 grep -q 'logo-lockup.svg' "$REPO_ROOT/README.md"
 grep -q 'assets/logo-mark.svg' "$SKILL_DIR/SKILL.md"
-grep -q 'href="#section-1"><strong>2</strong>Active claims' \
+test "$(grep -c '<a href=.*<strong>.*</strong>.*</a>' "$REPO_ROOT/docs/demo-report.html")" -eq 4
+grep -q 'href="#section-4"><strong>2</strong>Filed claims' \
   "$REPO_ROOT/docs/demo-report.html"
+if grep -q 'Active claims</a>\|Watching</a>\|Paid</a>\|Expired</a>' \
+  "$REPO_ROOT/docs/demo-report.html"; then
+  echo "A secondary report category was reintroduced into the top status strip." >&2
+  exit 1
+fi
 grep -q 'Actionable potential value' "$REPO_ROOT/docs/demo-report.html"
 grep -q 'Open claim form' "$REPO_ROOT/docs/demo-report.html"
 grep -q 'Filed &amp; tracking' "$REPO_ROOT/docs/demo-report.html"
