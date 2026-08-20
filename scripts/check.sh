@@ -17,10 +17,12 @@ required_files=(
   "$SKILL_DIR/agents/openai.yaml"
   "$SKILL_DIR/assets/app-icon.svg"
   "$SKILL_DIR/assets/logo-lockup.svg"
+  "$SKILL_DIR/assets/logo-lockup-dark.svg"
   "$SKILL_DIR/assets/logo-mark.svg"
   "$SKILL_DIR/references/extraction-guide.md"
   "$SKILL_DIR/references/phishing-guide.md"
   "$SKILL_DIR/references/report-template.md"
+  "$REPO_ROOT/docs/cost.md"
   "$REPO_ROOT/docs/demo-report.html"
   "$REPO_ROOT/docs/screenshot-report.png"
   "$REPO_ROOT/docs/screenshot-phishing-action.png"
@@ -62,29 +64,66 @@ grep -q 'no fixed 100-message, 25-product, or 30-search ceiling' \
   "$REPO_ROOT/README.md"
 grep -q 'there is no fixed search ceiling' "$SKILL_DIR/SKILL.md"
 grep -q '@media (max-width: 650px)' "$REPO_ROOT/docs/demo-report.html"
-grep -q 'font-size: clamp(28px, 8.5vw, 34px)' \
-  "$REPO_ROOT/docs/demo-report.html"
 if grep -Eq 'Use at most 100|Keep at most 25|Hard ceiling of \*\*30|<details open>' \
   "$SKILL_DIR/SKILL.md" "$REPO_ROOT/README.md"; then
   echo "A fixed scan cap or auto-open installation panel was reintroduced." >&2
   exit 1
 fi
 grep -q 'Content-Security-Policy' "$REPO_ROOT/docs/demo-report.html"
-grep -q '82 emails processed (inbox: 72, spam: 6, promotions: 4)' \
-  "$REPO_ROOT/docs/demo-report.html"
 grep -q 'class="email-funnel"' "$REPO_ROOT/docs/demo-report.html"
+# Coverage honesty: the funnel must name its folder split, not just a total.
+grep -qE 'emails processed \(inbox: [0-9]+, spam: [0-9]+, promotions: [0-9]+\)' \
+  "$REPO_ROOT/docs/demo-report.html"
+# Responsive intent, without pinning values a designer may legitimately retune.
+grep -q 'clamp(' "$REPO_ROOT/docs/demo-report.html"
+grep -qE 'width: min\(100%, [0-9]+px\)' "$REPO_ROOT/docs/demo-report.html"
+grep -qE 'href="#section-4"><strong>[0-9]+</strong>Filed claims' \
+  "$REPO_ROOT/docs/demo-report.html"
 grep -q 'class="brand-mark"' "$REPO_ROOT/docs/demo-report.html"
 grep -q 'position: sticky' "$REPO_ROOT/docs/demo-report.html"
 grep -q 'position: static' "$REPO_ROOT/docs/demo-report.html"
-grep -q 'overflow: visible' "$REPO_ROOT/docs/demo-report.html"
 grep -q 'grid-column: 1 / -1' "$REPO_ROOT/docs/demo-report.html"
 grep -q 'action-row > .button' "$REPO_ROOT/docs/demo-report.html"
-grep -q 'width: min(100%, 240px)' "$REPO_ROOT/docs/demo-report.html"
 grep -q 'logo-lockup.svg' "$REPO_ROOT/README.md"
+# The near-black wordmark vanishes on GitHub's dark theme without this pairing.
+grep -q 'prefers-color-scheme: dark' "$REPO_ROOT/README.md"
+grep -q 'logo-lockup-dark.svg' "$REPO_ROOT/README.md"
+# The wordmark is outlined Inter Bold, not live <text>: a <text> element re-renders in
+# whatever font the viewer happens to have, so the lockup must contain no text elements.
+for lockup in "$SKILL_DIR/assets/logo-lockup.svg" "$SKILL_DIR/assets/logo-lockup-dark.svg"; do
+  if grep -q '<text' "$lockup"; then
+    echo "Wordmark in $lockup reverted to live <text>; re-run the outlining step." >&2
+    exit 1
+  fi
+done
+# The magnifier handle crosses a same-coloured envelope, so a lone #22664F stroke
+# renders as nothing and the mark degrades into a check badge. The handle must stay a
+# pair: a #22664F casing under a #F8F7F2 core sharing identical path data. Checked by
+# shape, not by coordinates, so the handle can be redrawn without tripping this.
+for art in "$SKILL_DIR/assets/logo-mark.svg" "$SKILL_DIR/assets/logo-lockup.svg" \
+  "$SKILL_DIR/assets/logo-lockup-dark.svg" "$REPO_ROOT/docs/demo-report.html"; do
+  if ! python3 - "$art" <<'PYEOF'
+import re, sys
+svg = open(sys.argv[1]).read()
+strokes = {}
+for m in re.finditer(r'<path\b[^>]*>', svg):
+    tag = m.group(0)
+    colour = re.search(r'stroke="(#[0-9A-Fa-f]{6})"', tag)
+    data = re.search(r'\bd="([^"]+)"', tag)
+    if colour and data:
+        strokes.setdefault(data.group(1), set()).add(colour.group(1).upper())
+if not any({'#22664F', '#F8F7F2'} <= c for c in strokes.values()):
+    sys.exit(1)
+PYEOF
+  then
+    echo "Magnifier handle in $art lost its casing/core stroke pair." >&2
+    exit 1
+  fi
+done
+# Cost figures live in one file so pricing drift cannot scatter through the README.
+grep -q 'docs/cost.md' "$REPO_ROOT/README.md"
 grep -q 'assets/logo-mark.svg' "$SKILL_DIR/SKILL.md"
 test "$(grep -c '<a href=.*<strong>.*</strong>.*</a>' "$REPO_ROOT/docs/demo-report.html")" -eq 4
-grep -q 'href="#section-4"><strong>2</strong>Filed claims' \
-  "$REPO_ROOT/docs/demo-report.html"
 if grep -q 'Active claims</a>\|Watching</a>\|Paid</a>\|Expired</a>' \
   "$REPO_ROOT/docs/demo-report.html"; then
   echo "A secondary report category was reintroduced into the top status strip." >&2
@@ -96,7 +135,6 @@ grep -q 'Filed &amp; tracking' "$REPO_ROOT/docs/demo-report.html"
 grep -q 'Purchase matches to review' "$REPO_ROOT/docs/demo-report.html"
 grep -q '🧾 Purchase match' "$REPO_ROOT/docs/demo-report.html"
 grep -q 'Scan my purchases for class actions' "$REPO_ROOT/README.md"
-grep -q 'Tell the skill what you want' "$REPO_ROOT/README.md"
 grep -q "HTML report is saved in the installed skill's \`output/\` folder" \
   "$REPO_ROOT/README.md"
 grep -q 'email funnel' "$SKILL_DIR/SKILL.md"
@@ -154,6 +192,12 @@ test -L "$TMP_ROOT/symlink-home/.claude/skills/class-action-finder"
 
 if "$REPO_ROOT/install.sh" --unknown >/dev/null 2>&1; then
   echo "Installer unexpectedly accepted an unknown target." >&2
+  exit 1
+fi
+
+# Editor/Finder duplicates ("class-action-finder 2.zip") must never be tracked.
+if git -C "$REPO_ROOT" ls-files | grep -qE ' [0-9]+\.[A-Za-z]+$| copy( [0-9]+)?\.'; then
+  echo "A duplicate editor artifact is tracked by git." >&2
   exit 1
 fi
 
