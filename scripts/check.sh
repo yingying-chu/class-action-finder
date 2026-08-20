@@ -72,7 +72,9 @@ grep -q 'Filed &amp; tracking' "$REPO_ROOT/docs/demo-report.html"
 grep -q 'Purchase matches to review' "$REPO_ROOT/docs/demo-report.html"
 grep -q '🧾 Purchase match' "$REPO_ROOT/docs/demo-report.html"
 grep -q 'Scan my purchases for class actions' "$REPO_ROOT/README.md"
-grep -q 'Default behavior' "$REPO_ROOT/README.md"
+grep -q 'Tell the skill what you want' "$REPO_ROOT/README.md"
+grep -q "HTML report is saved in the installed skill's \`output/\` folder" \
+  "$REPO_ROOT/README.md"
 grep -q 'email funnel' "$SKILL_DIR/SKILL.md"
 if grep -Eiq '<script| on[a-z]+=' "$REPO_ROOT/docs/demo-report.html"; then
   echo "Demo report contains a script or inline event handler." >&2

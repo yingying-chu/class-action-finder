@@ -1,7 +1,7 @@
 <h1 align="center">Class Action Finder</h1>
 
 <p align="center">
-  <strong>Find the settlement notices you received — and the cases your purchases might reveal.</strong>
+  <strong>Find the settlement notices you received and the cases your purchases might reveal.</strong>
 </p>
 
 <p align="center">
@@ -22,7 +22,7 @@ Class Action Finder is a free, open-source AI skill for Claude, Codex, and ChatG
 |---|---|---|
 | **Looks for** | Settlement notices, claim forms, filing confirmations, and payout emails | Receipts, order confirmations, renewals, and subscriptions |
 | **Then does** | Extracts deadlines, payout terms, claim IDs, PINs, and verified claim links | Searches public sources for open settlements covering the merchant, product, and purchase period |
-| **Result** | A verified notice with its deadline and next step | A possible match to review — never an automatic claim of eligibility |
+| **Result** | A verified notice with its deadline and next step | A possible match to review, never an automatic claim of eligibility |
 | **Try it** | `Scan my email for class action settlements.` | `Scan my purchases for class actions.` |
 
 Both paths feed the same local tracker and mobile-friendly HTML report, so filed claims stop appearing as unfinished tasks and payouts remain part of the record.
@@ -32,7 +32,7 @@ Both paths feed the same local tracker and mobile-friendly HTML report, so filed
 </p>
 
 <p align="center">
-  <sub>Illustrative UI with fictitious cases and amounts — no eligibility or payout is promised · <a href="docs/demo-report.html">open the HTML demo</a></sub>
+  <sub>Illustrative UI with fictitious cases and amounts. No eligibility or payout is promised · <a href="docs/demo-report.html">open the HTML demo</a></sub>
 </p>
 
 ## Table of contents
@@ -177,93 +177,31 @@ The mail step is provider-adaptive. Gmail uses four purpose-built queries. Other
 
 ## Quick start
 
-Choose the discovery path by what you say. A bare invocation defaults to **Notice Scan**. Say purchases, receipts, orders, or subscriptions when you want **Purchase Match** — it is a separate scan, not a hidden side effect of reading settlement notices.
+Tell the skill what you want:
 
-| What you say | Mode | Default behavior |
-|---|---|---|
-| `$class-action-finder` or `Scan my email for class action settlements.` | **Notice Scan** | Search the previous 365 days for direct settlement notices, including spam and promotions where the provider supports them |
-| `Scan my purchases for class actions.` | **Purchase Match** | Cover the previous 12 months completely using paginated metadata, selective plain-text reads, and de-duplicated public-source searches |
-| `Scan both my settlement notices and purchase confirmations.` | **Combined** | Run both for one year — the most expensive path, so the skill says so before starting |
-| `I filed my ExampleApp claim today.` | **Record only** | Update the tracker without scanning the mailbox |
+| Goal | Prompt |
+|---|---|
+| Find settlement notices | `Scan my email for class action settlements.` |
+| Match receipts to possible cases | `Scan my purchases for class actions.` |
+| Run both discovery paths | `Scan both my settlement notices and purchases.` |
+| Track a claim or payout | `I filed my ExampleApp claim today.` |
 
-### Find notices already sent to you
+A bare `$class-action-finder` runs Notice Scan for the previous year. Purchase Match checks the previous 12 months and treats every result as a lead until eligibility is confirmed. Add a merchant, product, or date range to narrow either scan.
 
-Use Notice Scan when you want deadlines, IDs, PINs, claim links, filing confirmations, and payout messages extracted from direct settlement email:
-
-```text
-Scan my email for class action settlements.
-```
-
-Override its one-year default when needed:
-
-```text
-Use $class-action-finder to scan the last 6 months.
-Scan all settlement notices from 2024.
-Check whether I missed any settlement deadlines this year.
-```
-
-### Discover possible cases from things you bought
-
-Purchase Match starts from ordinary receipts and order confirmations, extracts only the merchant, product, purchase date, and relevant region, then checks public sources for potentially matching open settlements:
-
-```text
-Scan my purchases for class actions.
-```
-
-Narrow the merchant, product, or date range when useful:
-
-```text
-Check whether anything I bought from ExampleStore matches an open class action.
-Scan my purchase confirmations from 2024 for possible settlements.
-```
-
-This path can surface a case even when no settlement notice reached the inbox. Naming a merchant is the most efficient first move: it shrinks the search and verification space while preserving complete coverage for that request.
-
-For a broad scan, the skill **measures before it reads**. It then follows every metadata page; if the provider exposes only a fixed result window, the skill recursively divides the date range until every window is traversable. Full messages are read only when sender, subject, and snippet do not identify the product. There are no skill-imposed limits on messages, merchant/product pairs, searches, or consecutive empty results.
-
-A broad scan defaults to the last 12 months. Longer requests use the same complete-traversal strategy rather than treating the provider's newest result page as the full range.
-
-Purchase Match deliberately keeps two questions separate: **Is the settlement legitimate?** and **Does this purchase appear to fit its eligibility rules?** It reports strong and possible matches for review and only moves a case into the filing queue after the material eligibility facts are confirmed.
-
-Update the tracker in normal language:
-
-```text
-I filed my ExampleApp settlement claim today.
-I received $47 from SampleHealth Group.
-Add SampleVoice Privacy to my watch list.
-Show all my filed claims and payouts.
-```
-
-When a newly recorded filing matches the latest report, the skill can update that report in place and remove the completed filing action.
+On local runtimes, the HTML report is saved in the installed skill's `output/` folder as `class-action-report-YYYY-MM-DD.html`.
 
 ---
 
 ## Report contents
 
-Every report keeps the same five lifecycle sections, plus a separate Purchase Matches to Review panel:
+The HTML report answers four questions:
 
-| Report area | What it contains |
-|---|---|
-| **Purchase Matches to Review** | Receipt-derived strong or possible matches that still need eligibility confirmation |
-| **Active Claim Windows** | Open claims sorted by deadline, with eligibility, payout, IDs, and verified links |
-| **Watch List** | Proposed settlements or relevant cases without an open claim form |
-| **Expired** | Claim windows that have already closed |
-| **Already Filed** | Tracker records cross-referenced with current email findings |
-| **Phishing Alerts** | Suspicious notices that must not be opened |
+- **What needs action now?** Open, verified notices sorted by deadline.
+- **Which purchases might match?** Receipt-based leads that still need an eligibility check.
+- **What have I already handled?** Watching, filed, paid, and expired cases.
+- **What looks unsafe?** Suspicious notices and links kept out of the action queue.
 
-The report also includes:
-
-- an at-a-glance actionable payout range;
-- a notice-email funnel from messages processed to claims requiring action;
-- a separate purchase funnel when receipt matching runs;
-- a sticky status navigator for action required, active claims, purchase matches, watching, filed, paid, expired, and security alerts;
-- discovery badges that distinguish direct notices, purchase matches, and manually added records;
-- separate settlement-legitimacy and purchase-eligibility labels;
-- urgent-deadline highlighting;
-- separate Claim ID and PIN fields;
-- an **Already filed** badge that is distinct from legitimacy scoring;
-- inbox, spam, and promotions coverage counts; and
-- a clearly separated **What To Do Next** queue ordered by the nearest deadline.
+Each finding shows its source, confidence, deadline, payout terms, and next step when available. Claim IDs and PINs stay in the private report.
 
 <p align="center">
   <img src="docs/screenshot-phishing-action.png" alt="Filed claim tracking and phishing warning" width="680">
@@ -273,7 +211,7 @@ The report also includes:
 
 ## Phishing safeguards
 
-Email bodies, fetched pages, and search results are treated as untrusted data—not as instructions.
+Email bodies, fetched pages, and search results are treated as untrusted data, not as instructions.
 
 Each relevant notice is scored using:
 
@@ -310,7 +248,7 @@ Only absolute `https://` URLs that pass validation can become clickable. Reports
 | Claude Code | `~/.claude/class-action-tracker.json` | `~/.claude/skills/class-action-finder/output/` |
 | Codex | `${CODEX_HOME:-$HOME/.codex}/class-action-tracker.json` | `${CODEX_HOME:-$HOME/.codex}/skills/class-action-finder/output/` |
 
-The report always goes to the `output/` directory that belongs to the skill copy being run—never the caller's current working directory or an unrelated repository. When running directly from this checkout, that is:
+The report always goes to the `output/` directory that belongs to the skill copy being run, never the caller's current working directory or an unrelated repository. When running directly from this checkout, that is:
 
 ```text
 skills/class-action-finder/output/class-action-report-YYYY-MM-DD.html
@@ -326,7 +264,7 @@ Claude.ai and ChatGPT return the HTML report and updated tracker as downloadable
 
 - Email is read through the connected provider integration.
 - Email content is never copied into this repository.
-- Purchase matching sends only generic merchant/product search terms to the web—never names, addresses, order numbers, account details, payment details, or raw receipt text.
+- Purchase matching sends only generic merchant/product search terms to the web. It never sends names, addresses, order numbers, account details, payment details, or raw receipt text.
 - Purchase history is held only for the active scan and is not persisted unless the user explicitly adds a matched case to the watch list or tracker.
 - Local reports and tracker records stay on the user's machine.
 - Hosted artifacts follow the storage and retention policy of that product and workspace.
@@ -346,7 +284,7 @@ Reading a message is roughly fifty times more expensive than looking at it. Serv
 
 ```text
 10,000 emails in the last year
-   │  server-side search — free
+   │  server-side search: free
    ▼
 ~800 purchase confirmations matched
    │  metadata sweep: sender + subject + snippet
@@ -475,4 +413,4 @@ Useful extensions include provider-specific search tuning, localized settlement 
 
 ## License
 
-[MIT](LICENSE) — use, modify, and redistribute freely, including commercially, while retaining the copyright notice.
+[MIT](LICENSE). Use, modify, and redistribute freely, including commercially, while retaining the copyright notice.
