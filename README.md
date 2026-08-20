@@ -1,7 +1,7 @@
 <h1 align="center">Class Action Finder</h1>
 
 <p align="center">
-  <strong>Find settlement notices, match purchases to open cases, and remember every claim.</strong>
+  <strong>Find the settlement notices you received — and the cases your purchases might reveal.</strong>
 </p>
 
 <p align="center">
@@ -12,16 +12,27 @@
 
 ---
 
-> A portable AI skill that scans connected email for class action settlement notices, checks purchase confirmations against potentially matching open settlements, verifies cases against public sources, flags phishing, produces an actionable HTML report, and tracks claims and payouts over time.
+> Settlement notices are easy to miss. Purchase-based cases may never contact you at all. Class Action Finder checks both paths, verifies what it finds, and turns the results into one private report.
 
-The same source in `skills/class-action-finder/` runs on Claude, Codex, and ChatGPT. Gmail receives the fullest scan, including spam and promotions; other searchable mail providers are supported with any coverage gaps disclosed in the report.
+Class Action Finder is a free, open-source AI skill for Claude, Codex, and ChatGPT. It works with connected email, keeps direct notices separate from receipt-based leads, flags suspicious claim links, and remembers what you filed or received.
+
+## Two ways to find a claim
+
+| | **Notice Scan** | **Purchase Match** |
+|---|---|---|
+| **Looks for** | Settlement notices, claim forms, filing confirmations, and payout emails | Receipts, order confirmations, renewals, and subscriptions |
+| **Then does** | Extracts deadlines, payout terms, claim IDs, PINs, and verified claim links | Searches public sources for open settlements covering the merchant, product, and purchase period |
+| **Result** | A verified notice with its deadline and next step | A possible match to review — never an automatic claim of eligibility |
+| **Try it** | `Scan my email for class action settlements.` | `Scan my purchases for class actions.` |
+
+Both paths feed the same local tracker and mobile-friendly HTML report, so filed claims stop appearing as unfinished tasks and payouts remain part of the record.
 
 <p align="center">
   <img src="docs/screenshot-report.png" alt="Sample class action settlement report" width="760">
 </p>
 
 <p align="center">
-  <sub>Illustrative data — <a href="docs/demo-report.html">open the HTML demo</a></sub>
+  <sub>Illustrative UI with fictitious cases and amounts — no eligibility or payout is promised · <a href="docs/demo-report.html">open the HTML demo</a></sub>
 </p>
 
 ## Table of contents
@@ -166,7 +177,7 @@ The mail step is provider-adaptive. Gmail uses four purpose-built queries. Other
 
 ## Quick start
 
-Choose the mode by what you say. A bare invocation defaults to **Notice Scan**; the skill does not scan ordinary purchase confirmations unless you explicitly ask for purchases, receipts, orders, or subscriptions.
+Choose the discovery path by what you say. A bare invocation defaults to **Notice Scan**. Say purchases, receipts, orders, or subscriptions when you want **Purchase Match** — it is a separate scan, not a hidden side effect of reading settlement notices.
 
 | What you say | Mode | Default behavior |
 |---|---|---|
@@ -175,7 +186,9 @@ Choose the mode by what you say. A bare invocation defaults to **Notice Scan**; 
 | `Scan both my settlement notices and purchase confirmations.` | **Combined** | Run both for one year — the most expensive path, so the skill says so before starting |
 | `I filed my ExampleApp claim today.` | **Record only** | Update the tracker without scanning the mailbox |
 
-Copy and use the notice-scan prompt:
+### Find notices already sent to you
+
+Use Notice Scan when you want deadlines, IDs, PINs, claim links, filing confirmations, and payout messages extracted from direct settlement email:
 
 ```text
 Scan my email for class action settlements.
@@ -189,7 +202,9 @@ Scan all settlement notices from 2024.
 Check whether I missed any settlement deadlines this year.
 ```
 
-Copy and use the Purchase Match prompt:
+### Discover possible cases from things you bought
+
+Purchase Match starts from ordinary receipts and order confirmations, extracts only the merchant, product, purchase date, and relevant region, then checks public sources for potentially matching open settlements:
 
 ```text
 Scan my purchases for class actions.
@@ -202,13 +217,13 @@ Check whether anything I bought from ExampleStore matches an open class action.
 Scan my purchase confirmations from 2024 for possible settlements.
 ```
 
-Naming a merchant is the most efficient first move: it shrinks the search and verification space while preserving complete coverage for that request.
+This path can surface a case even when no settlement notice reached the inbox. Naming a merchant is the most efficient first move: it shrinks the search and verification space while preserving complete coverage for that request.
 
 For a broad scan, the skill **measures before it reads**. It then follows every metadata page; if the provider exposes only a fixed result window, the skill recursively divides the date range until every window is traversable. Full messages are read only when sender, subject, and snippet do not identify the product. There are no skill-imposed limits on messages, merchant/product pairs, searches, or consecutive empty results.
 
 A broad scan defaults to the last 12 months. Longer requests use the same complete-traversal strategy rather than treating the provider's newest result page as the full range.
 
-Purchase Match keeps settlement legitimacy separate from purchase eligibility. It reports strong and possible matches for review and only moves a case into the filing queue after the material eligibility facts are confirmed.
+Purchase Match deliberately keeps two questions separate: **Is the settlement legitimate?** and **Does this purchase appear to fit its eligibility rules?** It reports strong and possible matches for review and only moves a case into the filing queue after the material eligibility facts are confirmed.
 
 Update the tracker in normal language:
 
