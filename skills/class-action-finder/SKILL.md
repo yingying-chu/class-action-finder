@@ -67,7 +67,9 @@ Nearly all of this skill's cost is message retrieval, and most of that cost is a
 
 **2. Triage on search metadata before retrieving anything.** Search results usually already carry sender, subject, date, and a snippet — enough to identify a merchant, recognize an administrator domain, or discard an obvious non-match, at a small fraction of the cost of the message body. Retrieve a full message only when the decision actually needs the body. A scan that fetches every match in full has confused *looking at* a message with *reading* it.
 
-**3. Page rather than truncate.** Per-request result limits are page sizes, not totals — mail search APIs paginate (Gmail's `pageSize` maxes at 50 but accepts a `pageToken`). Because metadata is cheap under rule 2, breadth should come from paging through matches at the metadata level, while depth stays selective. Do not treat one page of results as the whole result set, and do not describe a first page as though it were everything (see the coverage-reporting rules in Part A Step 9 and Part D Step 12).
+**3. Page or partition rather than truncate.** Per-request result limits are usually page sizes, not totals — mail search APIs paginate (Gmail's `pageSize` maxes at 50 but accepts a `pageToken`). Follow continuation tokens until exhausted. If a provider exposes a hard non-pageable result window, split the requested date range into smaller windows based on measured density; recursively split any window that still reaches the provider limit, then de-duplicate boundary results. Do not treat one page as the whole result set.
+
+**4. Complete the requested scope without fixed budgets.** This skill does not impose a maximum message count, product-pair count, web-search count, or "empty result" stopping rule. Use batching, de-duplication, cached findings, and narrow follow-up queries to stay efficient, but continue until every candidate in the requested scope has been classified. If the provider makes complete coverage technically impossible, disclose the exact external limitation and the portion covered.
 
 Together these mean coverage and cost are not the tradeoff they first appear to be: a wide metadata sweep plus a narrow set of plain-text reads is usually both broader and cheaper than a narrow sweep of full-HTML fetches.
 
@@ -117,7 +119,7 @@ Find the connected mail app, connector, or MCP among the available tools. It nee
 
 **4a. Identify the provider and its syntax.** Inspect the connected mail tool's name and search schema to learn which provider it is and what query syntax it accepts (date format, folder/junk filters, OR/phrase syntax). Discover any deferred integration, app, connector, or MCP mail tools available in the current runtime before concluding that mail is unavailable.
 
-**4b. The four searches** (purpose first; Gmail query is the reference to translate from):
+**4b. The four searches** (purpose first; Gmail query is the reference to translate from). Issue independent searches together when the available tool supports batched or parallel queries; keep each search's pagination state separate:
 
 | # | Purpose | Gmail reference query |
 |---|---|---|
@@ -126,7 +128,7 @@ Find the connected mail app, connector, or MCP among the available tools. It nee
 | C | Same terms in the **spam / junk** folder | `in:spam (settlement OR "class action" OR "claim form" OR "claim deadline" OR "submit your claim") after:YYYY/MM/DD` |
 | D | Same terms in the **promotions / bulk** category | `category:promotions (settlement OR "class action" OR "claim form" OR "claim deadline" OR "submit your claim") after:YYYY/MM/DD` |
 
-Request the provider's maximum page size per search (Gmail's `search_threads` accepts `pageSize` up to 50; other providers use their own parameter name — check the tool schema rather than assuming one). Since these results are metadata only, page further with the provider's continuation token when a search reports substantially more matches than one page returned, rather than treating the first page as the full result set.
+Request the provider's maximum page size per search (Gmail's `search_threads` accepts `pageSize` up to 50; other providers use their own parameter name — check the tool schema rather than assuming one). Since these results are metadata only, follow the provider's continuation token until it is exhausted. If continuation is unavailable, use the adaptive date-partition strategy under **Reading mail economically**.
 
 **4c. Adapt to the provider.**
 - **Gmail:** use the reference queries verbatim.
@@ -134,7 +136,7 @@ Request the provider's maximum page size per search (Gmail's `search_threads` ac
 - **Plain keyword search only (no folder/field operators):** run A and B as keyword + date searches across all mail; skip C/D if there's no spam or bulk folder, and **note in the report header that spam/promotions couldn't be searched**.
 - **No working mail search at all:** stop and tell the user which account is connected and that the scanner needs a searchable mail integration (Gmail is most complete).
 
-Collect the result identifiers from every search that ran and retain which search/folder surfaced each result. De-duplicate by thread ID when the provider exposes one; otherwise de-duplicate by message ID now and by company/case in Step 7. Sort by most recent. Keep all matches at the metadata level; cap **full retrievals** at 100 (older results rarely have open claim windows). Settlement notices are rare enough that a year of mail usually yields well under 100 survivors after Step 5's triage, so this cap normally never binds — if it does, report the coverage fraction as Step 9 requires. Note in the report header how many came from spam vs. promotions vs. inbox (and which, if any, the provider didn't support).
+Collect the result identifiers from every search that ran and retain which search/folder surfaced each result. De-duplicate by thread ID when the provider exposes one; otherwise de-duplicate by message ID now and by company/case in Step 7. Sort by most recent. Keep all matches at the metadata level through Step 5, then retrieve every surviving candidate whose body is needed for classification or extraction. There is no skill-imposed full-retrieval limit. Note in the report header how many came from spam vs. promotions vs. inbox (and which, if any, the provider didn't support).
 
 ## Step 5 — Fetch and classify each thread
 
@@ -195,7 +197,7 @@ Create `class-action-report-YYYY-MM-DD.html`. On a local runtime, write it under
 
 - Start with a bright, editorial hero rather than a black admin-style header. Use a subtle warm/cool gradient, generous whitespace, and strong typography. The primary sentence must answer: **how many claims require action and what known payout range they could be worth**. Keep decoration functional — no ornamental rings, floating circles, or remote imagery.
 - In the hero, show the **actionable potential value** for unfiled 🟢/🟡 Type A claims only. Derive it conservatively from explicitly stated individual-payout amounts: sum known lower and upper bounds after de-duplication; treat an exact amount as the same lower/upper value and “up to $X” as `$0–$X`. Exclude already-filed, auto-enrolled, watch-list, expired, paid, 🟠, and 🔴 entries. If any included claim has an unknown/pro-rata amount, append `+ unknown` rather than inventing a number. If none has a numeric estimate, show “Value not yet known.”
-- **Every funnel stage that was capped must show its denominator.** A bare `100 purchase emails processed` reads as "you have 100 receipts" when it actually means "we stopped at 100." Whenever a stage hit a limit — the 100-message result cap, the 25-pair product cap, the 30-search ceiling, or the early stop — render it as `100 of ~1,400 · capped` with a visible marker, and add one line under the funnel naming the limit and how to widen it ("name a merchant or a shorter period to go deeper"). If the provider reports no total, say `100 (result cap reached — true total unknown)`. Only a stage that processed everything available may show a bare number.
+- **Show coverage explicitly.** For a complete stage, render `800 of 800 · complete`. If an external provider prevents complete traversal even after adaptive partitioning, render the known fraction with `provider-limited` and explain the exact limitation below the funnel. Never present a partial scan as complete.
 - For a Part A notice scan, add a compact, left-to-right **email funnel** inside the hero: `[emails processed] → [settlement notices] → [verified cases] → [need action]`. “Settlement notices” means relevant non-irrelevant messages after de-duplication; “verified cases” means unique 🟢/🟡 cases; “need action” must equal the number of items in the action queue. For Part D, use its separate purchase funnel; when both modes run, label and show both. Use labeled rectangular stages and arrows, not decorative circles or a misleading proportional chart.
 - Below the hero, add a pure-CSS anchor navigation/status strip for: Action required, **Active claims**, Purchase matches, Watch list, Filed, Paid, Expired, and Security alerts. Every strip entry must link to a real anchor and every count must match the corresponding report data. `Action required` points at the action queue and counts only unfiled 🟢/🟡 filing actions; `Active claims` points at Section 1 and counts every open claim window including already-filed and 🟠 ones — these two numbers legitimately differ, so label them so the difference reads as intentional. Make the strip sticky on wide screens and wrapped/static below ~900px. Give the action queue, the purchase-match review panel, all five report sections, **and the paid subsection inside Section 4** stable `id` targets, add `html { scroll-behavior: smooth; }`, and use `scroll-margin-top` so anchored headings are not hidden.
 - Put a clearly separated **“What to do next” action queue immediately after the overview**, sorted by soonest deadline. Each item must have its own row/card and explicitly state: the action verb, company/case, why the user should act, deadline/time remaining, estimated value, confidence, and one CTA. Use `Open claim form` for a validated 🟢/🟡 claim URL; clicking opens the form but never implies that the assistant submitted it. Exclude 🟠 entries from this queue and show their non-clickable safety notes in the relevant claim card instead. Already-filed claims never appear in this queue.
@@ -204,6 +206,7 @@ Create `class-action-report-YYYY-MM-DD.html`. On a local runtime, write it under
 - Show discovery-source badges on every finding: `📩 Direct notice`, `🧾 Purchase match`, and/or `✍️ Manually added`. Treat a tracker-only record as manually added; if settlement identity links it to a notice or purchase match, union the badges. These badges explain where the lead came from; they are not legitimacy or eligibility scores.
 - Make a verified claim URL clickable only for 🟢/🟡 entries. Show 🟠 URLs as non-clickable text with a verification warning. Never render a 🔴 URL.
 - In Section 4, clearly separate awaiting-payout and paid claims. Show filed date, claim ID/PIN, expected payout, actual payout, payment method, and current status so the report preserves the user’s claim history.
+- Make the self-contained report mobile-first as well as desktop-friendly. Include a viewport meta tag and a breakpoint at or below 650px that keeps the hero headline around 28–34px, reduces hero spacing, stacks the value ledger and multi-column rows, uses a compact two-column funnel and navigation, disables sticky navigation, wraps long IDs, and keeps every CTA inside the viewport.
 - All five sections must remain present even if empty; sort Section 1 by soonest deadline first. An active claim that is already filed still appears in Section 1 with its filed badge and in Section 4 for tracking, but never in the action queue.
 
 Treat every value extracted from email or the web as untrusted when generating HTML:
@@ -311,25 +314,23 @@ Use this path only when the user asks to check receipts, orders, subscriptions, 
 
 ## Step 1 — Determine purchase range and scope
 
-Parse any merchant, product, or date range the user supplies. A named merchant or product takes priority over a broad mailbox scan and should always be preferred — it is both cheaper and far more accurate. With no date range, use the previous **12 months** as the starting range; Step 2 decides whether that range is actually coverable.
+Parse any merchant, product, or date range the user supplies. A named merchant or product takes priority over a broad mailbox scan because it is cheaper and more accurate. With no date range, use the previous **12 months**. The entire requested range is the scope to complete.
 
-## Step 2 — Measure receipt density before scanning anything
+## Step 2 — Measure receipt density and plan complete traversal
 
-**Never start a broad purchase scan without measuring first.** A fixed window is not a coverage promise: mail search returns results newest-first, so if only the first page is taken, a 12-month request and a 3-year request return the same most-recent messages. Segmenting by a fixed period does not fix that on its own — if each segment still overflows one page, every segment truncates identically and running more of them buys proportionally nothing.
+**Never start a broad purchase scan without measuring first.** A fixed window is not a coverage promise: mail search returns results newest-first, so taking only the first page makes a 12-month request and a 3-year request return the same recent messages. Fixed-length segmentation is also insufficient when every segment still reaches the provider limit.
 
-Run the Step 4 queries **as a count-only probe**: request the match total (`resultSizeEstimate` or the provider's equivalent) without retrieving message bodies. This costs one search round-trip and no meaningful tokens. If the provider cannot report a total, request one page of metadata and treat the total as an estimate.
+Run the Step 4 queries **as a count-only probe** when supported: request the match total (`resultSizeEstimate` or the provider's equivalent) without retrieving message bodies. If the provider cannot report a total, begin paging metadata, retain that page as the start of Step 4 rather than fetching it twice, and treat the observed count as a lower bound until traversal finishes.
 
-Let `N` be the estimated match count for the range. Under **Reading mail economically**, `N` governs only the cheap metadata sweep — it is *not* the number of messages that will be retrieved in full, and it should not be compared against the full-retrieval cap.
+Let `N` be the estimated match count for the range. Under **Reading mail economically**, `N` governs only the cheap metadata sweep — it is not the number of messages that will be retrieved in full.
 
-**`N` ≤ ~1,000 — just scan it.** Page through the metadata for all `N` matches (roughly 40 tokens each) and let Step 4's triage decide the much smaller set worth retrieving in full. Report complete coverage. Most mailboxes land here, so most scans need no dialog at all: mention the count in passing and continue.
+Plan to traverse all metadata using the provider's continuation token in Step 4. When the provider has a non-pageable result window, estimate density (`N` divided by the requested time span), choose date windows expected to fit below that provider window, and recursively bisect any window that still fills it. Use non-overlapping boundaries where the syntax allows; otherwise de-duplicate by stable message/thread ID.
 
-**`N` > ~1,000 — the metadata sweep itself is now material,** so state the measured numbers and let the user decide before spending:
+When the sweep is unusually large, state the measured count and estimated workload before continuing so the user is not surprised:
 
-> "The last 12 months hold about **3,000** purchase confirmations. Scanning all of them costs roughly **150k tokens** for the sweep plus whatever detail is needed. I can also do the most recent 12 weeks, or a merchant you name, for a fraction of that. Which?"
+> "The last 12 months hold about **3,000** purchase confirmations. I’ll cover the full range using paginated metadata and selective plain-text reads; this may take roughly **150k tokens** plus web verification. You can narrow it to a merchant or shorter period if you prefer."
 
-Scale every figure to the measured `N` — never print the example numbers. If the user prefers a narrower run, size segments from the measured density (`N` ÷ months) rather than a fixed period, and run each as its own pass.
-
-A narrower scan is a legitimate choice, not a failure: recent purchases are the likeliest to fall inside an open class period. But it has to be **chosen**, not defaulted into silently. If the user does not answer, run the most recent segment and label it a sample in both the report and the summary.
+Scale every figure to the measured `N` — never print the example numbers. Continue with the full requested scope unless the user explicitly narrows it. A partial scan is acceptable only when the user chooses it or an external provider makes completion impossible.
 
 ## Step 3 — Load the tracker and reference guides
 
@@ -351,11 +352,9 @@ When the user names a merchant or product, include that term and prefer the narr
 
 Per **Reading mail economically**, page through the matches at the **metadata level first**. Sender, subject, and snippet identify the merchant for most receipts and often the product too, at a small fraction of the cost of a message body. De-duplicate repeated shipping, delivery, and invoice messages for the same order here, and drop cancellations, refunds, declined payments, shipping-only updates, and messages that do not identify a product or service — all without retrieving anything.
 
-Retrieve full messages, **in plain text** (`messageFormat: PLAIN_TEXT`), only for the receipts whose product or model is still unclear from metadata and whose merchant or category is plausibly relevant to a consumer class action. Process those in batches of 10. Retrieving every match in full is what made this scan expensive enough to need a cap; do not reintroduce it.
+Retrieve full messages, **in plain text** (`messageFormat: PLAIN_TEXT`), only for receipts whose product or model is still unclear from metadata and whose merchant or category is plausibly relevant to a consumer class action. Process them in provider-appropriate batches and continue until every ambiguous candidate is resolved. Do not retrieve a body when metadata already supplies the required evidence.
 
-Use at most 100 **full retrievals** per segment, with the segment length set by Step 2. The metadata sweep is not subject to that limit.
-
-Carry the measured totals forward: the estimated match count `N` for the requested range and the number actually retrieved. Step 12 reports the resulting coverage fraction, and it must be computed from these numbers rather than assumed.
+Carry three measured totals forward: the estimated/observed match count `N`, the number of metadata records traversed, and the smaller number of message bodies retrieved. Step 12 reports coverage from the first two and uses the third to explain the efficiency gain.
 
 ## Step 5 — Extract minimal purchase evidence
 
@@ -371,9 +370,9 @@ Follow `references/extraction-guide.md`. Extract only:
 
 Do not retain or use the buyer's name, street address, phone number, full order number, payment details, account number, or unrelated items. Never put those values into a web search or report. Hold purchase evidence in memory for this scan; do not persist the user's purchase history automatically.
 
-## Step 6 — Build a bounded product list
+## Step 6 — Build and de-duplicate the product list
 
-Normalize merchant suffixes and obvious product-name variants, then de-duplicate by merchant + product/service. Keep at most 25 distinct pairs in a broad scan, preferring entries with a specific product/model and a clear purchase date. If more remain, state that the scan sampled the 25 strongest candidates and offer to continue with another merchant or period.
+Normalize merchant suffixes and obvious product-name variants, then de-duplicate by merchant + product/service. Keep every distinct pair in scope. Group pairs by normalized merchant so one verified settlement result can be reused across related products, and retain all purchase dates needed for class-period comparison.
 
 Rank the surviving pairs before searching, highest first:
 
@@ -381,21 +380,14 @@ Rank the surviving pairs before searching, highest first:
 2. Categories with a high base rate of consumer class actions — consumer electronics, appliances, vehicles and parts, supplements and packaged food, personal-care products, telecom and streaming subscriptions, financial and insurance services.
 3. Everything else.
 
-## Step 7 — Search for open settlements (bounded)
+## Step 7 — Search for open settlements efficiently
 
 Work down the ranked list. For each pair, use web search with generic, non-personal queries such as:
 
 - `[merchant] [product] class action settlement claim`
 - `[product or service] settlement claim deadline`
 
-Start with the first query only. Run the second **only if** the first returned a plausible but unresolved lead — never both by default.
-
-**Search budget.** This step dominates the cost of a purchase scan, so it is capped:
-
-- Hard ceiling of **30 web searches** per purchase scan.
-- **Early stop:** if the 8 highest-ranked pairs all come back with no open settlement, stop the broad sweep. Report what was covered and offer to continue with a named merchant or a different period rather than grinding through the tail.
-- A pair the user explicitly named is exempt from the early stop, but still counts against the ceiling.
-- Whenever you stop early or hit the ceiling, **say so explicitly** in both the chat summary and the report — state how many pairs were searched out of how many were found. A truncated sweep must never read as complete coverage.
+Start with one merchant-level query when several products share a merchant, or the first product-level query when they do not. Batch independent first-pass queries up to the search tool's per-call capacity. Reuse verified results across each merchant group, and run the second query only for an unresolved product or case. Cache normalized case names and settlement-site hostnames so the same case is never searched or verified twice. Continue until every distinct pair is classified; there is no fixed search ceiling or early stop after empty results.
 
 Look for a currently open claim process supported by an official settlement site, court source, recognized administrator, or reputable reporting. Ignore attorney solicitations, complaints with no settlement, unrelated cases against the same company, and claim windows that are already closed. Do not send email text, identifiers, addresses, or other personal data to web search.
 
@@ -460,9 +452,9 @@ Only a `confirmed` match may move to Section 1 and the action queue. Keep its `�
 
 For a purchase scan, show a compact funnel: `[purchase emails processed] → [unique products/services] → [verified open settlements] → [matches to review]`. If Parts A and D ran together, show both funnels with clear labels. Purchase matches do not count as settlement notices, verified notice cases, actionable claims, or actionable potential value until confirmed.
 
-Also state, in chat and in the report, how many product/service pairs were actually searched out of how many were found, and whether the sweep stopped early or hit the Step 7 ceiling.
+Also state, in chat and in the report, how many product/service pairs were classified out of how many were found, and whether coverage was complete or externally provider-limited.
 
-**Report the measured coverage explicitly**, using the Step 2 estimate and the Step 4 retrieval count — for example: *"Read 100 of an estimated 800 purchase confirmations from the last 12 months (~12%), covering roughly the last 6 weeks."* When the range was fully coverable, say so plainly instead: *"Read all 74 purchase confirmations from the last 12 months."* Never describe a sampled scan with language that implies completeness, and never omit the fraction because it is unflattering — a user who believes a 12% sample was exhaustive will wrongly conclude they have no eligible purchases.
+**Report measured coverage explicitly**, using the Step 2 total and Step 4 traversal count — for example: *"Reviewed metadata for all 800 purchase confirmations from the last 12 months; 47 ambiguous receipts required plain-text reads."* If an external provider made complete coverage impossible, state the known fraction and exact constraint. Never describe partial coverage with language that implies completeness.
 
 After reporting, offer to add selected `strong` or `possible` cases to `watch_list` with `source: "purchase_confirmation"`, `discovery_sources: ["purchase_confirmation"]`, and `eligibility_match` set to the level from Step 9. Never add them automatically and never persist unrelated purchase records — store the case, not the receipt.
 

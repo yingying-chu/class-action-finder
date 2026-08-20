@@ -155,7 +155,7 @@
     top: 0;
     z-index: 5;
     display: grid;
-    grid-template-columns: repeat(7, minmax(0, 1fr));
+    grid-template-columns: repeat(8, minmax(0, 1fr));
     background: rgba(255,255,255,.96);
     border-bottom: 1px solid var(--line);
   }
@@ -312,10 +312,40 @@
     .action-row .button { justify-self: start; }
   }
   @media (max-width: 650px) {
-    .hero-inner, .content { width: min(100% - 28px, 1080px); }
+    .hero-inner, .content { width: min(100% - 24px, 1080px); }
+    .hero-inner { padding: 16px 0 18px; }
+    .topline { align-items: flex-start; gap: 8px; }
+    .demo-label { max-width: 150px; text-align: right; line-height: 1.3; }
+    .hero-main { margin-top: 22px; gap: 18px; }
+    .hero h1 {
+      margin: 6px 0 10px;
+      font-size: clamp(28px, 8.5vw, 34px);
+      line-height: 1.06;
+      letter-spacing: -.035em;
+    }
+    .hero-copy > p:last-child { font-size: 14px; }
+    .value-ledger { padding-top: 14px; }
+    .value-ledger > strong { margin-bottom: 10px; font-size: 28px; }
+    .value-line { grid-template-columns: minmax(72px, .9fr) minmax(50px, 1fr) auto; }
     .email-funnel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .funnel-stage { min-width: 0; padding: 8px 10px; }
+    .funnel-stage strong { font-size: 18px; }
     .arrow { display: none; }
+    .status-nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .status-nav a { padding: 9px 6px; }
+    .status-nav strong { display: inline; margin-right: 4px; font-size: 14px; }
+    .content { padding-top: 22px; }
+    .section-block { margin-top: 26px; padding-top: 22px; }
+    .section-head { gap: 6px; }
+    .section-head h2 { font-size: 20px; }
+    .action-row { grid-template-columns: 34px minmax(0, 1fr); gap: 10px; padding: 18px 0; }
+    .step { width: 32px; height: 32px; }
+    .action-data, .action-row .button { grid-column: 2; }
+    .action-row .button { width: 100%; }
+    .card { padding: 16px; }
+    .card-top { align-items: flex-start; gap: 10px; }
     .fields, .filed-row { grid-template-columns: 1fr; }
+    code { max-width: 100%; overflow-wrap: anywhere; }
   }
 </style>
 </head>
@@ -362,6 +392,7 @@
 
 <nav class="status-nav" aria-label="Report sections">
   <a href="#action-queue"><strong>2</strong>Action required</a>
+  <a href="#section-1"><strong>2</strong>Active claims</a>
   <a href="#purchase-matches"><strong>1</strong>Purchase match</a>
   <a href="#section-2"><strong>1</strong>Watching</a>
   <a href="#section-4"><strong>2</strong>Filed</a>

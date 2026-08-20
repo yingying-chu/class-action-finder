@@ -49,12 +49,23 @@ grep -q 'the `output/` directory that belongs to the skill copy being run' \
   "$REPO_ROOT/README.md"
 grep -q 'Plugins → Skills → Create → Upload from your computer' \
   "$REPO_ROOT/README.md"
-grep -q 'de-duplicated to ~25 unique threads read in full' \
+grep -q 'no fixed 100-message, 25-product, or 30-search ceiling' \
   "$REPO_ROOT/README.md"
+grep -q 'there is no fixed search ceiling' "$SKILL_DIR/SKILL.md"
+grep -q '@media (max-width: 650px)' "$REPO_ROOT/docs/demo-report.html"
+grep -q 'font-size: clamp(28px, 8.5vw, 34px)' \
+  "$REPO_ROOT/docs/demo-report.html"
+if grep -Eq 'Use at most 100|Keep at most 25|Hard ceiling of \*\*30|<details open>' \
+  "$SKILL_DIR/SKILL.md" "$REPO_ROOT/README.md"; then
+  echo "A fixed scan cap or auto-open installation panel was reintroduced." >&2
+  exit 1
+fi
 grep -q 'Content-Security-Policy' "$REPO_ROOT/docs/demo-report.html"
 grep -q '82 emails processed (inbox: 72, spam: 6, promotions: 4)' \
   "$REPO_ROOT/docs/demo-report.html"
 grep -q 'class="email-funnel"' "$REPO_ROOT/docs/demo-report.html"
+grep -q 'href="#section-1"><strong>2</strong>Active claims' \
+  "$REPO_ROOT/docs/demo-report.html"
 grep -q 'Actionable potential value' "$REPO_ROOT/docs/demo-report.html"
 grep -q 'Open claim form' "$REPO_ROOT/docs/demo-report.html"
 grep -q 'Filed &amp; tracking' "$REPO_ROOT/docs/demo-report.html"

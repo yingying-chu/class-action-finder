@@ -14,7 +14,7 @@ Purchase Match is deliberately separate from direct-notice discovery. It uses a 
 ## Invocation defaults
 
 - A bare skill invocation or a generic request to scan email for class actions runs **Part A — Notice Scan** for the previous 365 days.
-- Purchase Match runs only when the user explicitly mentions purchases, receipts, orders, subscriptions, or something they bought; its starting range is the previous 12 months, but Step 2 measures the match count before reading anything and asks the user how to proceed when the range isn't coverable. Do not restore a multi-year single pass: mail search returns newest-first under a 100-message cap, so a wider window returns the same messages while implying broader coverage.
+- Purchase Match runs only when the user explicitly mentions purchases, receipts, orders, subscriptions, or something they bought; its default range is the previous 12 months. Step 2 measures the match count, then pages or adaptively partitions the requested range until it is completely covered. A wider range must never mean "take the provider's first page and stop."
 - A request for both paths runs both defaults unless the user supplies another range, and announces the cost before starting.
 - Record commands update the tracker only and do not scan the mailbox.
 
@@ -25,9 +25,9 @@ These encode bugs that were found and fixed; don't regress them.
 - **Parts A and D share one report file per day.** Part D Step 10 defines three merge cases. A purchase scan must never regenerate the file and blank out Sections 1–5.
 - **Part D loads the tracker itself** (Step 2), so it can run without Part A.
 - **Legitimacy and eligibility are separate judgments.** A 🟢 settlement can be a `possible` match; never collapse them into one score.
-- **Truncation must be visible.** The per-segment 100-message cap, the 25-pair limit, the 30-search ceiling, and the early stop all have to be stated in the report and the chat summary, and capped funnel stages must render with a denominator.
-- **Measure before scanning, and size segments from density.** Part D Step 2 probes the match count first. Fixed-length segments are not a fix on their own — if each segment still overflows a page, every segment truncates identically and more segments buy nothing. Sampling is an acceptable outcome; silently defaulting into it is not.
-- **Read mail economically** (see that section). Always request plain text rather than the default HTML body; triage on search metadata before retrieving anything; page through matches instead of treating page one as the result set. Caps apply to *full retrievals*, not to how many matches are visible. Reverting any of these silently multiplies cost several-fold while narrowing coverage.
+- **No skill-imposed coverage caps.** Do not stop after a fixed number of messages, product pairs, searches, or empty results. Finish every requested range. If a provider imposes a hard, non-pageable limit, adaptively partition by date; if complete coverage is technically impossible, say exactly what the provider prevented rather than presenting the result as complete.
+- **Measure before scanning, and size partitions from density.** Part D Step 2 probes the match count first. Fixed-length segments are not a fix on their own — if each segment still overflows one page, recursively split the dense windows until the provider can return every result.
+- **Read mail economically** (see that section). Always request plain text rather than the default HTML body; triage on search metadata before retrieving anything; page through matches instead of treating page one as the result set. Retrieve every remaining ambiguous candidate, but never retrieve messages that metadata already resolves. Reverting any of these silently multiplies cost several-fold.
 
 It was previously two separate skills (`class-action-scanner` + `class-action-tracker`); they were merged so the record ↔ report loop lives in one place. If you see stale references to the old names anywhere, update them.
 

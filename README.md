@@ -45,7 +45,32 @@ The same source in `skills/class-action-finder/` runs on Claude, Codex, and Chat
 
 Choose the surface where you want to run the skill. Local Claude and Codex installations keep separate tracker files and do not overwrite one another.
 
-<details open>
+<details>
+<summary><strong>ChatGPT</strong></summary>
+
+1. Download [`class-action-finder.skill`](https://raw.githubusercontent.com/yingying-chu/class-action-finder/main/dist/class-action-finder.skill).
+2. In the ChatGPT sidebar, open **Plugins → Skills → Create → Upload from your computer**.
+3. Upload the Skill and connect the **Gmail** or **Outlook Email** app.
+4. Say: `Use $class-action-finder to scan my email for class action settlements.`
+
+Personal Skills are generally available for ChatGPT Business, Enterprise, Healthcare, and Edu, subject to workspace settings. Hosted chats return the report and updated tracker as downloadable artifacts.
+
+</details>
+
+<details>
+<summary><strong>Claude.ai</strong></summary>
+
+1. Download [`class-action-finder.zip`](https://raw.githubusercontent.com/yingying-chu/class-action-finder/main/dist/class-action-finder.zip).
+2. Ensure **Code execution and file creation** is enabled.
+3. Open **Customize → Skills → + → Create skill → Upload a skill**.
+4. Upload the ZIP and connect Gmail or another searchable mail integration.
+5. Say: `Scan my email for class action settlements.`
+
+Claude.ai returns the HTML report as a downloadable artifact. Keep the generated `class-action-tracker.json` if you want to reuse claim history in another chat.
+
+</details>
+
+<details>
 <summary><strong>Codex</strong></summary>
 
 Clone the repository and run the Codex installer:
@@ -92,31 +117,6 @@ Restart Claude Code, connect a searchable Gmail or other mail connector, then in
 ```text
 /class-action-finder
 ```
-
-</details>
-
-<details>
-<summary><strong>Claude.ai</strong></summary>
-
-1. Download [`class-action-finder.zip`](https://raw.githubusercontent.com/yingying-chu/class-action-finder/main/dist/class-action-finder.zip).
-2. Ensure **Code execution and file creation** is enabled.
-3. Open **Customize → Skills → + → Create skill → Upload a skill**.
-4. Upload the ZIP and connect Gmail or another searchable mail integration.
-5. Say: `Scan my email for class action settlements.`
-
-Claude.ai returns the HTML report as a downloadable artifact. Keep the generated `class-action-tracker.json` if you want to reuse claim history in another chat.
-
-</details>
-
-<details>
-<summary><strong>ChatGPT</strong></summary>
-
-1. Download [`class-action-finder.skill`](https://raw.githubusercontent.com/yingying-chu/class-action-finder/main/dist/class-action-finder.skill).
-2. In the ChatGPT sidebar, open **Plugins → Skills → Create → Upload from your computer**.
-3. Upload the Skill and connect the **Gmail** or **Outlook Email** app.
-4. Say: `Use $class-action-finder to scan my email for class action settlements.`
-
-Personal Skills are generally available for ChatGPT Business, Enterprise, Healthcare, and Edu, subject to workspace settings. Hosted chats return the report and updated tracker as downloadable artifacts.
 
 </details>
 
@@ -171,7 +171,7 @@ Choose the mode by what you say. A bare invocation defaults to **Notice Scan**; 
 | What you say | Mode | Default behavior |
 |---|---|---|
 | `$class-action-finder` or `Scan my email for class action settlements.` | **Notice Scan** | Search the previous 365 days for direct settlement notices, including spam and promotions where the provider supports them |
-| `Scan my purchases for class actions.` | **Purchase Match** | Sweep the previous 12 months at the metadata level, then read in full only the receipts that need it; capped at 100 full reads per segment, 25 merchant/product pairs, and 30 public-source searches |
+| `Scan my purchases for class actions.` | **Purchase Match** | Cover the previous 12 months completely using paginated metadata, selective plain-text reads, and de-duplicated public-source searches |
 | `Scan both my settlement notices and purchase confirmations.` | **Combined** | Run both for one year — the most expensive path, so the skill says so before starting |
 | `I filed my ExampleApp claim today.` | **Record only** | Update the tracker without scanning the mailbox |
 
@@ -202,11 +202,11 @@ Check whether anything I bought from ExampleStore matches an open class action.
 Scan my purchase confirmations from 2024 for possible settlements.
 ```
 
-Naming a merchant is the better first move: it shrinks the search space, so the 100-message budget covers that merchant completely instead of sampling your whole mailbox.
+Naming a merchant is the most efficient first move: it shrinks the search and verification space while preserving complete coverage for that request.
 
-For a broad scan, the skill **measures before it reads**. A count-only probe (cheap, no message bodies) establishes how many purchase confirmations actually exist in the range. If they fit under the cap, it scans them all. If they don't, it stops and tells you the real numbers — how many there are, what fraction one pass would cover, and what full coverage would cost — and lets you choose between full coverage, a recent sample, or naming a merchant. A sample is a fine answer; it just has to be your answer rather than a silent default.
+For a broad scan, the skill **measures before it reads**. It then follows every metadata page; if the provider exposes only a fixed result window, the skill recursively divides the date range until every window is traversable. Full messages are read only when sender, subject, and snippet do not identify the product. There are no skill-imposed limits on messages, merchant/product pairs, searches, or consecutive empty results.
 
-Naming a merchant is the better first move: it shrinks the search space, so the 100-message budget reaches much further back than it would in a broad sweep. A broad scan defaults to the last 12 months; ask for a longer period and it runs as consecutive 12-month segments, each with its own budget, rather than pretending one capped pass covered several years.
+A broad scan defaults to the last 12 months. Longer requests use the same complete-traversal strategy rather than treating the provider's newest result page as the full range.
 
 Purchase Match keeps settlement legitimacy separate from purchase eligibility. It reports strong and possible matches for review and only moves a case into the filing queue after the material eligibility facts are confirmed.
 
@@ -241,7 +241,7 @@ The report also includes:
 - an at-a-glance actionable payout range;
 - a notice-email funnel from messages processed to claims requiring action;
 - a separate purchase funnel when receipt matching runs;
-- a sticky status navigator for action required, purchase matches, watching, filed, paid, expired, and security alerts;
+- a sticky status navigator for action required, active claims, purchase matches, watching, filed, paid, expired, and security alerts;
 - discovery badges that distinguish direct notices, purchase matches, and manually added records;
 - separate settlement-legitimacy and purchase-eligibility labels;
 - urgent-deadline highlighting;
@@ -321,9 +321,9 @@ Claude.ai and ChatGPT return the HTML report and updated tracker as downloadable
 
 ## Cost and value
 
-**Typical notice-scan workload:** roughly 100 overlapping raw search hits across four searches, de-duplicated to ~25 unique threads read in full, with about 10 public-record checks.
+**Typical notice-scan workload:** four overlapping metadata searches, de-duplicated before any body retrieval, followed by plain-text reads only for relevant candidates and public-record checks only for unique cases. There is no fixed workload ceiling.
 
-**Purchase Match workload:** a broad scan defaults to the last 12 months. It sweeps every matching receipt at the metadata level, then reads in full only the ones whose product still needs identifying — capped at 100 full reads per segment, 25 merchant/product pairs, and 30 public-source searches, stopping early if the 8 highest-priority products come back empty. Narrow merchant or product requests remain cheaper and more precise.
+**Purchase Match workload:** a broad scan defaults to the last 12 months. It sweeps every matching receipt at the metadata level, then reads in full only those whose product still needs identifying. It classifies every de-duplicated merchant/product pair and reuses merchant- and case-level web findings instead of repeating searches. Narrow merchant or product requests remain cheaper and more precise.
 
 ### Where the cost actually is
 
@@ -344,15 +344,11 @@ Reading a message is roughly fifty times more expensive than looking at it. Serv
 complete coverage of all 800, for ~70k
 ```
 
-Two choices do most of the work here. Requesting **plain text instead of the default HTML body** avoids paying for layout, tracking pixels, and marketing markup to extract three fields. And **triaging on metadata first** means breadth costs almost nothing, so caps apply to the small set actually worth reading rather than to how much of your mailbox is visible.
+Three choices do most of the work here. Requesting **plain text instead of the default HTML body** avoids paying for layout, tracking pixels, and marketing markup to extract three fields. **Triaging on metadata first** keeps full reads selective. And **grouping by merchant plus caching verified cases** avoids repeating the same public-source search for related products.
 
 The practical effect: coverage and cost are not the tradeoff they appear to be. A wide metadata sweep with narrow, plain-text reads is usually both broader *and* cheaper than a narrow sweep of full-HTML fetches.
 
-Caps still exist, and when one binds the report says so with the denominator (`100 of ~800 · 12% sampled`) rather than presenting a sample as a complete scan.
-
-Past the ceiling the price stops rising and coverage falls instead. This is also why widening the date range is not the lever it appears to be: mail search returns newest-first, so a 1-year and a 3-year request hand back **the same most-recent 100 messages**. To genuinely see more, name a merchant — which shrinks the search space so 100 messages reach further back — or run consecutive 12-month segments, each of which gets its own budget.
-
-Every capped funnel stage is labelled with its denominator (`100 of ~1,400 · capped`) so a truncated scan is never presented as complete coverage.
+The skill has no fixed 100-message, 25-product, or 30-search ceiling. It follows continuation tokens to completion and adaptively partitions dense date ranges when a provider has a non-pageable result window. If an external service still makes complete coverage impossible, the report identifies that provider constraint and the known coverage instead of silently sampling.
 
 | Provider | Model | Estimated typical notice scan | Best fit |
 |---|---|---:|---|
@@ -360,10 +356,10 @@ Every capped funnel stage is labelled with its denominator (`100 of ~1,400 · ca
 | Anthropic | **Sonnet** | ~$0.35 | Balanced everyday scanning |
 | Anthropic | **Haiku** | ~$0.12 | Frequent or scheduled scans |
 | OpenAI | **GPT-5.6 Sol** | ~$0.70 | Frontier capability |
-| OpenAI | **GPT-5.6 Terra** | ~$0.35 | Balanced intelligence and cost |
-| OpenAI | **GPT-5.6 Luna** | ~$0.14 | Cost-sensitive, high-volume scans |
+| OpenAI | **GPT-5.6 Terra** | ~$0.28 | Balanced intelligence and cost |
+| OpenAI | **GPT-5.6 Luna** | ~$0.03 | Cost-sensitive, high-volume scans |
 
-These are API-equivalent token estimates for a notice scan with prompt caching, not guaranteed subscription charges. Purchase Match may cost more when it reaches the 25-product cap. Actual cost varies with mailbox volume, date range, tool calls, and reasoning effort. OpenAI rates are based on the published [Sol](https://developers.openai.com/api/docs/models/gpt-5.6-sol), [Terra](https://developers.openai.com/api/docs/models/gpt-5.6-terra), and [Luna](https://developers.openai.com/api/docs/models/gpt-5.6-luna) pricing available in July 2026.
+These are API-equivalent token estimates for a notice scan with prompt caching, not guaranteed subscription charges. Purchase Match cost grows with mailbox volume and the number of distinct products that require public verification. Actual cost varies with date range, tool calls, and reasoning effort. OpenAI estimates use the published [Sol](https://developers.openai.com/api/docs/models/gpt-5.6-sol), [Terra](https://developers.openai.com/api/docs/models/gpt-5.6-terra), and [Luna](https://developers.openai.com/api/docs/models/gpt-5.6-luna) rates checked in August 2026.
 
 Recording a filing or payout only reads and updates one small tracker file. One recovered claim deadline can outweigh years of routine scans.
 

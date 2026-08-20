@@ -49,9 +49,9 @@ Show at the top of the page:
 
 Each funnel is a count transformation, not a proportional value chart. Render rectangular labeled stages with arrows so a small verified count is not visually exaggerated. If both scans ran, label both funnels and do not mix purchase confirmations into the settlement-notice count.
 
-**Capped stages must show the denominator.** A funnel's first stage is the most misleading one, because a capped count looks identical to a complete count. For a purchase scan the denominator was measured in Part D Step 2, so it is always available: use `100 of ~800 · 12% sampled` rather than `100`. Put one line beneath the funnel naming which limit applied — the per-segment 100-message cap, the 25-pair product cap, the 30-search ceiling, or the early stop — the approximate time span actually covered, and how to go deeper. Where a provider genuinely cannot report a total, use `100 (result cap reached — true total unknown)`. Never print a bare number for a stage that was truncated.
+**Coverage must be explicit.** For a fully traversed range, show `800 of 800 · complete`. If an external provider prevents complete traversal even after paging and adaptive date partitioning, show the known fraction with `provider-limited` and name the exact provider constraint beneath the funnel. Never print a partial count as though it were complete.
 
-When a range was fully covered, show that too rather than leaving it ambiguous: `74 of 74 · complete`. A reader must be able to tell a complete scan from a sample at a glance, without reading the caption.
+The report must be mobile-first as well as desktop-friendly. At widths up to 650px, keep the hero headline at roughly 28–34px with a readable line height, reduce hero spacing, stack the value ledger, render funnels as a compact two-column grid, disable sticky navigation, and collapse multi-column action/card/filed layouts to one readable column. No content, badge, ID, or CTA may overflow the viewport; use wrapping or horizontal scrolling only for genuinely unbreakable identifiers.
 
 ---
 
