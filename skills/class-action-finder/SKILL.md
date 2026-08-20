@@ -18,7 +18,7 @@ The link between all three is a single tracker JSON file that both discovery pat
 
 | The user is… | Do this |
 |---|---|
-| Invoking the skill by name with no scan mode or arguments | Default to **Part A — Notice Scan** for the previous 365 days |
+| Invoking the skill by name with no scan mode or arguments | Default to **Part A — Notice Scan** for the previous 12 months |
 | Asking to scan / find / audit direct settlement notices in email | **Part A — Notice Scan** |
 | Asking to check receipts, orders, subscriptions, or purchases for possible settlements | **Part D — Purchase Match** |
 | Explicitly asking for both notices and purchase matching | Run **Part A first**, then **Part D**, each with its own default 12-month range unless the user supplies one. This is the most expensive path — say up front that it processes two mailbox sweeps plus web verification, and offer the notice scan alone if they'd rather start small. |
@@ -94,7 +94,7 @@ Parse the user's invocation text or arguments to determine the lookback period. 
 
 | Input | Date filter (Gmail reference format) |
 |---|---|
-| Blank | `after:YYYY/MM/DD` (today minus 365 days) |
+| Blank | `after:YYYY/MM/DD` (today minus 12 calendar months) |
 | `2024` | `after:2024/01/01 before:2025/01/01` |
 | `6 months` | `after:YYYY/MM/DD` (today minus 183 days) |
 | `3 months` | `after:YYYY/MM/DD` (today minus 91 days) |

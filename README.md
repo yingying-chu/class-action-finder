@@ -186,7 +186,7 @@ Tell the skill what you want:
 | Run both discovery paths | `Scan both my settlement notices and purchases.` |
 | Track a claim or payout | `I filed my ExampleApp claim today.` |
 
-A bare `$class-action-finder` runs Notice Scan for the previous year. Purchase Match checks the previous 12 months and treats every result as a lead until eligibility is confirmed. Add a merchant, product, or date range to narrow either scan.
+Both Notice Scan and Purchase Match cover the previous 12 months by default. Purchase Match treats every result as a lead until eligibility is confirmed. Add a merchant, product, or date range to narrow either scan.
 
 On local runtimes, the HTML report is saved in the installed skill's `output/` folder as `class-action-report-YYYY-MM-DD.html`.
 
@@ -283,7 +283,7 @@ Claude.ai and ChatGPT return the HTML report and updated tracker as downloadable
 Reading a message is roughly fifty times more expensive than looking at it. Server-side search is free, search results already carry sender, subject, date, and a snippet, and only full message retrieval costs real tokens:
 
 ```text
-10,000 emails in the last year
+10,000 emails in the last 12 months
    │  server-side search: free
    ▼
 ~800 purchase confirmations matched

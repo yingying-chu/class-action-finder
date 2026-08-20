@@ -35,7 +35,7 @@ grep -q '# PART D — Match purchase confirmations to possible settlements' \
   "$SKILL_DIR/SKILL.md"
 grep -q 'A bare `/class-action-finder`, `$class-action-finder`, or skill-name invocation is not ambiguous' \
   "$SKILL_DIR/SKILL.md"
-grep -q 'settlement notices from the last year' \
+grep -q 'settlement notices from the last 12 months' \
   "$SKILL_DIR/agents/openai.yaml"
 grep -q 'Never put those values into a web search or report' \
   "$SKILL_DIR/SKILL.md"

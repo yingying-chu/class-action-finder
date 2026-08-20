@@ -13,7 +13,7 @@ Purchase Match is deliberately separate from direct-notice discovery. It uses a 
 
 ## Invocation defaults
 
-- A bare skill invocation or a generic request to scan email for class actions runs **Part A — Notice Scan** for the previous 365 days.
+- A bare skill invocation or a generic request to scan email for class actions runs **Part A — Notice Scan** for the previous 12 months.
 - Purchase Match runs only when the user explicitly mentions purchases, receipts, orders, subscriptions, or something they bought; its default range is the previous 12 months. Step 2 measures the match count, then pages or adaptively partitions the requested range until it is completely covered. A wider range must never mean "take the provider's first page and stop."
 - A request for both paths runs both defaults unless the user supplies another range, and announces the cost before starting.
 - Record commands update the tracker only and do not scan the mailbox.
