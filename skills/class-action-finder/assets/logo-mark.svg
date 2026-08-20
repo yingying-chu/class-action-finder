@@ -7,5 +7,6 @@
   <path fill="none" stroke="#F8F7F2" stroke-width="10" d="m30 216 73-57M226 216l-54-42" stroke-linecap="round" opacity=".9"/>
   <circle cx="173" cy="164" r="50" fill="#F8F7F2" stroke="#22664F" stroke-width="14"/>
   <path fill="none" stroke="#7A3EC8" stroke-width="17" d="m145 162 18 18 37-42" stroke-linecap="round" stroke-linejoin="round"/>
-  <path fill="none" stroke="#22664F" stroke-width="18" d="m209 201 30 30" stroke-linecap="round"/>
+  <path fill="none" stroke="#22664F" stroke-width="26" d="m209 201 34 34" stroke-linecap="round"/>
+  <path fill="none" stroke="#F8F7F2" stroke-width="14" d="m209 201 34 34" stroke-linecap="round"/>
 </svg>

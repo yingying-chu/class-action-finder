@@ -9,3 +9,7 @@
 skills/class-action-finder/output/*
 !skills/class-action-finder/output/.gitkeep
 
+# Finder/editor duplicate artifacts ("foo 2.zip", "foo copy.md") — never intentional
+* [0-9].*
+* copy.*
+* copy [0-9].*
