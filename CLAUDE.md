@@ -11,6 +11,49 @@ This repo contains a single portable skill in `skills/class-action-finder/`. Run
 
 Purchase Match is deliberately separate from direct-notice discovery. It uses a source badge plus a categorical eligibility match, never treats a receipt as proof of class membership, never sends personal receipt details to web search, and does not persist purchase history automatically.
 
+## Architecture
+
+```text
+Connected mail
+    │
+    ├── Direct notices                      (SKILL.md Part A)
+    │     Search inbox, spam, and promotions
+    │     Verify case and score legitimacy
+    │     Extract deadlines, payouts, IDs, PINs, and claim URLs
+    │
+    └── Purchase confirmations              (SKILL.md Part D)
+          Extract merchant, product, and purchase date only
+          Search verified public settlement sources
+          Compare product, class period, and eligibility facts
+                  │
+                  ▼
+        Match settlement identity
+                  │
+            ┌─────┴─────┐
+            ▼           ▼
+      Tracker JSON   HTML report
+      filed + paid   actions + reviews + alerts
+            │           │
+            └─ refresh ─┘            (SKILL.md Parts B and C)
+```
+
+```text
+class-action-finder/
+├── README.md                 user-facing
+├── CLAUDE.md                 this file — contributor source of truth
+├── AGENTS.md                 pointer to this file for Codex
+├── install.sh                --claude (default) | --codex
+├── skills/class-action-finder/
+│   ├── SKILL.md              the portable workflow (Parts A–D)
+│   ├── agents/openai.yaml    ChatGPT interface metadata
+│   ├── assets/               brand SVGs
+│   ├── references/           runtime-loaded guides
+│   └── output/               generated reports (gitignored)
+├── scripts/                  package-skill.sh, check.sh
+├── dist/                     .zip + byte-identical .skill
+└── docs/                     demo report, screenshots, cost model
+```
+
 ## Invocation defaults
 
 - A bare skill invocation or a generic request to scan email for class actions runs **Part A — Notice Scan** for the previous 12 months.
@@ -49,7 +92,10 @@ The skill's `assets/` directory contains the production SVG logo set:
 |---|---|
 | `logo-mark.svg` | Transparent mark for generated report headers and light surfaces |
 | `app-icon.svg` | Green square icon for compact skill UI placements |
-| `logo-lockup.svg` | Horizontal wordmark for the repository README and large UI placements |
+| `logo-lockup.svg` | Horizontal wordmark for the README and large UI placements (light backgrounds) |
+| `logo-lockup-dark.svg` | Dark-background wordmark. The README pairs it with the light one via `<picture>` + `prefers-color-scheme`; without it the near-black wordmark is invisible on GitHub's dark theme. |
+
+**The magnifier handle must stay visible.** It is drawn as two stacked strokes — a `#22664F` casing under a `#F8F7F2` core — because the handle crosses the same-colour envelope. A single `#22664F` stroke there renders as nothing at all (the mark then reads as a check badge, not a finder), which is exactly the bug this pairing fixes. `app-icon.svg` achieves the same result with a plain white stroke only because its green square backdrop supplies the casing.
 
 Generated reports remain self-contained. Inline the trusted static artwork from `logo-mark.svg` into the HTML rather than linking to a local file or placing the full wordmark on the report gradient.
 
@@ -74,5 +120,7 @@ The skill uses whichever connected mail app, connector, or MCP can search mail a
 ## Portable distribution (dist/)
 
 `dist/class-action-finder.zip` is checked in for Claude uploads, and the byte-identical `dist/class-action-finder.skill` is checked in for ChatGPT. **After editing `SKILL.md`, `agents/openai.yaml`, an asset, or a reference file, re-run `./scripts/package-skill.sh` and commit both artifacts** so the download links stay current.
+
+The cost model and per-model estimates live in [`docs/cost.md`](docs/cost.md); README links to it rather than inlining it, so pricing drift is contained to one file.
 
 See README.md for setup instructions.
