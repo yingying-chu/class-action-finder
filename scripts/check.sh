@@ -150,10 +150,17 @@ fi
 # The v2 mock stays isolated from generator rules while enforcing its design goals.
 test "$(grep -c '<a href=.*<strong>.*</strong>.*</a>' "$REPO_ROOT/docs/demo-report-v2.html")" -eq 4
 grep -q '\$25–\$735' "$REPO_ROOT/docs/demo-report-v2.html"
-grep -q '82 emails scanned · 6 notices · 5 verified cases · 2 need action' \
+grep -q 'class="coverage-state">Complete coverage' \
+  "$REPO_ROOT/docs/demo-report-v2.html"
+for stage in '82 scanned' '6 notices' '5 verified' '2 need action'; do
+  grep -q ">$stage<" "$REPO_ROOT/docs/demo-report-v2.html"
+done
+grep -q 'Inbox 72 · Spam 6 · Promotions 4' \
   "$REPO_ROOT/docs/demo-report-v2.html"
 grep -q 'Receipt coverage:' "$REPO_ROOT/docs/demo-report-v2.html"
-grep -q 'No additional active claims' "$REPO_ROOT/docs/demo-report-v2.html"
+grep -q 'No additional open claims in this scan.' "$REPO_ROOT/docs/demo-report-v2.html"
+grep -q 'class="button secondary eligibility-button">Check eligibility' \
+  "$REPO_ROOT/docs/demo-report-v2.html"
 grep -q '@media (max-width: 650px)' "$REPO_ROOT/docs/demo-report-v2.html"
 for anchor in action-queue purchase-matches active watching expired filed security; do
   grep -q "id=\"$anchor\"" "$REPO_ROOT/docs/demo-report-v2.html"

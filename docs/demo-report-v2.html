@@ -27,16 +27,19 @@
   .demo-label, .small, .section-head p { color: var(--muted); font-size: 12px; }
   .demo-label, .eyebrow, .label { letter-spacing: .08em; text-transform: uppercase; }
   .demo-label { text-align: right; }
-  .hero-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(190px, .58fr) minmax(220px, .72fr); gap: 28px; align-items: end; margin-top: 30px; }
+  .hero-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(220px, .72fr) minmax(190px, .58fr); gap: 28px; align-items: end; margin-top: 30px; }
   .eyebrow, .label { color: var(--muted); font-size: 10px; }
   .hero h1 { max-width: 540px; margin: 6px 0 7px; font-size: clamp(35px, 5vw, 50px); line-height: 1.02; letter-spacing: -.04em; }
-  .hero-copy p { margin: 0; color: var(--muted); }
-  .hero-value, .hero-priority { padding-left: 20px; border-left: 1px solid rgba(32,35,31,.18); }
+  .hero-value { padding-left: 20px; border-left: 1px solid rgba(32,35,31,.18); }
   .hero-value strong { display: block; margin-top: 4px; font-size: 31px; letter-spacing: -.03em; }
-  .hero-priority strong { display: block; margin: 4px 0 2px; font-size: 18px; }
+  .hero-priority { padding: 12px 14px; border-left: 3px solid var(--brand); background: rgba(255,255,255,.42); }
+  .hero-priority strong { display: block; margin: 3px 0 1px; font-size: 22px; }
   .urgent { color: var(--danger); }
-  .scan-line { margin: 20px 0 0; padding-top: 13px; border-top: 1px solid rgba(32,35,31,.14); color: var(--muted); font-size: 12px; }
-  .scan-line strong { color: var(--text); }
+  .coverage-block { margin-top: 20px; padding-top: 13px; border-top: 1px solid rgba(32,35,31,.14); color: var(--muted); font-size: 11px; }
+  .coverage-main { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .coverage-state { display: inline-flex; padding: 3px 8px; border-radius: 999px; background: var(--confidence-soft); color: var(--confidence); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+  .coverage-steps { display: inline-flex; align-items: center; gap: 7px; color: var(--text); }
+  .coverage-folders { margin-top: 4px; }
   .status-nav { position: sticky; top: 0; z-index: 5; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); background: rgba(255,255,255,.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
   .status-nav a { padding: 9px 8px; border-right: 1px solid var(--line); text-align: center; text-decoration: none; font-size: 11px; }
   .status-nav a:first-child { background: var(--brand-soft); }
@@ -59,6 +62,7 @@
   .confidence-text { color: var(--confidence); }
   .button { display: inline-flex; min-height: 36px; align-items: center; justify-content: center; padding: 8px 12px; border-radius: 8px; background: var(--text); color: var(--surface); font-size: 12px; font-weight: 700; text-align: center; text-decoration: none; }
   .button.secondary { background: transparent; color: var(--text); border: 1px solid var(--line); }
+  .eligibility-button { min-height: 32px; margin-top: 4px; padding: 6px 10px; }
   .credentials { margin-top: 5px; }
   code { display: inline-block; margin: 0 4px 3px 0; padding: 3px 6px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); font-size: 11px; overflow-wrap: anywhere; }
   .reason { grid-column: 2 / 6; margin-top: -6px; color: var(--muted); font-size: 11px; }
@@ -79,6 +83,9 @@
   .case-facts strong, .tracker-facts strong { display: block; margin-top: 2px; font-size: 13px; }
   .case-note { margin-top: 9px; color: var(--muted); font-size: 11px; }
   .empty { margin: 8px 0 0; padding: 12px 14px; background: #eceee9; color: var(--muted); font-size: 12px; }
+  .compact-empty { margin-top: 18px; padding-top: 14px; }
+  .compact-empty p { display: flex; align-items: baseline; gap: 9px; margin: 0; color: var(--muted); font-size: 12px; }
+  .compact-empty strong { color: var(--text); font-size: 13px; }
   .tracker-row { display: grid; grid-template-columns: minmax(220px, 1.2fr) minmax(0, 1.8fr); gap: 22px; align-items: center; }
   .tracker-facts { margin: 0; grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .phishing { padding: 14px 16px; border: 1px solid #efc4c6; border-radius: 10px; background: #fff8f8; }
@@ -102,11 +109,12 @@
     .demo-label { max-width: 130px; font-size: 10px; }
     .hero-grid { grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 12px; margin-top: 17px; }
     .hero h1 { margin: 4px 0 5px; font-size: clamp(28px, 8vw, 32px); }
-    .hero-copy p { font-size: 13px; }
     .hero-value strong { font-size: 25px; }
-    .hero-priority { padding-left: 12px; }
-    .hero-priority strong { font-size: 15px; }
-    .scan-line { margin-top: 12px; padding-top: 10px; font-size: 11px; }
+    .hero-priority { padding: 9px 10px; }
+    .hero-priority strong { font-size: 17px; }
+    .coverage-block { margin-top: 12px; padding-top: 10px; }
+    .coverage-main { align-items: flex-start; gap: 6px; }
+    .coverage-steps { gap: 4px; font-size: 10px; }
     .status-nav a { padding: 8px 3px; font-size: 9px; line-height: 1.2; }
     .status-nav strong { display: block; margin: 0; font-size: 13px; }
     main { padding-top: 17px; }
@@ -120,6 +128,8 @@
     .claim-row .button { grid-column: 1 / -1; grid-row: auto; width: min(100%, 220px); justify-self: center; }
     .reason { grid-column: 2; margin-top: 0; }
     .case-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .eligibility-button { width: 100%; }
+    .compact-empty p { align-items: flex-start; flex-direction: column; gap: 2px; }
     .tracker-row { grid-template-columns: 1fr; gap: 9px; }
     .tracker-facts { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
     .case-top { gap: 8px; }
@@ -145,14 +155,17 @@
         </svg>
         <span class="brand-name">Class Action <span>Finder</span></span>
       </div>
-      <span class="demo-label">v2 mock · illustrative data</span>
+      <span class="demo-label">v2.1 mock · illustrative data</span>
     </div>
     <div class="hero-grid">
-      <div class="hero-copy"><span class="eyebrow">Needs your attention</span><h1>2 claims need action.</h1><p>Together, their supported individual payouts could total up to $735.</p></div>
-      <div class="hero-value"><span class="label">Potential value</span><strong>$25–$735</strong></div>
+      <div class="hero-copy"><span class="eyebrow">Needs your attention</span><h1>2 claims need action.</h1></div>
       <div class="hero-priority"><span class="label">Start here</span><strong>ExampleApp</strong><span class="urgent">Closes in 2 days</span></div>
+      <div class="hero-value"><span class="label">Potential value</span><strong>$25–$735</strong></div>
     </div>
-    <p class="scan-line"><strong>Coverage:</strong> 82 emails scanned · 6 notices · 5 verified cases · 2 need action · inbox 72, spam 6, promotions 4 · complete</p>
+    <div class="coverage-block">
+      <div class="coverage-main"><span class="coverage-state">Complete coverage</span><span class="coverage-steps"><strong>82 scanned</strong><span>→</span><strong>6 notices</strong><span>→</span><strong>5 verified</strong><span>→</span><strong>2 need action</strong></span></div>
+      <div class="coverage-folders">Inbox 72 · Spam 6 · Promotions 4</div>
+    </div>
   </div>
 </header>
 <nav class="status-nav" aria-label="Report sections">
@@ -191,13 +204,12 @@
     <div class="purchase-summary"><strong>Receipt coverage:</strong> 18 purchase emails · 12 unique products · 2 open settlements · 1 match to review</div>
     <article class="case-row">
       <div class="case-top"><div><span class="badge source">🧾 Purchase match</span><h3>ExampleHome · Model H Air Fryer Settlement</h3><div class="sub">A Jun 18, 2024 order names Model H; the case covers selected variants purchased during 2023–2025.</div></div><div><span class="badge confidence-high">High confidence settlement</span> <span class="badge eligibility">Strong purchase match</span></div></div>
-      <div class="case-facts"><div><span class="label">Still confirm</span><strong>Serial-number range</strong></div><div><span class="label">Deadline</span><strong>Oct 30, 2026</strong></div><div><span class="label">Potential payout</span><strong>Up to $75</strong></div><div><span class="label">Next step</span><strong>Check eligibility</strong></div></div>
+      <div class="case-facts"><div><span class="label">Still confirm</span><strong>Serial-number range</strong></div><div><span class="label">Deadline</span><strong>Oct 30, 2026</strong></div><div><span class="label">Potential payout</span><strong>Up to $75</strong></div><div><span class="label">Next step</span><span class="button secondary eligibility-button">Check eligibility</span></div></div>
       <div class="case-note">The official source supports the case. The receipt supports a possible product match, not automatic eligibility.</div>
     </article>
   </section>
-  <section class="section-block" id="active">
-    <div class="section-head"><div><span class="eyebrow">Open claims</span><h2>Active claim windows</h2></div><p>Open claims that are not filing actions.</p></div>
-    <p class="empty">No additional active claims. The two open filing actions, including IDs and payout details, appear once in What to do next above.</p>
+  <section class="section-block compact-empty" id="active">
+    <p><strong>Active claims</strong><span>No additional open claims in this scan.</span></p>
   </section>
   <section class="section-block" id="watching">
     <div class="section-head"><div><span class="eyebrow">No action yet</span><h2>Watching</h2></div><p>Cases to revisit after a material update.</p></div>
