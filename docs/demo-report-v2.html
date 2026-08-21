@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
+<title>Class Action Finder | Sample Report v2</title>
+<style>
+  :root {
+    --page: #f7f7f4; --surface: #fff; --text: #20231f; --muted: #687068;
+    --line: #dfe3dc; --brand: #22664f; --brand-soft: #dceee5; --purple: #7a3ec8;
+    --hero-a: #e0f1e8; --hero-b: #eee4f7; --hero-c: #f4ead4;
+    --confidence: #0d6b73; --confidence-soft: #e0f2f1;
+    --warning: #8a570d; --warning-soft: #fff0cf; --danger: #b52d32; --danger-soft: #fbe4e5;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--page); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; line-height: 1.42; }
+  a { color: inherit; }
+  .wrap { width: min(1080px, calc(100% - 40px)); margin: 0 auto; }
+  .hero { background: linear-gradient(118deg, var(--hero-a), var(--hero-b) 56%, var(--hero-c)); border-bottom: 1px solid rgba(32,35,31,.12); }
+  .hero-inner { padding: 22px 0 16px; }
+  .topline, .section-head, .case-top, .claim-title { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+  .brand { display: inline-flex; align-items: center; gap: 9px; font-size: 14px; font-weight: 700; }
+  .brand-mark { width: 35px; height: 35px; }
+  .brand-name span { color: var(--brand); }
+  .demo-label, .small, .section-head p { color: var(--muted); font-size: 12px; }
+  .demo-label, .eyebrow, .label { letter-spacing: .08em; text-transform: uppercase; }
+  .demo-label { text-align: right; }
+  .hero-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(190px, .58fr) minmax(220px, .72fr); gap: 28px; align-items: end; margin-top: 30px; }
+  .eyebrow, .label { color: var(--muted); font-size: 10px; }
+  .hero h1 { max-width: 540px; margin: 6px 0 7px; font-size: clamp(35px, 5vw, 50px); line-height: 1.02; letter-spacing: -.04em; }
+  .hero-copy p { margin: 0; color: var(--muted); }
+  .hero-value, .hero-priority { padding-left: 20px; border-left: 1px solid rgba(32,35,31,.18); }
+  .hero-value strong { display: block; margin-top: 4px; font-size: 31px; letter-spacing: -.03em; }
+  .hero-priority strong { display: block; margin: 4px 0 2px; font-size: 18px; }
+  .urgent { color: var(--danger); }
+  .scan-line { margin: 20px 0 0; padding-top: 13px; border-top: 1px solid rgba(32,35,31,.14); color: var(--muted); font-size: 12px; }
+  .scan-line strong { color: var(--text); }
+  .status-nav { position: sticky; top: 0; z-index: 5; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); background: rgba(255,255,255,.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+  .status-nav a { padding: 9px 8px; border-right: 1px solid var(--line); text-align: center; text-decoration: none; font-size: 11px; }
+  .status-nav a:first-child { background: var(--brand-soft); }
+  .status-nav a:last-child { border-right: 0; }
+  .status-nav strong { display: inline; margin-right: 5px; font-size: 15px; }
+  main { padding: 22px 0 50px; }
+  section { scroll-margin-top: 62px; }
+  .section-block { margin-top: 30px; padding-top: 24px; border-top: 1px solid var(--line); }
+  .section-head { align-items: flex-end; margin-bottom: 10px; }
+  .section-head h2 { margin: 3px 0 0; font-size: 22px; }
+  .section-head p { margin: 0; text-align: right; }
+  .claim-list { border-bottom: 1px solid var(--line); }
+  .claim-row { display: grid; grid-template-columns: 34px minmax(220px, 1.25fr) 116px 116px 154px 158px; gap: 14px; align-items: center; padding: 17px 0; border-top: 1px solid var(--line); }
+  .step { display: grid; width: 32px; height: 32px; place-items: center; border-radius: 7px; background: var(--brand-soft); font-weight: 700; }
+  .claim-title { justify-content: flex-start; align-items: flex-start; gap: 8px; }
+  .claim-title h3 { margin: 2px 0; font-size: 16px; }
+  .claim-title p, .fact p { margin: 0; color: var(--muted); font-size: 11px; }
+  .fact { min-width: 0; padding-left: 12px; border-left: 1px solid var(--line); }
+  .fact strong { display: block; margin-top: 3px; font-size: 13px; }
+  .confidence-text { color: var(--confidence); }
+  .button { display: inline-flex; min-height: 36px; align-items: center; justify-content: center; padding: 8px 12px; border-radius: 8px; background: var(--text); color: var(--surface); font-size: 12px; font-weight: 700; text-align: center; text-decoration: none; }
+  .button.secondary { background: transparent; color: var(--text); border: 1px solid var(--line); }
+  .credentials { margin-top: 5px; }
+  code { display: inline-block; margin: 0 4px 3px 0; padding: 3px 6px; border: 1px solid var(--line); border-radius: 4px; background: var(--surface); font-size: 11px; overflow-wrap: anywhere; }
+  .reason { grid-column: 2 / 6; margin-top: -6px; color: var(--muted); font-size: 11px; }
+  .reminder { margin-top: 14px; padding: 11px 13px; border-left: 3px solid var(--brand); background: var(--brand-soft); font-size: 12px; }
+  .purchase-summary { margin: 8px 0 12px; padding: 9px 12px; border-left: 3px solid var(--purple); background: #f0e9f7; color: var(--muted); font-size: 12px; }
+  .purchase-summary strong { color: var(--text); }
+  .case-row, .tracker-row { padding: 14px 0; border-top: 1px solid var(--line); }
+  .case-top { align-items: flex-start; }
+  .case-top h3, .tracker-row h3 { margin: 3px 0; font-size: 16px; }
+  .sub { color: var(--muted); font-size: 12px; }
+  .badge { display: inline-flex; padding: 3px 8px; border-radius: 999px; font-size: 10px; font-weight: 700; white-space: nowrap; }
+  .source { background: #eceee9; color: var(--text); }
+  .confidence-high { background: var(--confidence-soft); color: var(--confidence); }
+  .confidence-watch { background: var(--warning-soft); color: var(--warning); }
+  .confidence-danger { background: var(--danger-soft); color: var(--danger); }
+  .eligibility { background: #f0e9f7; color: #65409a; }
+  .case-facts, .tracker-facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-top: 11px; }
+  .case-facts strong, .tracker-facts strong { display: block; margin-top: 2px; font-size: 13px; }
+  .case-note { margin-top: 9px; color: var(--muted); font-size: 11px; }
+  .empty { margin: 8px 0 0; padding: 12px 14px; background: #eceee9; color: var(--muted); font-size: 12px; }
+  .tracker-row { display: grid; grid-template-columns: minmax(220px, 1.2fr) minmax(0, 1.8fr); gap: 22px; align-items: center; }
+  .tracker-facts { margin: 0; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .phishing { padding: 14px 16px; border: 1px solid #efc4c6; border-radius: 10px; background: #fff8f8; }
+  .phishing .case-note { padding-top: 9px; border-top: 1px solid #efc4c6; }
+  @media (max-width: 900px) {
+    .status-nav { position: static; backdrop-filter: none; -webkit-backdrop-filter: none; }
+    .hero-grid { grid-template-columns: 1fr 1fr; }
+    .hero-copy { grid-column: 1 / -1; }
+    .hero-value { padding-left: 0; border-left: 0; }
+    .claim-row { grid-template-columns: 34px minmax(0, 1fr) 120px 146px; }
+    .claim-row .deadline, .claim-row .payout { grid-column: 2; padding-left: 0; border-left: 0; }
+    .claim-row .confidence-fact { grid-column: 3; grid-row: 2; }
+    .claim-row .button { grid-column: 4; grid-row: 1 / 3; }
+    .reason { grid-column: 2 / 4; }
+  }
+  @media (max-width: 650px) {
+    .wrap { width: min(100% - 24px, 1080px); }
+    .hero-inner { padding: 14px 0 12px; }
+    .brand { gap: 7px; font-size: 13px; }
+    .brand-mark { width: 30px; height: 30px; }
+    .demo-label { max-width: 130px; font-size: 10px; }
+    .hero-grid { grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 12px; margin-top: 17px; }
+    .hero h1 { margin: 4px 0 5px; font-size: clamp(28px, 8vw, 32px); }
+    .hero-copy p { font-size: 13px; }
+    .hero-value strong { font-size: 25px; }
+    .hero-priority { padding-left: 12px; }
+    .hero-priority strong { font-size: 15px; }
+    .scan-line { margin-top: 12px; padding-top: 10px; font-size: 11px; }
+    .status-nav a { padding: 8px 3px; font-size: 9px; line-height: 1.2; }
+    .status-nav strong { display: block; margin: 0; font-size: 13px; }
+    main { padding-top: 17px; }
+    .section-block { margin-top: 23px; padding-top: 19px; }
+    .section-head { align-items: flex-start; gap: 5px; }
+    .section-head h2 { font-size: 19px; }
+    .section-head p { max-width: 130px; }
+    .claim-row { grid-template-columns: 30px minmax(0, 1fr); gap: 9px; padding: 15px 0; }
+    .step { width: 29px; height: 29px; }
+    .claim-row .deadline, .claim-row .payout, .claim-row .confidence-fact { grid-column: 2; grid-row: auto; padding-left: 0; border-left: 0; }
+    .claim-row .button { grid-column: 1 / -1; grid-row: auto; width: min(100%, 220px); justify-self: center; }
+    .reason { grid-column: 2; margin-top: 0; }
+    .case-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .tracker-row { grid-template-columns: 1fr; gap: 9px; }
+    .tracker-facts { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .case-top { gap: 8px; }
+    .badge { white-space: normal; }
+  }
+</style>
+</head>
+<body>
+<header class="hero" id="top">
+  <div class="hero-inner wrap">
+    <div class="topline">
+      <div class="brand" aria-label="Class Action Finder">
+        <svg class="brand-mark" viewBox="0 0 256 256" aria-hidden="true">
+          <path fill="#22664F" d="M39 84h178c13 0 23 10 23 23v105c0 13-10 23-23 23H39c-13 0-23-10-23-23V107c0-13 10-23 23-23Z"/>
+          <path fill="#F8F7F2" stroke="#22664F" stroke-width="12" d="M69 20h91l29 30v124H69z" stroke-linejoin="round"/>
+          <path fill="none" stroke="#22664F" stroke-width="11" d="M159 21v31h30M92 78h74M92 104h62M92 130h45" stroke-linecap="round" stroke-linejoin="round"/>
+          <path fill="#22664F" d="M16 112l103 69c5 4 13 4 18 0l103-69v100c0 13-10 23-23 23H39c-13 0-23-10-23-23Z"/>
+          <path fill="none" stroke="#F8F7F2" stroke-width="10" d="m30 216 73-57M226 216l-54-42" stroke-linecap="round" opacity=".9"/>
+          <circle cx="173" cy="164" r="50" fill="#F8F7F2" stroke="#22664F" stroke-width="14"/>
+          <path fill="none" stroke="#7A3EC8" stroke-width="17" d="m145 162 18 18 37-42" stroke-linecap="round" stroke-linejoin="round"/>
+          <path fill="none" stroke="#22664F" stroke-width="26" d="m209 201 34 34" stroke-linecap="round"/>
+          <path fill="none" stroke="#F8F7F2" stroke-width="14" d="m209 201 34 34" stroke-linecap="round"/>
+        </svg>
+        <span class="brand-name">Class Action <span>Finder</span></span>
+      </div>
+      <span class="demo-label">v2 mock · illustrative data</span>
+    </div>
+    <div class="hero-grid">
+      <div class="hero-copy"><span class="eyebrow">Needs your attention</span><h1>2 claims need action.</h1><p>Together, their supported individual payouts could total up to $735.</p></div>
+      <div class="hero-value"><span class="label">Potential value</span><strong>$25–$735</strong></div>
+      <div class="hero-priority"><span class="label">Start here</span><strong>ExampleApp</strong><span class="urgent">Closes in 2 days</span></div>
+    </div>
+    <p class="scan-line"><strong>Coverage:</strong> 82 emails scanned · 6 notices · 5 verified cases · 2 need action · inbox 72, spam 6, promotions 4 · complete</p>
+  </div>
+</header>
+<nav class="status-nav" aria-label="Report sections">
+  <a href="#action-queue"><strong>2</strong>Action required</a>
+  <a href="#purchase-matches"><strong>1</strong>Purchase matches</a>
+  <a href="#filed"><strong>2</strong>Filed claims</a>
+  <a href="#security"><strong>1</strong>Security alerts</a>
+</nav>
+<main class="wrap">
+  <section id="action-queue">
+    <div class="section-head"><div><span class="eyebrow">Priority queue</span><h2>What to do next</h2></div><p>Complete details live here once, sorted by deadline.</p></div>
+    <div class="claim-list">
+      <article class="claim-row">
+        <span class="step">1</span>
+        <div><div class="claim-title"><div><span class="badge source">📩 Direct notice</span><h3>ExampleApp · Security Breach Settlement</h3></div></div><p class="small">Claim site and administrator independently verified.</p><div class="credentials"><code>ID: SAMPLE-ID-0001</code><code>PIN: 0000</code></div></div>
+        <div class="fact deadline"><span class="label">Deadline</span><strong class="urgent">Jul 2, 2026</strong><p>2 days left</p></div>
+        <div class="fact payout"><span class="label">Your payout</span><strong>$25–$175</strong><p>$24.45M pool</p></div>
+        <div class="fact confidence-fact"><span class="label">Legitimacy</span><strong class="confidence-text">High confidence</strong><p>Verified case and sender</p></div>
+        <span class="button">Open claim form</span>
+        <div class="reason">California residents may receive an additional CCPA payment. Illustrative claim link disabled.</div>
+      </article>
+      <article class="claim-row">
+        <span class="step">2</span>
+        <div><div class="claim-title"><div><span class="badge source">📩 Direct notice</span><h3>SampleCorp · Data Security Incident</h3></div></div><p class="small">Confirm documented-loss eligibility before submitting.</p><div class="credentials"><code>ID: SAMPLE-ID-0002</code></div></div>
+        <div class="fact deadline"><span class="label">Deadline</span><strong>Sep 14, 2026</strong><p>76 days left</p></div>
+        <div class="fact payout"><span class="label">Your payout</span><strong>Up to $560</strong><p>$18.9M pool</p></div>
+        <div class="fact confidence-fact"><span class="label">Legitimacy</span><strong class="confidence-text">High confidence</strong><p>Verified case and domain</p></div>
+        <span class="button secondary">Open claim details</span>
+        <div class="reason">Documented losses and time spent may affect the payout. Illustrative claim link disabled.</div>
+      </article>
+    </div>
+    <div class="reminder">After submitting, tell the assistant “I already filed the ExampleApp one.” It will move into Filed &amp; tracking.</div>
+  </section>
+  <section class="section-block" id="purchase-matches">
+    <div class="section-head"><div><span class="eyebrow">Receipt discovery</span><h2>Purchase matches to review</h2></div><p>Possible match, not yet actionable.</p></div>
+    <div class="purchase-summary"><strong>Receipt coverage:</strong> 18 purchase emails · 12 unique products · 2 open settlements · 1 match to review</div>
+    <article class="case-row">
+      <div class="case-top"><div><span class="badge source">🧾 Purchase match</span><h3>ExampleHome · Model H Air Fryer Settlement</h3><div class="sub">A Jun 18, 2024 order names Model H; the case covers selected variants purchased during 2023–2025.</div></div><div><span class="badge confidence-high">High confidence settlement</span> <span class="badge eligibility">Strong purchase match</span></div></div>
+      <div class="case-facts"><div><span class="label">Still confirm</span><strong>Serial-number range</strong></div><div><span class="label">Deadline</span><strong>Oct 30, 2026</strong></div><div><span class="label">Potential payout</span><strong>Up to $75</strong></div><div><span class="label">Next step</span><strong>Check eligibility</strong></div></div>
+      <div class="case-note">The official source supports the case. The receipt supports a possible product match, not automatic eligibility.</div>
+    </article>
+  </section>
+  <section class="section-block" id="active">
+    <div class="section-head"><div><span class="eyebrow">Open claims</span><h2>Active claim windows</h2></div><p>Open claims that are not filing actions.</p></div>
+    <p class="empty">No additional active claims. The two open filing actions, including IDs and payout details, appear once in What to do next above.</p>
+  </section>
+  <section class="section-block" id="watching">
+    <div class="section-head"><div><span class="eyebrow">No action yet</span><h2>Watching</h2></div><p>Cases to revisit after a material update.</p></div>
+    <article class="case-row">
+      <div class="case-top"><div><h3>SampleTech · Mobile Data Practices</h3><div class="sub">A mobile app allegedly transferred usage data without clear consent.</div></div><span class="badge confidence-watch">Likely legitimate</span></div>
+      <div class="case-facts"><div><span class="label">Status</span><strong>Awaiting final approval</strong></div><div><span class="label">Estimated payout</span><strong>Pro-rata, unknown</strong></div><div><span class="label">Current action</span><strong>None</strong></div><div><span class="label">Why watching</span><strong>No open claim form</strong></div></div>
+    </article>
+  </section>
+  <section class="section-block" id="expired"><div class="section-head"><div><span class="eyebrow">Closed windows</span><h2>Expired</h2></div></div><p class="empty">No expired claims found in this scan.</p></section>
+  <section class="section-block" id="filed">
+    <div class="section-head"><div><span class="eyebrow">Your tracker</span><h2>Filed &amp; tracking</h2></div><p>Remembered across future scans.</p></div>
+    <article class="tracker-row"><div><span class="badge source">✍️ Manually added</span><h3>SampleHealth Group · Antitrust</h3><div class="sub">Filed before 2021</div></div><div class="tracker-facts"><div><span class="label">Claim ID</span><strong>Not recorded</strong></div><div><span class="label">Expected</span><strong>Pro-rata</strong></div><div><span class="label">Status</span><strong>Awaiting payout</strong></div></div></article>
+    <article class="tracker-row" id="paid"><div><h3>SampleSocial · Internet Tracking</h3><div class="sub">Filed date unknown</div></div><div class="tracker-facts"><div><span class="label">Claim ID</span><strong>SAMPLE-PAID-1</strong></div><div><span class="label">Received</span><strong>$12.50</strong></div><div><span class="label">Status</span><strong class="confidence-text">Paid · direct deposit</strong></div></div></article>
+  </section>
+  <section class="section-block" id="security">
+    <div class="section-head"><div><span class="eyebrow">Do not click</span><h2>Security alerts</h2></div><p>Suspicious notices kept out of the action queue.</p></div>
+    <article class="phishing"><div class="case-top"><div><h3>“Claim Your $5,000 Settlement NOW”</h3><div class="sub">claims@xk7r-settle.xyz</div></div><span class="badge confidence-danger">Phishing risk</span></div><div class="case-note">Requests a processing fee; the case name has no verifiable record; the sender domain is unrelated to a known administrator. Do not click any links. Report it as phishing in your mail provider.</div></article>
+  </section>
+</main>
+</body>
+</html>

@@ -24,6 +24,8 @@ required_files=(
   "$SKILL_DIR/references/report-template.md"
   "$REPO_ROOT/docs/cost.md"
   "$REPO_ROOT/docs/demo-report.html"
+  "$REPO_ROOT/docs/demo-report-v2.html"
+  "$REPO_ROOT/docs/demo-report-v2-notes.md"
   "$REPO_ROOT/docs/screenshot-report.png"
   "$REPO_ROOT/docs/screenshot-phishing-action.png"
 )
@@ -70,6 +72,7 @@ if grep -Eq 'Use at most 100|Keep at most 25|Hard ceiling of \*\*30|<details ope
   exit 1
 fi
 grep -q 'Content-Security-Policy' "$REPO_ROOT/docs/demo-report.html"
+grep -q 'Content-Security-Policy' "$REPO_ROOT/docs/demo-report-v2.html"
 grep -q 'class="email-funnel"' "$REPO_ROOT/docs/demo-report.html"
 # Coverage honesty: the funnel must name its folder split, not just a total.
 grep -qE 'emails processed \(inbox: [0-9]+, spam: [0-9]+, promotions: [0-9]+\)' \
@@ -101,7 +104,8 @@ done
 # pair: a #22664F casing under a #F8F7F2 core sharing identical path data. Checked by
 # shape, not by coordinates, so the handle can be redrawn without tripping this.
 for art in "$SKILL_DIR/assets/logo-mark.svg" "$SKILL_DIR/assets/logo-lockup.svg" \
-  "$SKILL_DIR/assets/logo-lockup-dark.svg" "$REPO_ROOT/docs/demo-report.html"; do
+  "$SKILL_DIR/assets/logo-lockup-dark.svg" "$REPO_ROOT/docs/demo-report.html" \
+  "$REPO_ROOT/docs/demo-report-v2.html"; do
   if ! python3 - "$art" <<'PYEOF'
 import re, sys
 svg = open(sys.argv[1]).read()
@@ -140,6 +144,23 @@ grep -q "HTML report is saved in the installed skill's \`output/\` folder" \
 grep -q 'email funnel' "$SKILL_DIR/SKILL.md"
 if grep -Eiq '<script| on[a-z]+=' "$REPO_ROOT/docs/demo-report.html"; then
   echo "Demo report contains a script or inline event handler." >&2
+  exit 1
+fi
+
+# The v2 mock stays isolated from generator rules while enforcing its design goals.
+test "$(grep -c '<a href=.*<strong>.*</strong>.*</a>' "$REPO_ROOT/docs/demo-report-v2.html")" -eq 4
+grep -q '\$25–\$735' "$REPO_ROOT/docs/demo-report-v2.html"
+grep -q '82 emails scanned · 6 notices · 5 verified cases · 2 need action' \
+  "$REPO_ROOT/docs/demo-report-v2.html"
+grep -q 'Receipt coverage:' "$REPO_ROOT/docs/demo-report-v2.html"
+grep -q 'No additional active claims' "$REPO_ROOT/docs/demo-report-v2.html"
+grep -q '@media (max-width: 650px)' "$REPO_ROOT/docs/demo-report-v2.html"
+for anchor in action-queue purchase-matches active watching expired filed security; do
+  grep -q "id=\"$anchor\"" "$REPO_ROOT/docs/demo-report-v2.html"
+done
+if grep -Eq '>Section [1-5]|[0-9]{1,3}% (confidence|verified|likely|legitimate)|<script| on[a-z]+=' \
+  "$REPO_ROOT/docs/demo-report-v2.html"; then
+  echo "V2 mock reintroduced section numerals, false precision, or active content." >&2
   exit 1
 fi
 
