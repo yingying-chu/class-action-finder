@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Class Action Finder Product Hunt Assets</title>
+<style>
+  :root {
+    --ink: #20231f;
+    --muted: #667068;
+    --green: #22664f;
+    --green-dark: #184a3a;
+    --green-soft: #dceee5;
+    --purple: #7a3ec8;
+    --purple-soft: #eee4f7;
+    --cream: #f8f7f2;
+    --line: rgba(32, 35, 31, .14);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 48px;
+    background: #d8dbd6;
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  .asset { position: relative; overflow: hidden; margin: 0 0 48px; }
+  #thumbnail { width: 240px; height: 240px; border-radius: 50px; }
+  #thumbnail img { display: block; width: 240px; height: 240px; }
+  .gallery { width: 1270px; height: 760px; background: var(--cream); }
+  .brand { display: flex; align-items: center; }
+  .brand img { display: block; width: 390px; height: auto; }
+  .eyebrow {
+    color: var(--green);
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+
+  #gallery-one {
+    background: linear-gradient(120deg, #dceee5 0%, #eee4f7 57%, #f4ead4 100%);
+  }
+  .g1-brand { position: absolute; top: 42px; left: 66px; }
+  .g1-copy { position: absolute; top: 205px; left: 68px; width: 455px; z-index: 2; }
+  .g1-copy h1 {
+    margin: 15px 0 20px;
+    font-size: 61px;
+    line-height: .99;
+    letter-spacing: -.045em;
+  }
+  .g1-copy p {
+    margin: 0;
+    max-width: 410px;
+    color: #505851;
+    font-size: 21px;
+    line-height: 1.45;
+  }
+  .platforms {
+    display: inline-flex;
+    gap: 9px;
+    margin-top: 29px;
+    padding: 9px 13px;
+    border: 1px solid rgba(32, 35, 31, .14);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .5);
+    color: var(--green-dark);
+    font-size: 14px;
+    font-weight: 750;
+  }
+  .report-frame {
+    position: absolute;
+    top: 174px;
+    right: 38px;
+    width: 690px;
+    height: 443px;
+    overflow: hidden;
+    border: 1px solid rgba(32, 35, 31, .12);
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 28px 70px rgba(32, 35, 31, .18);
+    transform: rotate(-1.2deg);
+  }
+  .report-frame img { display: block; width: 690px; height: auto; }
+  .privacy-note {
+    position: absolute;
+    right: 61px;
+    bottom: 44px;
+    color: #4e5850;
+    font-size: 14px;
+    font-weight: 650;
+  }
+
+  #gallery-two { background: #f8f7f2; }
+  #gallery-two::before {
+    position: absolute;
+    inset: 0 0 auto;
+    height: 12px;
+    background: linear-gradient(90deg, var(--green), var(--purple), #d6a54f);
+    content: "";
+  }
+  .g2-brand { position: absolute; top: 37px; left: 65px; }
+  .g2-brand img { width: 300px; }
+  .g2-title {
+    position: absolute;
+    top: 143px;
+    left: 66px;
+    margin: 0;
+    font-size: 48px;
+    letter-spacing: -.035em;
+  }
+  .paths { position: absolute; top: 230px; left: 65px; display: flex; gap: 26px; }
+  .path {
+    width: 557px;
+    height: 365px;
+    padding: 30px 34px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+  }
+  .path.notice { background: linear-gradient(145deg, #e2f1e9, #f7faf7); }
+  .path.purchase { background: linear-gradient(145deg, #f0e8f8, #fbf8fd); }
+  .path-top { display: flex; align-items: center; justify-content: space-between; }
+  .path-number {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    border-radius: 11px;
+    background: var(--green);
+    color: #fff;
+    font-size: 18px;
+    font-weight: 800;
+  }
+  .purchase .path-number { background: var(--purple); }
+  .path-source {
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.65);
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .path h2 { margin: 25px 0 9px; font-size: 31px; letter-spacing: -.025em; }
+  .path > p { margin: 0 0 21px; color: #566057; font-size: 17px; }
+  .path ul { margin: 0; padding: 0; list-style: none; }
+  .path li {
+    position: relative;
+    margin: 11px 0;
+    padding-left: 24px;
+    font-size: 16px;
+    font-weight: 650;
+  }
+  .path li::before {
+    position: absolute;
+    left: 0;
+    color: var(--green);
+    content: "✓";
+    font-weight: 900;
+  }
+  .purchase li::before { color: var(--purple); }
+  .g2-footer {
+    position: absolute;
+    left: 65px;
+    right: 65px;
+    bottom: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 22px;
+    border-top: 1px solid var(--line);
+  }
+  .g2-footer strong { font-size: 19px; }
+  .g2-footer span { color: var(--muted); font-size: 15px; }
+</style>
+</head>
+<body>
+  <div class="asset" id="thumbnail">
+    <img src="../../skills/class-action-finder/assets/app-icon.svg" alt="Class Action Finder icon">
+  </div>
+
+  <section class="asset gallery" id="gallery-one">
+    <div class="brand g1-brand"><img src="../../skills/class-action-finder/assets/logo-lockup.svg" alt="Class Action Finder"></div>
+    <div class="g1-copy">
+      <div class="eyebrow">Your inbox, made actionable</div>
+      <h1>Find claims hiding in your email.</h1>
+      <p>Scan settlement notices and purchase confirmations. Verify links. See what needs action now.</p>
+      <div class="platforms">Claude&nbsp;&nbsp;·&nbsp;&nbsp;Codex&nbsp;&nbsp;·&nbsp;&nbsp;ChatGPT</div>
+    </div>
+    <div class="report-frame"><img src="../screenshot-report.png" alt="Class Action Finder report"></div>
+    <div class="privacy-note">Free · open source · private by design</div>
+  </section>
+
+  <section class="asset gallery" id="gallery-two">
+    <div class="brand g2-brand"><img src="../../skills/class-action-finder/assets/logo-lockup.svg" alt="Class Action Finder"></div>
+    <h1 class="g2-title">Two ways to find a claim.</h1>
+    <div class="paths">
+      <article class="path notice">
+        <div class="path-top"><span class="path-number">1</span><span class="path-source">Direct email evidence</span></div>
+        <h2>Notice Scan</h2>
+        <p>Find the settlement messages that already reached you.</p>
+        <ul>
+          <li>Deadlines, claim IDs, and PINs</li>
+          <li>Verified claim links and payout terms</li>
+          <li>Urgent actions sorted first</li>
+        </ul>
+      </article>
+      <article class="path purchase">
+        <div class="path-top"><span class="path-number">2</span><span class="path-source">Possible match, not proof</span></div>
+        <h2>Purchase Match</h2>
+        <p>Find open cases that may never send you a notice.</p>
+        <ul>
+          <li>Receipts, renewals, and subscriptions</li>
+          <li>Public settlement verification</li>
+          <li>Eligibility stays unconfirmed until checked</li>
+        </ul>
+      </article>
+    </div>
+    <div class="g2-footer"><strong>One private HTML report</strong><span>Action queue · claim tracker · phishing safeguards</span></div>
+  </section>
+</body>
+</html>
