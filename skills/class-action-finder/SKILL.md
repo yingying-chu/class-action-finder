@@ -124,11 +124,13 @@ Find the connected mail app, connector, or MCP among the available tools. It nee
 | # | Purpose | Gmail reference query |
 |---|---|---|
 | A | Settlement/claim terms in the **subject** | `subject:(settlement OR "class action" OR "claim form") after:YYYY/MM/DD` |
-| B | Urgency/claim phrases **in the body** | `("claim deadline" OR "submit your claim" OR "file a claim" OR "settlement administrator" OR "opt out" OR "claims period") after:YYYY/MM/DD` |
+| B | High-signal claim phrases **in the body** | `("claim deadline" OR "submit your claim" OR "file a claim" OR "settlement administrator" OR "claims period") after:YYYY/MM/DD` |
 | C | Same terms in the **spam / junk** folder | `in:spam (settlement OR "class action" OR "claim form" OR "claim deadline" OR "submit your claim") after:YYYY/MM/DD` |
 | D | Same terms in the **promotions / bulk** category | `category:promotions (settlement OR "class action" OR "claim form" OR "claim deadline" OR "submit your claim") after:YYYY/MM/DD` |
 
 Request the provider's maximum page size per search (Gmail's `search_threads` accepts `pageSize` up to 50; other providers use their own parameter name — check the tool schema rather than assuming one). Since these results are metadata only, follow the provider's continuation token until it is exhausted. If continuation is unavailable, use the adaptive date-partition strategy under **Reading mail economically**.
+
+Every body-search phrase must be a useful settlement signal on its own. Never use `opt out`, `unsubscribe`, `manage preferences`, or similar footer language as a standalone discovery term: ordinary marketing footers contain it at mailbox scale. An opt-out deadline is still extracted after a genuine settlement candidate is found; it is not a reason to retrieve unrelated email. If a query proves footer-dominated, correct or remove the low-signal term, discard that query's noisy pagination state, and traverse the refined query to completion. Do not stop after sampling hundreds of footer hits and describe the requested settlement scan as complete.
 
 **4c. Adapt to the provider.**
 - **Gmail:** use the reference queries verbatim.
@@ -140,7 +142,7 @@ Collect the result identifiers from every search that ran and retain which searc
 
 ## Step 5 — Fetch and classify each thread
 
-First triage on the search metadata you already have (sender, subject, date, snippet) per **Reading mail economically**: discard obvious non-matches — marketing, newsletters, law-firm solicitations, account or insurance settlements — without retrieving anything.
+First triage on the search metadata you already have (sender, subject, date, snippet) per **Reading mail economically**: discard obvious non-matches — marketing, newsletters, law-firm solicitations, account or insurance settlements, and footer-only unsubscribe or opt-out hits with no case/settlement context — without retrieving anything.
 
 For each result that survives triage, call the provider's message retrieval tool **requesting plain text** (`messageFormat: PLAIN_TEXT` on Gmail's `get_thread`), never the default full-HTML form. Process in batches of 10 to keep context manageable. Classify each using the extraction guide:
 - **Type A (Active):** claim form open and deadline still in the future; a submission URL is usually present but is not required

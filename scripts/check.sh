@@ -65,6 +65,20 @@ grep -q 'Plugins → Skills → Create → Upload from your computer' \
 grep -q 'no fixed 100-message, 25-product, or 30-search ceiling' \
   "$REPO_ROOT/README.md"
 grep -q 'there is no fixed search ceiling' "$SKILL_DIR/SKILL.md"
+grep -q '| B | High-signal claim phrases \*\*in the body\*\*' \
+  "$SKILL_DIR/SKILL.md"
+grep -q 'Opt-out language is an extraction field, not a discovery anchor' \
+  "$SKILL_DIR/references/extraction-guide.md"
+python3 - "$SKILL_DIR/SKILL.md" <<'PYEOF'
+import sys
+
+body_search = next(
+    (line for line in open(sys.argv[1], encoding='utf-8') if line.startswith('| B | High-signal claim phrases')),
+    '',
+)
+if not body_search or '"opt out"' in body_search:
+    raise SystemExit('The Part A body search is missing or contains standalone "opt out".')
+PYEOF
 grep -q '@media (max-width: 650px)' "$REPO_ROOT/docs/demo-report.html"
 if grep -Eq 'Use at most 100|Keep at most 25|Hard ceiling of \*\*30|<details open>' \
   "$SKILL_DIR/SKILL.md" "$REPO_ROOT/README.md"; then

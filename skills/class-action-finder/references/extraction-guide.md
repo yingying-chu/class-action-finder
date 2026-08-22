@@ -10,10 +10,13 @@ These match the Gmail search queries but are NOT class action settlement emails:
 | Insurance claim settled | "Your property claim #12345 has been settled" | Skip |
 | Lease / rent dispute | Landlord-tenant settlement, HOA settlement | Skip |
 | Marketing language | "Settle in for savings", "settle your score" | Skip |
+| Generic footer hit | `opt out`, `unsubscribe`, or `manage preferences` appears only in a marketing footer, with no class-action, settlement, case, or claim context | Skip from metadata; do not retrieve the body |
 | Law firm solicitation | "Were you harmed by X? Contact us" — recruiting plaintiffs for an investigation or new lawsuit | Skip |
 | News / newsletter | Article about a lawsuit but not a settlement notice or class-member-relevant case update | Skip |
 
 **Quick skip heuristic:** If the email does not say "you may be a class member" or "you are entitled to submit a claim" or "you received this notice because", it is almost certainly irrelevant.
+
+Opt-out language is an extraction field, not a discovery anchor. Many unrelated emails use `opt out` in an unsubscribe footer. Only extract an opt-out deadline after other evidence has established that the message is a settlement candidate.
 
 ---
 
