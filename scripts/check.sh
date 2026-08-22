@@ -24,8 +24,6 @@ required_files=(
   "$SKILL_DIR/references/report-template.md"
   "$REPO_ROOT/docs/cost.md"
   "$REPO_ROOT/docs/demo-report.html"
-  "$REPO_ROOT/docs/demo-report-v2.html"
-  "$REPO_ROOT/docs/demo-report-v2-notes.md"
   "$REPO_ROOT/docs/screenshot-report.png"
   "$REPO_ROOT/docs/screenshot-phishing-action.png"
 )
@@ -72,21 +70,21 @@ if grep -Eq 'Use at most 100|Keep at most 25|Hard ceiling of \*\*30|<details ope
   exit 1
 fi
 grep -q 'Content-Security-Policy' "$REPO_ROOT/docs/demo-report.html"
-grep -q 'Content-Security-Policy' "$REPO_ROOT/docs/demo-report-v2.html"
-grep -q 'class="email-funnel"' "$REPO_ROOT/docs/demo-report.html"
 # Coverage honesty: the funnel must name its folder split, not just a total.
-grep -qE 'emails processed \(inbox: [0-9]+, spam: [0-9]+, promotions: [0-9]+\)' \
+grep -q 'class="coverage-state">Complete coverage' \
+  "$REPO_ROOT/docs/demo-report.html"
+grep -q 'Inbox 72 · Spam 6 · Promotions 4' \
   "$REPO_ROOT/docs/demo-report.html"
 # Responsive intent, without pinning values a designer may legitimately retune.
 grep -q 'clamp(' "$REPO_ROOT/docs/demo-report.html"
 grep -qE 'width: min\(100%, [0-9]+px\)' "$REPO_ROOT/docs/demo-report.html"
-grep -qE 'href="#section-4"><strong>[0-9]+</strong>Filed claims' \
+grep -qE 'href="#filed"><strong>[0-9]+</strong>Filed claims' \
   "$REPO_ROOT/docs/demo-report.html"
 grep -q 'class="brand-mark"' "$REPO_ROOT/docs/demo-report.html"
 grep -q 'position: sticky' "$REPO_ROOT/docs/demo-report.html"
 grep -q 'position: static' "$REPO_ROOT/docs/demo-report.html"
 grep -q 'grid-column: 1 / -1' "$REPO_ROOT/docs/demo-report.html"
-grep -q 'action-row > .button' "$REPO_ROOT/docs/demo-report.html"
+grep -q '\.claim-row \.button' "$REPO_ROOT/docs/demo-report.html"
 grep -q 'logo-lockup.svg' "$REPO_ROOT/README.md"
 # The near-black wordmark vanishes on GitHub's dark theme without this pairing.
 grep -q 'prefers-color-scheme: dark' "$REPO_ROOT/README.md"
@@ -104,8 +102,7 @@ done
 # pair: a #22664F casing under a #F8F7F2 core sharing identical path data. Checked by
 # shape, not by coordinates, so the handle can be redrawn without tripping this.
 for art in "$SKILL_DIR/assets/logo-mark.svg" "$SKILL_DIR/assets/logo-lockup.svg" \
-  "$SKILL_DIR/assets/logo-lockup-dark.svg" "$REPO_ROOT/docs/demo-report.html" \
-  "$REPO_ROOT/docs/demo-report-v2.html"; do
+  "$SKILL_DIR/assets/logo-lockup-dark.svg" "$REPO_ROOT/docs/demo-report.html"; do
   if ! python3 - "$art" <<'PYEOF'
 import re, sys
 svg = open(sys.argv[1]).read()
@@ -133,7 +130,7 @@ if grep -q 'Active claims</a>\|Watching</a>\|Paid</a>\|Expired</a>' \
   echo "A secondary report category was reintroduced into the top status strip." >&2
   exit 1
 fi
-grep -q 'Actionable potential value' "$REPO_ROOT/docs/demo-report.html"
+grep -q '<span class="label">Potential value</span>' "$REPO_ROOT/docs/demo-report.html"
 grep -q 'Open claim form' "$REPO_ROOT/docs/demo-report.html"
 grep -q 'Filed &amp; tracking' "$REPO_ROOT/docs/demo-report.html"
 grep -q 'Purchase matches to review' "$REPO_ROOT/docs/demo-report.html"
@@ -147,22 +144,17 @@ if grep -Eiq '<script| on[a-z]+=' "$REPO_ROOT/docs/demo-report.html"; then
   exit 1
 fi
 
-# The v2 mock stays isolated from generator rules while enforcing its design goals.
-test "$(grep -c '<a href=.*<strong>.*</strong>.*</a>' "$REPO_ROOT/docs/demo-report-v2.html")" -eq 4
-grep -q '\$25–\$735' "$REPO_ROOT/docs/demo-report-v2.html"
-grep -q 'class="coverage-state">Complete coverage' \
-  "$REPO_ROOT/docs/demo-report-v2.html"
+# The official demo enforces the approved report design.
+grep -q '\$25–\$735' "$REPO_ROOT/docs/demo-report.html"
 for stage in '82 scanned' '6 notices' '5 verified' '2 need action'; do
-  grep -q ">$stage<" "$REPO_ROOT/docs/demo-report-v2.html"
+  grep -q ">$stage<" "$REPO_ROOT/docs/demo-report.html"
 done
-grep -q 'Inbox 72 · Spam 6 · Promotions 4' \
-  "$REPO_ROOT/docs/demo-report-v2.html"
-grep -q 'Receipt coverage:' "$REPO_ROOT/docs/demo-report-v2.html"
-grep -q 'No additional open claims in this scan.' "$REPO_ROOT/docs/demo-report-v2.html"
+grep -q 'Receipt coverage:' "$REPO_ROOT/docs/demo-report.html"
+grep -q 'No additional open claims in this scan.' "$REPO_ROOT/docs/demo-report.html"
 grep -q 'class="button secondary eligibility-button">Check eligibility' \
-  "$REPO_ROOT/docs/demo-report-v2.html"
+  "$REPO_ROOT/docs/demo-report.html"
 grep -q '\.eligibility-button { display: block;' \
-  "$REPO_ROOT/docs/demo-report-v2.html"
+  "$REPO_ROOT/docs/demo-report.html"
 grep -q 'render the CTA as an `<a>` only when it points to a validated absolute `https://`' \
   "$SKILL_DIR/SKILL.md"
 grep -q 'do not render them in the report' "$SKILL_DIR/SKILL.md"
@@ -176,13 +168,12 @@ if sed '/without `Section 1–5` numerals/d' "$SKILL_DIR/SKILL.md" | \
   echo "SKILL.md contains a legacy numbered lifecycle-section name." >&2
   exit 1
 fi
-grep -q '@media (max-width: 650px)' "$REPO_ROOT/docs/demo-report-v2.html"
 for anchor in action-queue purchase-matches active watching expired filed security; do
-  grep -q "id=\"$anchor\"" "$REPO_ROOT/docs/demo-report-v2.html"
+  grep -q "id=\"$anchor\"" "$REPO_ROOT/docs/demo-report.html"
 done
 if grep -Eq '>Section [1-5]|[0-9]{1,3}% (confidence|verified|likely|legitimate)|<script| on[a-z]+=' \
-  "$REPO_ROOT/docs/demo-report-v2.html"; then
-  echo "V2 mock reintroduced section numerals, false precision, or active content." >&2
+  "$REPO_ROOT/docs/demo-report.html"; then
+  echo "Demo report reintroduced section numerals, false precision, or active content." >&2
   exit 1
 fi
 
