@@ -161,6 +161,15 @@ grep -q 'Receipt coverage:' "$REPO_ROOT/docs/demo-report-v2.html"
 grep -q 'No additional open claims in this scan.' "$REPO_ROOT/docs/demo-report-v2.html"
 grep -q 'class="button secondary eligibility-button">Check eligibility' \
   "$REPO_ROOT/docs/demo-report-v2.html"
+grep -q '\.eligibility-button { display: block;' \
+  "$REPO_ROOT/docs/demo-report-v2.html"
+grep -q 'render the CTA as an `<a>` only when it points to a validated absolute `https://`' \
+  "$SKILL_DIR/SKILL.md"
+grep -q 'do not render them in the report' "$SKILL_DIR/SKILL.md"
+grep -q 'The action queue is the single owner of complete details' \
+  "$SKILL_DIR/SKILL.md"
+grep -q 'give the anchor block formatting' \
+  "$SKILL_DIR/references/report-template.md"
 grep -q '@media (max-width: 650px)' "$REPO_ROOT/docs/demo-report-v2.html"
 for anchor in action-queue purchase-matches active watching expired filed security; do
   grep -q "id=\"$anchor\"" "$REPO_ROOT/docs/demo-report-v2.html"

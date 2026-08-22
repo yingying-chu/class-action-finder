@@ -14,11 +14,12 @@ This mock uses the current demo amounts: ExampleApp `$25–$175`, SampleCorp up 
 - Claim and tracker rows are denser for faster comparison.
 - Brand green is reserved for product chrome; legitimacy uses a separate teal treatment.
 
-## Generator rules to change after approval
+## Approved generator rules
 
-- `SKILL.md` Step 9 must make the action queue the single owner of actionable-claim details and demote notice coverage to one line.
-- `references/report-template.md` must remove rendered section numerals and define Active claim windows as additional open claims not already shown in the action queue.
-- Report-facing confidence labels must drop percentages while keeping the four legitimacy bands and their evidence-based reasons.
-- Purchase coverage must look different from notice coverage while legitimacy and purchase eligibility remain separate.
+- `SKILL.md` Step 9 makes the action queue the single owner of actionable-claim details and keeps notice coverage compact.
+- `references/report-template.md` removes rendered section numerals and defines Active claims as additional open claims not already shown in the action queue.
+- Report-facing confidence labels drop percentages while keeping the four legitimacy bands and their evidence-based reasons.
+- Purchase coverage looks different from notice coverage while legitimacy and purchase eligibility remain separate.
+- A real `Check eligibility` CTA is a block-level `<a>` only for a validated absolute `https://` 🟢/🟡 official information URL. Illustrative demos may use a non-interactive `<span>` with the same layout.
 
-No generator rule is changed by this mock.
+These rules are now part of the packaged skill specification.
