@@ -172,7 +172,7 @@ grep -q 'give the anchor block formatting' \
   "$SKILL_DIR/references/report-template.md"
 grep -q 'without `Section 1–5` numerals' "$SKILL_DIR/SKILL.md"
 if sed '/without `Section 1–5` numerals/d' "$SKILL_DIR/SKILL.md" | \
-  grep -Eq 'Sections? [1-5](–[1-5])?'; then
+  grep -E 'Sections? [1-5](–[1-5])?' >/dev/null; then
   echo "SKILL.md contains a legacy numbered lifecycle-section name." >&2
   exit 1
 fi
@@ -239,7 +239,8 @@ if "$REPO_ROOT/install.sh" --unknown >/dev/null 2>&1; then
 fi
 
 # Editor/Finder duplicates ("class-action-finder 2.zip") must never be tracked.
-if git -C "$REPO_ROOT" ls-files | grep -qE ' [0-9]+\.[A-Za-z]+$| copy( [0-9]+)?\.'; then
+if git -C "$REPO_ROOT" ls-files | \
+  grep -E ' [0-9]+\.[A-Za-z]+$| copy( [0-9]+)?\.' >/dev/null; then
   echo "A duplicate editor artifact is tracked by git." >&2
   exit 1
 fi
@@ -284,7 +285,7 @@ diff -ru -x output "$SKILL_DIR" \
   "$TMP_ROOT/unpacked/class-action-finder"
 
 for archive in "$TRACKED_SKILL" "$GENERATED_SKILL"; do
-  if unzip -Z1 "$archive" | grep -q '/output/'; then
+  if unzip -Z1 "$archive" | grep '/output/' >/dev/null; then
     echo "Packaged archive unexpectedly contains runtime output files." >&2
     exit 1
   fi
