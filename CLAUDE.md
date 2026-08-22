@@ -49,7 +49,7 @@ class-action-finder/
 │   ├── assets/               brand SVGs
 │   ├── references/           runtime-loaded guides
 │   └── output/               generated reports (gitignored)
-├── scripts/                  package-skill.sh, check.sh
+├── scripts/                  package-skill.sh, shoot-screenshots.sh, check.sh
 ├── dist/                     .zip + byte-identical .skill
 └── docs/                     demo report, screenshots, cost model
 ```
@@ -112,6 +112,10 @@ Neither platform's installer overwrites the other's tracker. The filename kept t
 Written to `output/` relative to the skill's own installed directory, never the user's cwd or Desktop/Documents. The whole folder is gitignored (everything under `output/` except a `.gitkeep`), so a generated report is **local-only and can never be committed or pushed to the origin repo** — this holds for anyone who clones or forks the project, not just the maintainer. Reports stay on the machine that ran the scan.
 
 A user may redirect the installed skill's `output/` to a more convenient, still-gitignored location (for example, symlink it into a project checkout so reports are easy to find). `install.sh` detects a symlinked `output/` and preserves the link across reinstalls rather than replacing it with a fresh directory.
+
+## Demo screenshots
+
+The README screenshots are build products of `docs/demo-report.html`, not independent assets. After changing the demo HTML, run `./scripts/shoot-screenshots.sh` and commit both PNGs plus `docs/screenshots.manifest`. The script renders at 1280px, derives both crop regions from live DOM boundaries, and writes true-colour PNGs. `scripts/check.sh` compares the demo's SHA-256 with the manifest so stale screenshots cannot pass CI; it does not require a browser itself.
 
 ## Mail tools (Gmail-first, provider-adaptive)
 

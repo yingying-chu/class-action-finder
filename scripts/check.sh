@@ -24,8 +24,10 @@ required_files=(
   "$SKILL_DIR/references/report-template.md"
   "$REPO_ROOT/docs/cost.md"
   "$REPO_ROOT/docs/demo-report.html"
+  "$REPO_ROOT/docs/screenshots.manifest"
   "$REPO_ROOT/docs/screenshot-report.png"
   "$REPO_ROOT/docs/screenshot-phishing-action.png"
+  "$REPO_ROOT/scripts/shoot-screenshots.sh"
 )
 
 for file in "${required_files[@]}"; do
@@ -70,6 +72,20 @@ if grep -Eq 'Use at most 100|Keep at most 25|Hard ceiling of \*\*30|<details ope
   exit 1
 fi
 grep -q 'Content-Security-Policy' "$REPO_ROOT/docs/demo-report.html"
+if command -v shasum >/dev/null 2>&1; then
+  demo_hash=$(shasum -a 256 "$REPO_ROOT/docs/demo-report.html" | awk '{print $1}')
+elif command -v sha256sum >/dev/null 2>&1; then
+  demo_hash=$(sha256sum "$REPO_ROOT/docs/demo-report.html" | awk '{print $1}')
+else
+  echo "A SHA-256 tool (shasum or sha256sum) is required." >&2
+  exit 1
+fi
+screenshot_hash=$(awk 'NF {print $1; exit}' "$REPO_ROOT/docs/screenshots.manifest")
+if [ "$demo_hash" != "$screenshot_hash" ]; then
+  echo "demo-report.html changed since the screenshots were generated." >&2
+  echo "Run ./scripts/shoot-screenshots.sh and commit the result." >&2
+  exit 1
+fi
 # Coverage honesty: the funnel must name its folder split, not just a total.
 grep -q 'class="coverage-state">Complete coverage' \
   "$REPO_ROOT/docs/demo-report.html"
