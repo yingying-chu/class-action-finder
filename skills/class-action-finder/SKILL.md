@@ -159,7 +159,7 @@ Apply the phishing guide's scoring. Also use the runtime's web search capability
 | 🟠 | 40–59% | Uncertain — verify before acting |
 | 🔴 | < 40% | Phishing risk — do not click |
 
-Record the score and the 2–3 signals behind it. Move any 🔴 thread straight to Section 5 — skip field extraction for those.
+Record the score and the 2–3 signals behind it. Move any 🔴 thread straight to Security alerts — skip field extraction for those.
 
 ## Step 7 — Extract fields
 
@@ -185,7 +185,7 @@ For each Type A / B thread (not 🔴), extract. Write `"unknown"` for anything n
 
 **Cross-reference memory:** apply **Settlement identity matching** above. Set `already_filed: true` and carry over the filed date and claim ID only when a settlement-specific identifier, normalized case/case number, or validated settlement hostname establishes the match. A fuzzy company-only match is not enough; keep the claim actionable and add a note that a possibly related filing exists in the tracker.
 
-**If `already_filed` is true:** still include the claim in Section 1 while its deadline hasn't passed (the user may still need documentation or a payout check), but mark it with a distinct "✅ Already filed on [date]" badge — separate from the confidence score — so it doesn't read as a pending action. Exclude it from the "What To Do Next" claim-filing actions. It may also appear in Section 4, where the tracker-specific filing and payout details are shown.
+**If `already_filed` is true:** still include the claim in Active claims while its deadline hasn't passed (the user may still need documentation or a payout check), but mark it with a distinct "✅ Already filed on [date]" badge — separate from the confidence score — so it doesn't read as a pending action. Exclude it from the "What To Do Next" claim-filing actions. It may also appear in Filed & tracking, where the tracker-specific filing and payout details are shown.
 
 ## Step 8 — Web supplement (Type A + URL + high enough confidence)
 
@@ -431,7 +431,7 @@ Part A and Part D share one report file per day, `class-action-report-YYYY-MM-DD
 
 **Case 1 — Part A already ran in this conversation.** Add the Purchase Matches to Review panel and the purchase funnel into the report you just wrote, as a targeted edit. Update the status-strip counts and both funnel labels. Leave the five lifecycle sections and the action queue untouched unless a `confirmed` match earns a place in the action queue.
 
-**Case 2 — Part D ran alone and today's report file already exists** (from an earlier Part A run today). Read the existing file and merge into it exactly as in Case 1. **Do not regenerate it** — a purchase scan has no settlement-notice data and would blank out Sections 1–5.
+**Case 2 — Part D ran alone and today's report file already exists** (from an earlier Part A run today). Read the existing file and merge into it exactly as in Case 1. **Do not regenerate it** — a purchase scan has no settlement-notice data and would blank out the five lifecycle sections.
 
 **Case 3 — Part D ran alone and no report exists for today.** Write a new report containing the hero, status strip, action queue, Purchase Matches to Review, and all five lifecycle sections. Active claims, Watching, Expired, and Security alerts will be empty; use the Empty Section Rule wording from `references/report-template.md` and make the empty state say the reason explicitly — e.g. *"No settlement-notice scan has run today. Ask me to scan your email for settlement notices to fill this in."* Populate Filed & tracking from the tracker (Step 3), since that data exists independently of any scan. Show only the purchase funnel, and label the header period as a purchase scan so the report is not mistaken for a full audit.
 

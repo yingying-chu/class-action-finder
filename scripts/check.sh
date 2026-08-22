@@ -170,6 +170,12 @@ grep -q 'The action queue is the single owner of complete details' \
   "$SKILL_DIR/SKILL.md"
 grep -q 'give the anchor block formatting' \
   "$SKILL_DIR/references/report-template.md"
+grep -q 'without `Section 1–5` numerals' "$SKILL_DIR/SKILL.md"
+if sed '/without `Section 1–5` numerals/d' "$SKILL_DIR/SKILL.md" | \
+  grep -Eq 'Sections? [1-5](–[1-5])?'; then
+  echo "SKILL.md contains a legacy numbered lifecycle-section name." >&2
+  exit 1
+fi
 grep -q '@media (max-width: 650px)' "$REPO_ROOT/docs/demo-report-v2.html"
 for anchor in action-queue purchase-matches active watching expired filed security; do
   grep -q "id=\"$anchor\"" "$REPO_ROOT/docs/demo-report-v2.html"
