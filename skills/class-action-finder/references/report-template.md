@@ -27,6 +27,8 @@ Keep the top status strip to four decision-oriented links:
 
 Counts must match the underlying cards. `Action required` counts only unfiled 🟢/🟡 filing actions, Filed includes its paid subset, and Security alerts equals the number of 🔴 cards. Active, Watching, Paid, and Expired remain clearly labeled in the report body but do not get separate top-level links. Keep the strip sticky on desktop and static at 900px and below. Use pure anchor links only, with no JavaScript.
 
+Use these exact IDs for report destinations: `action-queue`, `purchase-matches`, `active`, `watching`, `expired`, `filed`, `paid`, and `security`. These are semantic contracts, not examples. Do not generate positional IDs such as `sec1` through `sec5`.
+
 ---
 
 ## Header Block
@@ -36,8 +38,9 @@ Show at the top of the page:
 - Product label: "Class Action Finder"
 - Generated date (today's date) and period scanned
 - A direct headline such as: "[N] claims need action."
-- A prominent `Start here` cue naming the nearest actionable case and deadline. Place it before the value panel in reading order.
-- A separate actionable-potential-value panel, calculated exactly as Step 9 specifies. If amounts are ranges, show the summed range; if some are unknown, append `+ unknown`. Do not repeat this number in an adjacent subtitle.
+- An optional summary of no more than one or two short sentences. Omit it when it only repeats the headline, `Start here`, value panel, or funnels.
+- A prominent `Start here` cue naming the nearest actionable case and deadline. Place it before the value panel in reading order. If no claim is actionable, use the compact state `Nothing to file right now` and do not promote a non-actionable case into this slot.
+- Exactly one currency-denominated hero summary: the actionable-potential-value panel, in an element whose class includes `hero-value`, calculated exactly as Step 9 specifies. If amounts are ranges, show the summed range; if some are unknown, append `+ unknown`. If no numeric actionable estimate exists, show `No actionable payout estimate`. Do not repeat this number in an adjacent subtitle and do not add other money cards.
 - Notice funnel when Part A ran: emails processed → relevant settlement notices → verified unique cases → action-required claims
 - Purchase funnel when Part D ran: purchase emails processed → unique products/services → verified open settlements → matches to review
 - A visually distinct coverage state such as `Complete coverage`, followed by the notice-funnel stages
@@ -45,7 +48,9 @@ Show at the top of the page:
 
 Each funnel is a count transformation, not a proportional value chart. Render rectangular labeled stages with arrows so a small verified count is not visually exaggerated. If both scans ran, label both funnels and do not mix purchase confirmations into the settlement-notice count.
 
-**Coverage must be explicit.** For a fully traversed range, show `800 of 800 · complete`. If an external provider prevents complete traversal even after paging and adaptive date partitioning, show the known fraction with `provider-limited` and name the exact provider constraint beneath the funnel. Never print a partial count as though it were complete.
+**Coverage must be explicit.** For a fully traversed range, show `800 of 800 · complete`. If an external provider prevents complete traversal even after paging and adaptive date partitioning, show the known fraction with `provider-limited` and name the exact provider constraint. Keep extended methodology, exclusions, and limitations outside the hero in a closed-by-default `Coverage details` disclosure. Never print a partial count as though it were complete.
+
+The hero must never use a total settlement fund as the user's payout, potential value, or missed money. Do not sum settlement funds. A fund amount belongs only inside its individual case card and must be labeled `Total settlement fund`.
 
 The report must be mobile-first as well as desktop-friendly. At widths up to 650px, keep the hero headline at roughly 28–34px with a readable line height, reduce hero spacing, keep `Start here` visible before potential value, wrap the compact coverage sequence, disable sticky navigation, and collapse multi-column action/card/filed layouts to one readable column. No content, badge, ID, or CTA may overflow the viewport; use wrapping or horizontal scrolling only for genuinely unbreakable identifiers.
 
@@ -74,7 +79,7 @@ Put the CTA on its own line below the `Next step` label. When the label and CTA 
 
 ## Active Claims
 
-Render the heading as `Active claims`, without a `Section 1` numeral. The action queue is the single owner of complete details for unfiled 🟢/🟡 filing actions, so do not duplicate those cards here. Use this section only for additional open claims, such as already-filed but still-open claims, auto-enrolled cases, or 🟠 entries that need a non-clickable verification note. Sort nonempty cards by soonest deadline first.
+Render the heading as `Active claims`, with `id="active"` and without a `Section 1` numeral. The action queue is the single owner of complete details for unfiled 🟢/🟡 filing actions. Filed & tracking is the single owner of filed and auto-enrolled claims, including claims whose filing windows remain open. Use Active claims only for additional open, non-filed items that cannot enter the action queue, principally 🟠 entries that need a non-clickable verification note. Sort nonempty cards by soonest deadline first. Never repeat a full claim card from Filed & tracking here.
 
 **Each card must include:**
 
@@ -83,19 +88,15 @@ Render the heading as `Active claims`, without a `Section 1` numeral. The action
 | Company / case name | Defendant + case citation if available |
 | What it's about | One sentence describing the alleged harm |
 | Legitimacy | e.g., `High confidence` plus `PCWorld coverage, Epiq sender, no payment requested`; omit the percentage |
-| Already filed? | If `already_filed` is true (Step 7), show a distinct "✅ Already filed on [date]" badge — separate from the confidence score, so it can't be mistaken for a phishing signal |
 | Claim deadline | Highlight as urgent if ≤ 14 days away |
 | Opt-out deadline | Show if different from claim deadline |
 | Your payout | Amount or range; "pro-rata, unknown" if not stated |
-| Total settlement pool | e.g., "$725M" |
-| Claim ID / PIN | Two separate monospace boxes — `claim_id` and `pin` from Step 7. Omit the PIN box entirely if none was extracted; don't show an empty one |
+| Total settlement fund | e.g., "$725M"; label it clearly so it cannot be mistaken for the claimant's payout |
 | Claim URL | Clickable only for verified 🟢/🟡 `https://` URLs; show 🟠 URLs as non-clickable text with a warning |
 | Notes | One sentence on anything notable (e.g., "CA residents get +$100 CCPA") |
 | Discovery source | One or more source badges; keep them separate from confidence and filed status |
 
-Include auto-enrolled cases here too (no form needed, but payout is pending).
-
-When an active card has `already_filed: true`, keep it in this section for reference, show the filed badge prominently, and give it no filing CTA.
+Do not include already-filed or auto-enrolled cases here. They belong only in Filed & tracking.
 
 ---
 
@@ -130,8 +131,9 @@ Render the heading as `Expired`, without a section numeral. Use one card per cas
 | Legitimacy band and reason | No percentage in report-facing text |
 | What the deadline was | |
 | What benefits were available | |
-| Your claim ID | If one was found in the email |
 | Claim URL | For reference even if closed |
+
+Do not render a claim ID or PIN in Expired. Those identifiers no longer support an action and unnecessarily increase the sensitivity of the local report.
 
 ---
 
@@ -150,6 +152,8 @@ Render the heading as `Filed & tracking`, without a section numeral. Use one car
 | Actual payout | If received; "Pending ⏳" if not |
 | Payment method | e.g., "Zelle", "Virtual Visa", "check" |
 | Notes | Include any action still needed (e.g., redeem a prepaid card) |
+
+If a filed or auto-enrolled claim's window remains open, show an `Open window` state and its deadline on this card. Do not duplicate it in Active claims.
 
 ---
 
@@ -229,6 +233,14 @@ Within Filed & tracking, present awaiting-payout claims first and paid claims se
 - `Action needed · redeem payment`
 
 Show filed date, claim ID and PIN, expected payout, actual payout, payout date, and payment method when known. These records remain visible across future scans through the tracker, even though they are excluded from the filing-action queue and the actionable-value total.
+
+---
+
+## Purchase Search Audit
+
+When Part D runs, state how many distinct product/service pairs reached a terminal classification out of how many were found. Email traversal and product classification are different coverage claims; do not use completion of the mailbox metadata sweep to imply that every product was checked.
+
+An optional `Searched and ruled out` note may summarize no-match classifications by broad category and count. Keep it compact. Name a merchant only when the user explicitly requested it or its identity is material to a displayed match. For healthcare providers and similarly sensitive merchants, use categories and counts rather than names. A complete report must not contain a `not individually searched` bucket. If the user narrows scope, mark the remainder `user-limited`; if an external provider blocks completion, mark it `provider-limited` and state the constraint.
 
 ---
 

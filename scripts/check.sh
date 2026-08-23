@@ -28,6 +28,7 @@ required_files=(
   "$REPO_ROOT/docs/screenshot-report.png"
   "$REPO_ROOT/docs/screenshot-phishing-action.png"
   "$REPO_ROOT/scripts/shoot-screenshots.sh"
+  "$REPO_ROOT/scripts/audit-generated-report.py"
 )
 
 for file in "${required_files[@]}"; do
@@ -69,6 +70,16 @@ grep -q '| B | High-signal claim phrases \*\*in the body\*\*' \
   "$SKILL_DIR/SKILL.md"
 grep -q 'Opt-out language is an extraction field, not a discovery anchor' \
   "$SKILL_DIR/references/extraction-guide.md"
+grep -q 'hero has exactly one currency-denominated summary' \
+  "$SKILL_DIR/SKILL.md"
+grep -q 'Give each claim one lifecycle owner' \
+  "$SKILL_DIR/SKILL.md"
+grep -q 'A report described as complete must never contain a bucket such as `not individually searched`' \
+  "$SKILL_DIR/SKILL.md"
+grep -q 'Never render a claim ID or PIN in Expired' \
+  "$SKILL_DIR/SKILL.md"
+grep -q 'Use these exact IDs for report destinations' \
+  "$SKILL_DIR/references/report-template.md"
 python3 - "$SKILL_DIR/SKILL.md" <<'PYEOF'
 import sys
 
@@ -188,7 +199,7 @@ grep -q '\.eligibility-button { display: block;' \
 grep -q 'render the CTA as an `<a>` only when it points to a validated absolute `https://`' \
   "$SKILL_DIR/SKILL.md"
 grep -q 'do not render them in the report' "$SKILL_DIR/SKILL.md"
-grep -q 'The action queue is the single owner of complete details' \
+grep -q 'The action queue owns unfiled' \
   "$SKILL_DIR/SKILL.md"
 grep -q 'give the anchor block formatting' \
   "$SKILL_DIR/references/report-template.md"
@@ -206,6 +217,63 @@ if grep -Eq '>Section [1-5]|[0-9]{1,3}% (confidence|verified|likely|legitimate)|
   echo "Demo report reintroduced section numerals, false precision, or active content." >&2
   exit 1
 fi
+python3 "$REPO_ROOT/scripts/audit-generated-report.py" \
+  "$REPO_ROOT/docs/demo-report.html" >/dev/null
+
+# Prove the generated-report audit rejects the launch-blocker failure classes.
+BROKEN_REPORT="$TMP_ROOT/broken-generated-report.html"
+BROKEN_AUDIT="$TMP_ROOT/broken-generated-report-audit.txt"
+python3 - "$REPO_ROOT/docs/demo-report.html" "$BROKEN_REPORT" <<'PYEOF'
+import re
+import sys
+
+source = open(sys.argv[1], encoding='utf-8').read()
+source = source.replace('id="active"', 'id="sec1"', 1)
+source = source.replace(
+    '</header>',
+    '<div>$9M total settlement fund</div><div class="hero-value">extra</div>'
+    + ('<span>coverage detail </span>' * 230)
+    + '</header>',
+    1,
+)
+source = re.sub(
+    r'(<section\b[^>]*\bid="sec1"[^>]*>)',
+    r'\1<article><h3>Duplicate audit claim</h3></article>',
+    source,
+    count=1,
+)
+source = re.sub(
+    r'(<section\b[^>]*\bid="filed"[^>]*>)',
+    r'\1<article><h3>Duplicate audit claim</h3></article>',
+    source,
+    count=1,
+)
+source = re.sub(
+    r'(<section\b[^>]*\bid="expired"[^>]*>)',
+    r'\1<p>Claim ID: PRIVATE</p>',
+    source,
+    count=1,
+)
+source = source.replace('</body>', '<p>Not individually searched</p></body>', 1)
+open(sys.argv[2], 'w', encoding='utf-8').write(source)
+PYEOF
+if python3 "$REPO_ROOT/scripts/audit-generated-report.py" \
+  "$BROKEN_REPORT" >"$BROKEN_AUDIT" 2>&1; then
+  echo "Generated-report audit accepted a deliberately broken report." >&2
+  exit 1
+fi
+for expected in \
+  'missing one or more required semantic anchors' \
+  'uses a positional sec1-sec5 anchor' \
+  'Hero exceeds the generated-report readability limit' \
+  'Hero must contain exactly one hero-value element' \
+  'Hero contains settlement-fund or closed-window money context' \
+  'Hero contains currency outside hero-value' \
+  'duplicated between Active and Filed' \
+  'Expired contains a claim ID or PIN' \
+  'complete report contains a not-individually-searched bucket'; do
+  grep -Fq "$expected" "$BROKEN_AUDIT"
+done
 
 bash -n \
   "$REPO_ROOT/install.sh" \
