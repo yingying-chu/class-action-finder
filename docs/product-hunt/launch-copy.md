@@ -8,9 +8,9 @@ Class Action Finder
 
 Find claims hiding in your email and receipts
 
-## Description (246/260 characters)
+## Description (253/260 characters)
 
-Free, open-source AI skill for ChatGPT, Claude, and Codex. Scan settlement notices, match receipts to open cases, verify links, and organize deadlines, filings, and payouts in a private HTML report. Receipts are leads, not proof that you qualify.
+Free, open-source AI skill for ChatGPT, Claude, and Codex. Find class action notices in your email, check potential eligibility for purchases confirmed in your inbox, verify claim links, and track deadlines, claims, and payouts in a private HTML report.
 
 ## Pricing
 
@@ -43,7 +43,7 @@ I built Class Action Finder because settlement notices are easy to miss, and pur
 It is a free, open-source AI skill for ChatGPT, Claude, and Codex with two discovery paths:
 
 - Notice Scan finds settlement emails, extracts deadlines and claim credentials, verifies the claim site, and puts urgent actions first.
-- Purchase Match reviews receipts and subscriptions, then checks public sources for potentially matching open settlements. A receipt can reveal a case, but it does not prove eligibility.
+- Purchase Match reviews receipts and subscriptions, then checks whether purchases confirmed in your email may qualify for open settlements.
 
 The result is a private, mobile-friendly HTML report with an action queue, claim tracker, payout history, and phishing safeguards. Local reports stay on your machine. Purchase matching sends only generic merchant and product terms to web search, never raw receipt text or personal identifiers.
 
