@@ -216,13 +216,51 @@ def audit(path: Path) -> list[str]:
         section = next((n for n in nodes if n.attrs.get("id") == section_id), None)
         if section is None or section_id in linked or section_id == "paid":
             continue
-        if len(section.visible_text().split()) > 25:
+        # "Has content" means it holds item cards, not that its empty-state
+        # explanation is wordy. A section with zero items is correctly omitted
+        # from the navigation and named in the trailing line instead.
+        if any(d.tag == "article" for d in section.descendants()):
             nonempty_unlinked.append(section_id)
     if nonempty_unlinked:
         errors.append("A section with content has no navigation entry.")
 
-    if not any("back-to-top" in n.classes for n in nodes):
+    # Navigation counts must match the cards they claim to describe. Checking only
+    # that a digit is present lets a chip say 99 for a one-item section.
+    def article_count(node: "Node | None") -> int:
+        if node is None:
+            return 0
+        return sum(1 for d in node.descendants() if d.tag == "article")
+
+    for link in nav_links:
+        target = link.attrs.get("href", "").lstrip("#")
+        section = next((n for n in nodes if n.attrs.get("id") == target), None)
+        if section is None:
+            continue
+        stated = [int(v) for v in re.findall(r"\d+", link.visible_text())]
+        if not stated:
+            continue
+        if stated[0] != article_count(section):
+            errors.append("A navigation count does not match its section's cards.")
+            break
+        # A nested secondary count (for example "2 paid") describes a subsection.
+        if len(stated) > 1 and target == "filed":
+            paid = next((n for n in nodes if n.attrs.get("id") == "paid"), None)
+            if stated[1] != article_count(paid):
+                errors.append("The nested paid count does not match the paid cards.")
+                break
+
+    # Back to top must actually go to the top, not merely exist.
+    back_links = [
+        d
+        for n in nodes
+        if "back-to-top" in n.classes
+        for d in ([n] + list(n.descendants()))
+        if d.tag == "a"
+    ]
+    if not back_links:
         errors.append("Report offers no back-to-top affordance.")
+    elif any(link.attrs.get("href") != "#top" for link in back_links):
+        errors.append("A back-to-top link does not target #top.")
     if not any(n.attrs.get("id") == "top" for n in nodes):
         errors.append("Report has no #top anchor for back-to-top links.")
 

@@ -48,6 +48,7 @@
   .status-nav .nested { font-size: 11px; font-weight: 500; color: var(--muted); }
   .status-nav a:first-child .nested { color: rgba(255,255,255,.72); }
   .nav-absent { margin-left: auto; color: var(--muted); font-size: 11.5px; }
+  .paid-head { margin: 20px 0 0; padding-top: 14px; border-top: 1px solid var(--line); }
   .back-to-top { display: block; margin-top: 12px; text-align: right; }
   .back-to-top a { color: var(--muted); font-size: 11.5px; text-decoration: none; }
   .back-to-top a:hover { color: var(--brand); }
@@ -234,7 +235,10 @@
   <section class="section-block" id="filed">
     <div class="section-head"><div><span class="eyebrow">Your tracker</span><h2>Filed &amp; tracking</h2></div><p>2 items · 1 paid</p></div>
     <article class="tracker-row"><div><span class="badge source">✍️ Manually added</span><h3>SampleHealth Group · Antitrust</h3><div class="sub">Filed before 2021</div></div><div class="tracker-facts"><div><span class="label">Claim ID</span><strong>Not recorded</strong></div><div><span class="label">Expected</span><strong>Pro-rata</strong></div><div><span class="label">Status</span><strong>Awaiting payout</strong></div></div></article>
-    <article class="tracker-row" id="paid"><div><h3>SampleSocial · Internet Tracking</h3><div class="sub">Filed date unknown</div></div><div class="tracker-facts"><div><span class="label">Claim ID</span><strong>SAMPLE-PAID-1</strong></div><div><span class="label">Received</span><strong>$12.50</strong></div><div><span class="label">Status</span><strong class="confidence-text">Paid · direct deposit</strong></div></div></article>
+    <div id="paid">
+      <p class="paid-head"><span class="eyebrow">Paid · 1</span></p>
+      <article class="tracker-row"><div><h3>SampleSocial · Internet Tracking</h3><div class="sub">Filed date unknown</div></div><div class="tracker-facts"><div><span class="label">Claim ID</span><strong>SAMPLE-PAID-1</strong></div><div><span class="label">Received</span><strong>$12.50</strong></div><div><span class="label">Status</span><strong class="confidence-text">Paid · direct deposit</strong></div></div></article>
+    </div>
     <p class="back-to-top"><a href="#top">↑ Back to top</a></p>
   </section>
   <section class="section-block" id="security">

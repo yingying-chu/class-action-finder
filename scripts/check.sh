@@ -187,6 +187,15 @@ grep -q 'class="back-to-top"' "$REPO_ROOT/docs/demo-report.html"
 grep -q 'id="top"' "$REPO_ROOT/docs/demo-report.html"
 grep -q 'one compact pure-CSS \*\*section navigation\*\*' "$SKILL_DIR/SKILL.md"
 grep -q 'Paid is never a peer chip' "$SKILL_DIR/SKILL.md"
+grep -q 'The action queue owns every claim with an open, user-actionable deadline' \
+  "$SKILL_DIR/SKILL.md"
+grep -q 'Activate benefit' "$SKILL_DIR/SKILL.md"
+grep -q 'open, user-actionable deadline' \
+  "$SKILL_DIR/references/report-template.md"
+if grep -q 'four-item status strip' "$SKILL_DIR/SKILL.md"; then
+  echo "SKILL.md still carries the superseded four-item mobile navigation rule." >&2
+  exit 1
+fi
 grep -q 'at least the sticky row' "$SKILL_DIR/SKILL.md"
 grep -q 'Use one section-navigation row, never two' \
   "$SKILL_DIR/references/report-template.md"
@@ -218,7 +227,7 @@ grep -q '\.eligibility-button { display: block;' \
 grep -q 'render the CTA as an `<a>` only when it points to a validated absolute `https://`' \
   "$SKILL_DIR/SKILL.md"
 grep -q 'do not render them in the report' "$SKILL_DIR/SKILL.md"
-grep -q 'The action queue owns unfiled' \
+grep -q 'The action queue owns every claim with an open, user-actionable deadline' \
   "$SKILL_DIR/SKILL.md"
 grep -q 'Never apply `white-space: nowrap` to a legitimacy or confidence rationale' \
   "$SKILL_DIR/SKILL.md"
@@ -279,9 +288,10 @@ source = re.sub(
 )
 source = source.replace('</body>', '<p>Not individually searched</p></body>', 1)
 source = source.replace('<a href="#watching">', '<a href="#paid">', 1)
-source = source.replace('class="back-to-top"', 'class="was-back-to-top"')
 source = source.replace('id="top"', 'id="was-top"', 1)
 source = source.replace('</nav>', '</nav><nav><span>Also in this report</span></nav>', 1)
+source = source.replace('<strong>1</strong>Watching', '<strong>99</strong>Watching', 1)
+source = source.replace('href="#top"', 'href="#nowhere"')
 open(sys.argv[2], 'w', encoding='utf-8').write(source)
 PYEOF
 if python3 "$REPO_ROOT/scripts/audit-generated-report.py" \
@@ -303,10 +313,24 @@ for expected in \
   'contains a second navigation row' \
   'Paid was promoted to a top-level navigation chip' \
   'section with content has no navigation entry' \
-  'offers no back-to-top affordance' \
-  'no #top anchor for back-to-top links'; do
+  'no #top anchor for back-to-top links' \
+  'navigation count does not match' \
+  'back-to-top link does not target #top'; do
   grep -Fq "$expected" "$BROKEN_AUDIT"
 done
+
+# Removing the affordance and breaking its target are mutually exclusive defects,
+# so the second one needs its own fixture.
+NOBACK_REPORT="$TMP_ROOT/no-back-to-top-report.html"
+NOBACK_AUDIT="$TMP_ROOT/no-back-to-top-audit.txt"
+sed 's/class="back-to-top"/class="was-back-to-top"/g' \
+  "$REPO_ROOT/docs/demo-report.html" >"$NOBACK_REPORT"
+if python3 "$REPO_ROOT/scripts/audit-generated-report.py" \
+  "$NOBACK_REPORT" >"$NOBACK_AUDIT" 2>&1; then
+  echo "Generated-report audit accepted a report with no back-to-top affordance." >&2
+  exit 1
+fi
+grep -Fq 'offers no back-to-top affordance' "$NOBACK_AUDIT"
 
 # The first live v2 generator run omitted only the Paid destination, despite rendering
 # paid cards. Prove that this exact one-anchor drift cannot pass by accident.
