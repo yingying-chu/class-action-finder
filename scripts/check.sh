@@ -30,6 +30,7 @@ required_files=(
   "$REPO_ROOT/docs/product-hunt/assets.manifest"
   "$REPO_ROOT/docs/product-hunt/gallery-01-report.png"
   "$REPO_ROOT/docs/product-hunt/gallery-02-workflow.png"
+  "$REPO_ROOT/docs/product-hunt/gallery-03-full-report.png"
   "$REPO_ROOT/docs/product-hunt/gallery-source.html"
   "$REPO_ROOT/docs/product-hunt/launch-copy.md"
   "$REPO_ROOT/docs/product-hunt/thumbnail.png"
@@ -138,6 +139,7 @@ expected = {
     "thumbnail.png": (240, 240),
     "gallery-01-report.png": (1270, 760),
     "gallery-02-workflow.png": (1270, 760),
+    "gallery-03-full-report.png": (1270, 760),
 }
 for name, dimensions in expected.items():
     data = (asset_dir / name).read_bytes()
