@@ -146,6 +146,8 @@ for name, dimensions in expected.items():
     width, height = struct.unpack(">II", data[16:24])
     if (width, height) != dimensions:
         raise SystemExit(f"{name} has dimensions {width}x{height}, expected {dimensions[0]}x{dimensions[1]}")
+    if name == "thumbnail.png" and data[25] != 6:
+        raise SystemExit("Product Hunt thumbnail must be an RGBA PNG with transparent corners")
 if (asset_dir / "thumbnail.png").stat().st_size >= 3 * 1024 * 1024:
     raise SystemExit("Product Hunt thumbnail must be smaller than 3MB")
 
@@ -155,6 +157,8 @@ for heading, limit in (("## Tagline", 60), ("## Description", 260)):
     if len(value) > limit:
         raise SystemExit(f"{heading[3:]} is {len(value)} characters; limit is {limit}")
 PYEOF
+grep -q 'Free · open source · illustrative sample data' \
+  "$REPO_ROOT/docs/product-hunt/gallery-source.html"
 # Coverage honesty: the funnel must name its folder split, not just a total.
 grep -q 'class="coverage-state">Complete coverage' \
   "$REPO_ROOT/docs/demo-report.html"

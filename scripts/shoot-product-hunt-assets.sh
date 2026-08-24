@@ -69,6 +69,11 @@ const { pathToFileURL } = require("url");
     ];
 
     for (const asset of assets) {
+      if (asset.selector === "#thumbnail") {
+        await page.evaluate(() => {
+          document.body.style.background = "transparent";
+        });
+      }
       const locator = page.locator(asset.selector);
       const box = await locator.boundingBox();
       if (!box || Math.round(box.width) !== asset.width || Math.round(box.height) !== asset.height) {
@@ -79,11 +84,14 @@ const { pathToFileURL } = require("url");
         type: "png",
         animations: "disabled",
         caret: "hide",
-        omitBackground: false,
+        omitBackground: asset.selector === "#thumbnail",
       });
       const image = fs.readFileSync(`${process.env.TMP_ROOT}/${asset.name}`);
       const colourType = image[25];
-      if (colourType !== 2 && colourType !== 6) {
+      if (asset.selector === "#thumbnail" && colourType !== 6) {
+        throw new Error("thumbnail.png must retain RGBA transparency");
+      }
+      if (asset.selector !== "#thumbnail" && colourType !== 2 && colourType !== 6) {
         throw new Error(`${asset.name} is not a true-colour PNG`);
       }
     }
