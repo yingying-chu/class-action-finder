@@ -402,6 +402,14 @@ if "$REPO_ROOT/install.sh" --unknown >/dev/null 2>&1; then
   exit 1
 fi
 
+# Build residue must never be tracked: running the audit script leaves a
+# __pycache__ next to it, and one reached main this way.
+if git -C "$REPO_ROOT" ls-files \
+  | grep -E '__pycache__/|\.py[cod]$|\.DS_Store$' >/dev/null; then
+  echo "A build cache or OS metadata file is tracked by git." >&2
+  exit 1
+fi
+
 # Editor/Finder duplicates ("class-action-finder 2.zip") must never be tracked.
 if git -C "$REPO_ROOT" ls-files | \
   grep -E ' [0-9]+\.[A-Za-z]+$| copy( [0-9]+)?\.' >/dev/null; then

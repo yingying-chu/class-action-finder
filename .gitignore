@@ -13,3 +13,7 @@ skills/class-action-finder/output/*
 * [0-9].*
 * copy.*
 * copy [0-9].*
+
+# Python bytecode caches — created by running scripts/, never part of the skill
+__pycache__/
+*.py[cod]
