@@ -216,7 +216,10 @@ def audit(path: Path) -> list[str]:
         section = next((n for n in nodes if n.attrs.get("id") == section_id), None)
         if section is None or section_id in linked or section_id == "paid":
             continue
-        if len(section.visible_text().split()) > 25:
+        # "Has content" means it holds item cards, not that its empty-state
+        # explanation is wordy. A section with zero items is correctly omitted
+        # from the navigation and named in the trailing line instead.
+        if any(d.tag == "article" for d in section.descendants()):
             nonempty_unlinked.append(section_id)
     if nonempty_unlinked:
         errors.append("A section with content has no navigation entry.")
