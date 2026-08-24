@@ -203,6 +203,10 @@ grep -q 'render the CTA as an `<a>` only when it points to a validated absolute 
 grep -q 'do not render them in the report' "$SKILL_DIR/SKILL.md"
 grep -q 'The action queue owns unfiled' \
   "$SKILL_DIR/SKILL.md"
+grep -q 'Never apply `white-space: nowrap` to a legitimacy or confidence rationale' \
+  "$SKILL_DIR/SKILL.md"
+grep -q 'Give those badges `max-width: 100%` and allow their evidence text to wrap' \
+  "$SKILL_DIR/references/report-template.md"
 grep -q 'give the anchor block formatting' \
   "$SKILL_DIR/references/report-template.md"
 grep -q 'without `Section 1–5` numerals' "$SKILL_DIR/SKILL.md"

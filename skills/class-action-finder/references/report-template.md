@@ -52,7 +52,7 @@ Each funnel is a count transformation, not a proportional value chart. Render re
 
 The hero must never use a total settlement fund as the user's payout, potential value, or missed money. Do not sum settlement funds. A fund amount belongs only inside its individual case card and must be labeled `Total settlement fund`.
 
-The report must be mobile-first as well as desktop-friendly. At widths up to 650px, keep the hero headline at roughly 28–34px with a readable line height, reduce hero spacing, keep `Start here` visible before potential value, wrap the compact coverage sequence, disable sticky navigation, and collapse multi-column action/card/filed layouts to one readable column. No content, badge, ID, or CTA may overflow the viewport; use wrapping or horizontal scrolling only for genuinely unbreakable identifiers.
+The report must be mobile-first as well as desktop-friendly. At widths up to 650px, keep the hero headline at roughly 28–34px with a readable line height, reduce hero spacing, keep `Start here` visible before potential value, wrap the compact coverage sequence, disable sticky navigation, and collapse multi-column action/card/filed layouts to one readable column. No content, badge, ID, or CTA may overflow the viewport; use wrapping or horizontal scrolling only for genuinely unbreakable identifiers. Never apply `white-space: nowrap` to a legitimacy or confidence rationale. Give those badges `max-width: 100%` and allow their evidence text to wrap.
 
 ---
 
