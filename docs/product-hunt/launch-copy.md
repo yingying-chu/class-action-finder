@@ -4,13 +4,13 @@
 
 Class Action Finder
 
-## Tagline (53/60 characters)
+## Tagline (45 characters)
 
-Find missed class action notices and purchase matches
+Find claims hiding in your email and receipts
 
-## Description (393/500 characters)
+## Description (246/260 characters)
 
-Class Action Finder is a free, open-source AI skill for Claude, Codex, and ChatGPT. It scans settlement notices, checks purchase confirmations against open cases, verifies claim links for phishing risk, and keeps deadlines, filed claims, and payouts in one private HTML report. Purchase matches remain leads until eligibility is confirmed, and sensitive email data is never sent to web search.
+Free, open-source AI skill for ChatGPT, Claude, and Codex. Scan settlement notices, match receipts to open cases, verify links, and organize deadlines, filings, and payouts in a private HTML report. Receipts are leads, not proof that you qualify.
 
 ## Pricing
 
@@ -38,18 +38,18 @@ https://yingying-chu.github.io/class-action-finder/demo-report.html
 
 Hi Product Hunt 👋
 
-I built Class Action Finder around a simple problem: settlement notices are easy to miss, and purchase-based cases may never contact you at all.
+I built Class Action Finder because settlement notices are easy to miss, and purchase-based cases may never email you at all.
 
-Class Action Finder is a free, open-source AI skill for Claude, Codex, and ChatGPT. It follows two separate discovery paths:
+It is a free, open-source AI skill for ChatGPT, Claude, and Codex with two discovery paths:
 
 - Notice Scan finds settlement emails, extracts deadlines and claim credentials, verifies the claim site, and puts urgent actions first.
-- Purchase Match reviews receipts and subscriptions, then checks public sources for potentially matching open settlements. A receipt is treated as a lead, never automatic proof of eligibility.
+- Purchase Match reviews receipts and subscriptions, then checks public sources for potentially matching open settlements. A receipt can reveal a case, but it does not prove eligibility.
 
-The result is one private, mobile-friendly HTML report with an action queue, claim tracker, payout history, and phishing safeguards. Local reports stay on the user's machine, and sensitive receipt details are never sent to web search.
+The result is a private, mobile-friendly HTML report with an action queue, claim tracker, payout history, and phishing safeguards. Local reports stay on your machine. Purchase matching sends only generic merchant and product terms to web search, never raw receipt text or personal identifiers.
 
 The project is MIT licensed, and the sample companies, credentials, and payout amounts shown in the gallery are illustrative.
 
-I would especially value feedback on the report's clarity, the safety boundaries, and which email integrations you would like to see next.
+I would love feedback on the report's clarity, the safety boundaries, and which mail integrations you would like next.
 
 Thanks for taking a look!
 
@@ -58,3 +58,12 @@ Thanks for taking a look!
 1. `thumbnail.png`
 2. `gallery-01-report.png`
 3. `gallery-02-workflow.png`
+
+## Final submission checklist
+
+- Post from a completed personal Product Hunt account and add the maker by Product Hunt username.
+- Choose `Free` for pricing and `Available now` for status.
+- Use only a few closely related topics: Artificial Intelligence, Open Source, and Legal Tech when available; otherwise replace Legal Tech with Productivity.
+- Upload the assets in the order above. The gallery needs both images to be visible.
+- Use the GitHub repository as the primary URL and the live HTML demo as the additional link.
+- Keep the gallery disclaimer visible: every company, credential, date, and payout shown is illustrative.

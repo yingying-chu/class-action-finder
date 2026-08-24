@@ -27,7 +27,14 @@ required_files=(
   "$REPO_ROOT/docs/screenshots.manifest"
   "$REPO_ROOT/docs/screenshot-report.png"
   "$REPO_ROOT/docs/screenshot-phishing-action.png"
+  "$REPO_ROOT/docs/product-hunt/assets.manifest"
+  "$REPO_ROOT/docs/product-hunt/gallery-01-report.png"
+  "$REPO_ROOT/docs/product-hunt/gallery-02-workflow.png"
+  "$REPO_ROOT/docs/product-hunt/gallery-source.html"
+  "$REPO_ROOT/docs/product-hunt/launch-copy.md"
+  "$REPO_ROOT/docs/product-hunt/thumbnail.png"
   "$REPO_ROOT/scripts/shoot-screenshots.sh"
+  "$REPO_ROOT/scripts/shoot-product-hunt-assets.sh"
   "$REPO_ROOT/scripts/audit-generated-report.py"
 )
 
@@ -113,6 +120,41 @@ if [ "$demo_hash" != "$screenshot_hash" ]; then
   echo "Run ./scripts/shoot-screenshots.sh and commit the result." >&2
   exit 1
 fi
+
+# Product Hunt upload assets are derived from the current report screenshot, logo,
+# icon, and gallery HTML. Keep them reproducible and reject stale images.
+if command -v shasum >/dev/null 2>&1; then
+  (cd "$REPO_ROOT" && shasum -a 256 -c docs/product-hunt/assets.manifest) >/dev/null
+else
+  (cd "$REPO_ROOT" && sha256sum -c docs/product-hunt/assets.manifest) >/dev/null
+fi
+python3 - "$REPO_ROOT/docs/product-hunt" <<'PYEOF'
+import struct
+import sys
+from pathlib import Path
+
+asset_dir = Path(sys.argv[1])
+expected = {
+    "thumbnail.png": (240, 240),
+    "gallery-01-report.png": (1270, 760),
+    "gallery-02-workflow.png": (1270, 760),
+}
+for name, dimensions in expected.items():
+    data = (asset_dir / name).read_bytes()
+    if data[:8] != b"\x89PNG\r\n\x1a\n":
+        raise SystemExit(f"{name} is not a PNG")
+    width, height = struct.unpack(">II", data[16:24])
+    if (width, height) != dimensions:
+        raise SystemExit(f"{name} has dimensions {width}x{height}, expected {dimensions[0]}x{dimensions[1]}")
+if (asset_dir / "thumbnail.png").stat().st_size >= 3 * 1024 * 1024:
+    raise SystemExit("Product Hunt thumbnail must be smaller than 3MB")
+
+copy = (asset_dir / "launch-copy.md").read_text(encoding="utf-8")
+for heading, limit in (("## Tagline", 60), ("## Description", 260)):
+    value = copy.split(heading, 1)[1].split("\n\n", 2)[1]
+    if len(value) > limit:
+        raise SystemExit(f"{heading[3:]} is {len(value)} characters; limit is {limit}")
+PYEOF
 # Coverage honesty: the funnel must name its folder split, not just a total.
 grep -q 'class="coverage-state">Complete coverage' \
   "$REPO_ROOT/docs/demo-report.html"
