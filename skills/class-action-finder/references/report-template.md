@@ -18,16 +18,25 @@ A source badge is never a confidence badge. A legitimate settlement can still be
 
 Start with a bright editorial hero followed by a horizontal anchor/status strip. Use the transparent mark from `assets/logo-mark.svg` beside a live-text product label, following Step 9's self-contained inline-SVG rule. Place the mark directly on the hero with no white tile, border, or drop shadow so its green, purple, and warm-white artwork belongs to the gradient. Do not use a black admin-style header, the full wordmark on the gradient, or ornamental rings/circles.
 
-Keep the top status strip to four decision-oriented links:
+Use one section-navigation row, never two. It carries a chip per section that has content, each with its count, in this fixed order:
 
 1. Action required → the action queue
-2. Purchase matches → the Purchase Matches to Review panel
-3. Filed claims → Filed & tracking
-4. Security alerts → Security alerts
+2. Security alerts → Security alerts
+3. Purchase matches → the Purchase Matches to Review panel
+4. Filed & tracking → Filed & tracking, with its paid subset as a nested secondary count in the same chip
+5. Watching → Watching
+6. Expired → Expired
+7. Active claims → Active claims
 
-Counts must match the underlying cards. `Action required` counts only unfiled 🟢/🟡 filing actions, Filed includes its paid subset, and Security alerts equals the number of 🔴 cards. Active, Watching, Paid, and Expired remain clearly labeled in the report body but do not get separate top-level links. Keep the strip sticky on desktop and static at 900px and below. Use pure anchor links only, with no JavaScript.
+The order is fixed so the layout is predictable; membership is not. Omit any section whose count is zero and name the omitted ones in a single muted trailing line, e.g. `Nothing found in Active claims or Expired`. Navigation then describes this report rather than a fixed set of categories that are usually half empty.
+
+`Paid` never gets its own chip — it is a subsection inside Filed & tracking, so promoting it to a peer of Active/Watching/Expired states the wrong hierarchy.
+
+Counts must match the underlying cards. `Action required` counts only unfiled 🟢/🟡 filing actions, `Filed & tracking` counts all filed records including the paid subset, and `Security alerts` equals the number of 🔴 cards. Keep the row sticky on desktop and static at 900px and below; let chips wrap rather than shrink. Pure anchor links only, with no JavaScript.
 
 Use these exact IDs for report destinations: `action-queue`, `purchase-matches`, `active`, `watching`, `expired`, `filed`, `paid`, and `security`. These are semantic contracts, not examples. Do not generate positional IDs such as `sec1` through `sec5`.
+
+Every section starts with a visible rule and real space above it, and a head carrying an eyebrow, a heading, and a right-aligned item count. Every section long enough to fill a viewport ends with a quiet right-aligned `↑ Back to top` link.
 
 ---
 

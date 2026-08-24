@@ -40,11 +40,17 @@
   .coverage-state { display: inline-flex; padding: 3px 8px; border-radius: 999px; background: var(--confidence-soft); color: var(--confidence); font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
   .coverage-steps { display: inline-flex; align-items: center; gap: 7px; color: var(--text); }
   .coverage-folders { margin-top: 4px; }
-  .status-nav { position: sticky; top: 0; z-index: 5; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); background: rgba(255,255,255,.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
-  .status-nav a { padding: 9px 8px; border-right: 1px solid var(--line); text-align: center; text-decoration: none; font-size: 11px; }
-  .status-nav a:first-child { background: var(--brand-soft); }
-  .status-nav a:last-child { border-right: 0; }
-  .status-nav strong { display: inline; margin-right: 5px; font-size: 15px; }
+  .status-nav { position: sticky; top: 0; z-index: 5; background: rgba(255,255,255,.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--line); }
+  .status-nav .nav-inner { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; width: min(1080px, calc(100% - 40px)); margin: 0 auto; padding: 10px 0; }
+  .status-nav a { display: inline-flex; align-items: baseline; gap: 7px; padding: 6px 13px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); text-decoration: none; font-size: 12.5px; font-weight: 600; }
+  .status-nav a:first-child { background: var(--brand); border-color: var(--brand); color: var(--surface); font-weight: 700; }
+  .status-nav strong { font-size: 14px; font-weight: 800; }
+  .status-nav .nested { font-size: 11px; font-weight: 500; color: var(--muted); }
+  .status-nav a:first-child .nested { color: rgba(255,255,255,.72); }
+  .nav-absent { margin-left: auto; color: var(--muted); font-size: 11.5px; }
+  .back-to-top { display: block; margin-top: 12px; text-align: right; }
+  .back-to-top a { color: var(--muted); font-size: 11.5px; text-decoration: none; }
+  .back-to-top a:hover { color: var(--brand); }
   main { padding: 22px 0 50px; }
   section { scroll-margin-top: 62px; }
   .section-block { margin-top: 30px; padding-top: 24px; border-top: 1px solid var(--line); }
@@ -169,14 +175,18 @@
   </div>
 </header>
 <nav class="status-nav" aria-label="Report sections">
-  <a href="#action-queue"><strong>2</strong>Action required</a>
-  <a href="#purchase-matches"><strong>1</strong>Purchase matches</a>
-  <a href="#filed"><strong>2</strong>Filed claims</a>
-  <a href="#security"><strong>1</strong>Security alerts</a>
+  <div class="nav-inner">
+    <a href="#action-queue"><strong>2</strong>Action required</a>
+    <a href="#security"><strong>1</strong>Security alerts</a>
+    <a href="#purchase-matches"><strong>1</strong>Purchase matches</a>
+    <a href="#filed"><strong>2</strong>Filed &amp; tracking<span class="nested">1 paid</span></a>
+    <a href="#watching"><strong>1</strong>Watching</a>
+    <span class="nav-absent">Nothing found in Active claims or Expired</span>
+  </div>
 </nav>
 <main class="wrap">
   <section id="action-queue">
-    <div class="section-head"><div><span class="eyebrow">Priority queue</span><h2>What to do next</h2></div><p>Complete details live here once, sorted by deadline.</p></div>
+    <div class="section-head"><div><span class="eyebrow">Priority queue</span><h2>What to do next</h2></div><p>2 items · sorted by deadline</p></div>
     <div class="claim-list">
       <article class="claim-row">
         <span class="step">1</span>
@@ -200,32 +210,35 @@
     <div class="reminder">After submitting, tell the assistant “I already filed the ExampleApp one.” It will move into Filed &amp; tracking.</div>
   </section>
   <section class="section-block" id="purchase-matches">
-    <div class="section-head"><div><span class="eyebrow">Receipt discovery</span><h2>Purchase matches to review</h2></div><p>Possible match, not yet actionable.</p></div>
+    <div class="section-head"><div><span class="eyebrow">Receipt discovery</span><h2>Purchase matches to review</h2></div><p>1 item · not yet actionable</p></div>
     <div class="purchase-summary"><strong>Receipt coverage:</strong> 18 purchase emails · 12 unique products · 2 open settlements · 1 match to review</div>
     <article class="case-row">
       <div class="case-top"><div><span class="badge source">🧾 Purchase match</span><h3>ExampleHome · Model H Air Fryer Settlement</h3><div class="sub">A Jun 18, 2024 order names Model H; the case covers selected variants purchased during 2023–2025.</div></div><div><span class="badge confidence-high">High confidence settlement</span> <span class="badge eligibility">Strong purchase match</span></div></div>
       <div class="case-facts"><div><span class="label">Still confirm</span><strong>Serial-number range</strong></div><div><span class="label">Deadline</span><strong>Oct 30, 2026</strong></div><div><span class="label">Potential payout</span><strong>Up to $75</strong></div><div><span class="label">Next step</span><span class="button secondary eligibility-button">Check eligibility</span></div></div>
       <div class="case-note">The official source supports the case. The receipt supports a possible product match, not automatic eligibility.</div>
     </article>
+    <p class="back-to-top"><a href="#top">↑ Back to top</a></p>
   </section>
   <section class="section-block compact-empty" id="active">
     <p><strong>Active claims</strong><span>No additional open claims in this scan.</span></p>
   </section>
   <section class="section-block" id="watching">
-    <div class="section-head"><div><span class="eyebrow">No action yet</span><h2>Watching</h2></div><p>Cases to revisit after a material update.</p></div>
+    <div class="section-head"><div><span class="eyebrow">No action yet</span><h2>Watching</h2></div><p>1 item · revisit after an update</p></div>
     <article class="case-row">
       <div class="case-top"><div><h3>SampleTech · Mobile Data Practices</h3><div class="sub">A mobile app allegedly transferred usage data without clear consent.</div></div><span class="badge confidence-watch">Likely legitimate</span></div>
       <div class="case-facts"><div><span class="label">Status</span><strong>Awaiting final approval</strong></div><div><span class="label">Estimated payout</span><strong>Pro-rata, unknown</strong></div><div><span class="label">Current action</span><strong>None</strong></div><div><span class="label">Why watching</span><strong>No open claim form</strong></div></div>
     </article>
+    <p class="back-to-top"><a href="#top">↑ Back to top</a></p>
   </section>
   <section class="section-block" id="expired"><div class="section-head"><div><span class="eyebrow">Closed windows</span><h2>Expired</h2></div></div><p class="empty">No expired claims found in this scan.</p></section>
   <section class="section-block" id="filed">
-    <div class="section-head"><div><span class="eyebrow">Your tracker</span><h2>Filed &amp; tracking</h2></div><p>Remembered across future scans.</p></div>
+    <div class="section-head"><div><span class="eyebrow">Your tracker</span><h2>Filed &amp; tracking</h2></div><p>2 items · 1 paid</p></div>
     <article class="tracker-row"><div><span class="badge source">✍️ Manually added</span><h3>SampleHealth Group · Antitrust</h3><div class="sub">Filed before 2021</div></div><div class="tracker-facts"><div><span class="label">Claim ID</span><strong>Not recorded</strong></div><div><span class="label">Expected</span><strong>Pro-rata</strong></div><div><span class="label">Status</span><strong>Awaiting payout</strong></div></div></article>
     <article class="tracker-row" id="paid"><div><h3>SampleSocial · Internet Tracking</h3><div class="sub">Filed date unknown</div></div><div class="tracker-facts"><div><span class="label">Claim ID</span><strong>SAMPLE-PAID-1</strong></div><div><span class="label">Received</span><strong>$12.50</strong></div><div><span class="label">Status</span><strong class="confidence-text">Paid · direct deposit</strong></div></div></article>
+    <p class="back-to-top"><a href="#top">↑ Back to top</a></p>
   </section>
   <section class="section-block" id="security">
-    <div class="section-head"><div><span class="eyebrow">Do not click</span><h2>Security alerts</h2></div><p>Suspicious notices kept out of the action queue.</p></div>
+    <div class="section-head"><div><span class="eyebrow">Do not click</span><h2>Security alerts</h2></div><p>1 item · kept out of the queue</p></div>
     <article class="phishing"><div class="case-top"><div><h3>“Claim Your $5,000 Settlement NOW”</h3><div class="sub">claims@xk7r-settle.xyz</div></div><span class="badge confidence-danger">Phishing risk</span></div><div class="case-note">Requests a processing fee; the case name has no verifiable record; the sender domain is unrelated to a known administrator. Do not click any links. Report it as phishing in your mail provider.</div></article>
   </section>
 </main>

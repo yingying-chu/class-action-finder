@@ -187,6 +187,45 @@ def audit(path: Path) -> list[str]:
     ):
         errors.append("A complete report contains a not-individually-searched bucket.")
 
+    # --- navigation: one row, counted chips, Paid not a peer, back-to-top ---
+    navs = [n for n in nodes if n.tag == "nav"]
+    if len(navs) != 1:
+        errors.append("Report must have exactly one navigation row.")
+    if re.search(r"also in this report", visible, re.IGNORECASE):
+        errors.append("Report contains a second navigation row.")
+
+    nav_links = [
+        n
+        for nav in navs
+        for n in nav.descendants()
+        if n.tag == "a" and n.attrs.get("href", "").startswith("#")
+    ]
+    if any(n.attrs.get("href") == "#paid" for n in nav_links):
+        errors.append("Paid was promoted to a top-level navigation chip.")
+    # Look for a digit anywhere in the chip's own text rather than a specific
+    # element, so a designer can mark up the count however they like.
+    uncounted = [n for n in nav_links if not re.search(r"\d", n.visible_text())]
+    if nav_links and uncounted:
+        errors.append("A navigation chip is missing its count.")
+
+    # Sections present in the document but unreachable from the navigation, unless
+    # the report names them as empty in the trailing line.
+    linked = {n.attrs["href"].lstrip("#") for n in nav_links if n.attrs.get("href")}
+    nonempty_unlinked = []
+    for section_id in REQUIRED_IDS:
+        section = next((n for n in nodes if n.attrs.get("id") == section_id), None)
+        if section is None or section_id in linked or section_id == "paid":
+            continue
+        if len(section.visible_text().split()) > 25:
+            nonempty_unlinked.append(section_id)
+    if nonempty_unlinked:
+        errors.append("A section with content has no navigation entry.")
+
+    if not any("back-to-top" in n.classes for n in nodes):
+        errors.append("Report offers no back-to-top affordance.")
+    if not any(n.attrs.get("id") == "top" for n in nodes):
+        errors.append("Report has no #top anchor for back-to-top links.")
+
     return errors
 
 
