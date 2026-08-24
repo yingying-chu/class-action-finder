@@ -121,7 +121,7 @@ grep -q 'Inbox 72 · Spam 6 · Promotions 4' \
 # Responsive intent, without pinning values a designer may legitimately retune.
 grep -q 'clamp(' "$REPO_ROOT/docs/demo-report.html"
 grep -qE 'width: min\(100%, [0-9]+px\)' "$REPO_ROOT/docs/demo-report.html"
-grep -qE 'href="#filed"><strong>[0-9]+</strong>Filed claims' \
+grep -qE 'href="#filed"><strong>[0-9]+</strong>Filed &amp; tracking' \
   "$REPO_ROOT/docs/demo-report.html"
 grep -q 'class="brand-mark"' "$REPO_ROOT/docs/demo-report.html"
 grep -q 'position: sticky' "$REPO_ROOT/docs/demo-report.html"
@@ -167,12 +167,29 @@ done
 # Cost figures live in one file so pricing drift cannot scatter through the README.
 grep -q 'docs/cost.md' "$REPO_ROOT/README.md"
 grep -q 'assets/logo-mark.svg' "$SKILL_DIR/SKILL.md"
-test "$(grep -c '<a href=.*<strong>.*</strong>.*</a>' "$REPO_ROOT/docs/demo-report.html")" -eq 4
-if grep -q 'Active claims</a>\|Watching</a>\|Paid</a>\|Expired</a>' \
-  "$REPO_ROOT/docs/demo-report.html"; then
-  echo "A secondary report category was reintroduced into the top status strip." >&2
+# One navigation row, never two: a second row of section links was the confusing part.
+test "$(grep -c '<nav' "$REPO_ROOT/docs/demo-report.html")" -eq 1
+if grep -q 'Also in this report' "$REPO_ROOT/docs/demo-report.html"; then
+  echo "A second navigation row was reintroduced into the report." >&2
   exit 1
 fi
+# Paid is a subsection of Filed & tracking, so it never gets a peer chip.
+if grep -qE '<a href="#paid"[^>]*>' "$REPO_ROOT/docs/demo-report.html"; then
+  echo "Paid was promoted to a top-level navigation chip." >&2
+  exit 1
+fi
+# Every navigation chip states a count, and the empty sections are named once.
+test "$(grep -c '<a href="#[a-z-]*"><strong>' "$REPO_ROOT/docs/demo-report.html")" -ge 4
+grep -q 'class="nav-absent"' "$REPO_ROOT/docs/demo-report.html"
+# Sections are visibly separated and long ones offer a way back.
+grep -q 'border-top: 1px solid var(--line)' "$REPO_ROOT/docs/demo-report.html"
+grep -q 'class="back-to-top"' "$REPO_ROOT/docs/demo-report.html"
+grep -q 'id="top"' "$REPO_ROOT/docs/demo-report.html"
+grep -q 'one compact pure-CSS \*\*section navigation\*\*' "$SKILL_DIR/SKILL.md"
+grep -q 'Paid is never a peer chip' "$SKILL_DIR/SKILL.md"
+grep -q 'at least the sticky row' "$SKILL_DIR/SKILL.md"
+grep -q 'Use one section-navigation row, never two' \
+  "$SKILL_DIR/references/report-template.md"
 grep -q '<span class="label">Potential value</span>' "$REPO_ROOT/docs/demo-report.html"
 grep -q 'Open claim form' "$REPO_ROOT/docs/demo-report.html"
 grep -q 'Filed &amp; tracking' "$REPO_ROOT/docs/demo-report.html"
@@ -261,6 +278,10 @@ source = re.sub(
     count=1,
 )
 source = source.replace('</body>', '<p>Not individually searched</p></body>', 1)
+source = source.replace('<a href="#watching">', '<a href="#paid">', 1)
+source = source.replace('class="back-to-top"', 'class="was-back-to-top"')
+source = source.replace('id="top"', 'id="was-top"', 1)
+source = source.replace('</nav>', '</nav><nav><span>Also in this report</span></nav>', 1)
 open(sys.argv[2], 'w', encoding='utf-8').write(source)
 PYEOF
 if python3 "$REPO_ROOT/scripts/audit-generated-report.py" \
@@ -277,7 +298,13 @@ for expected in \
   'Hero contains currency outside hero-value' \
   'duplicated between Active and Filed' \
   'Expired contains a claim ID or PIN' \
-  'complete report contains a not-individually-searched bucket'; do
+  'complete report contains a not-individually-searched bucket' \
+  'must have exactly one navigation row' \
+  'contains a second navigation row' \
+  'Paid was promoted to a top-level navigation chip' \
+  'section with content has no navigation entry' \
+  'offers no back-to-top affordance' \
+  'no #top anchor for back-to-top links'; do
   grep -Fq "$expected" "$BROKEN_AUDIT"
 done
 
