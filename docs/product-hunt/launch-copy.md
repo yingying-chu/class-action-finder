@@ -4,13 +4,13 @@
 
 Class Action Finder
 
-## Tagline (45 characters)
+## Tagline (44 characters)
 
-Find claims hiding in your email and receipts
+Find money and benefits hiding in your inbox
 
-## Description (253/260 characters)
+## Description (258/260 characters)
 
-Free, open-source AI skill for ChatGPT, Claude, and Codex. Find class action notices in your email, check potential eligibility for purchases confirmed in your inbox, verify claim links, and track deadlines, claims, and payouts in a private HTML report.
+An open-source skill for AI assistants and agents. Find class action notices in email, check purchases for potential eligibility, verify links, and track deadlines, benefits, claims, and payouts in a private HTML report. Ready for ChatGPT, Claude, and Codex.
 
 ## Pricing
 
@@ -40,7 +40,7 @@ Hi Product Hunt 👋
 
 I built Class Action Finder because settlement notices are easy to miss, and purchase-based cases may never email you at all.
 
-It is a free, open-source AI skill for ChatGPT, Claude, and Codex with two discovery paths:
+It is a free, open-source skill for AI assistants and agents. The workflow is portable, with ready-to-use support for ChatGPT, Claude, and Codex. It follows two discovery paths:
 
 - Notice Scan finds settlement emails, extracts deadlines and claim credentials, verifies the claim site, and puts urgent actions first.
 - Purchase Match reviews receipts and subscriptions, then checks whether purchases confirmed in your email may qualify for open settlements.
@@ -66,5 +66,6 @@ Thanks for taking a look!
 - Choose `Free` for pricing and `Available now` for status.
 - Use only a few closely related topics: Artificial Intelligence, Open Source, and Legal Tech when available; otherwise replace Legal Tech with Productivity.
 - Upload the assets in the order above. The third image is a flat, readable view of the sample report.
+- The gallery files are Retina 2540×1520 exports of the recommended 1270×760 canvas. Upload them at their original size rather than resaving or compressing them.
 - Use the GitHub repository as the primary URL and the live HTML demo as the additional link.
 - Keep the gallery disclaimer visible: every company, credential, date, and payout shown is illustrative.

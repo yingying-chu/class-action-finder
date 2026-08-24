@@ -58,15 +58,17 @@ const { pathToFileURL } = require("url");
   try {
     const page = await browser.newPage({
       viewport: { width: 1500, height: 3000 },
-      deviceScaleFactor: 1,
+      // Keep the 1270x760 design canvas but export galleries at 2x for
+      // high-density displays and Product Hunt's large preview modal.
+      deviceScaleFactor: 2,
     });
     await page.goto(pathToFileURL(process.env.SOURCE_FILE).href, { waitUntil: "load" });
 
     const assets = [
-      { selector: "#thumbnail", name: "thumbnail.png", width: 240, height: 240 },
-      { selector: "#gallery-one", name: "gallery-01-report.png", width: 1270, height: 760 },
-      { selector: "#gallery-two", name: "gallery-02-workflow.png", width: 1270, height: 760 },
-      { selector: "#gallery-three", name: "gallery-03-full-report.png", width: 1270, height: 760 },
+      { selector: "#thumbnail", name: "thumbnail.png", width: 240, height: 240, scale: "css" },
+      { selector: "#gallery-one", name: "gallery-01-report.png", width: 1270, height: 760, scale: "device" },
+      { selector: "#gallery-two", name: "gallery-02-workflow.png", width: 1270, height: 760, scale: "device" },
+      { selector: "#gallery-three", name: "gallery-03-full-report.png", width: 1270, height: 760, scale: "device" },
     ];
 
     for (const asset of assets) {
@@ -86,6 +88,7 @@ const { pathToFileURL } = require("url");
         animations: "disabled",
         caret: "hide",
         omitBackground: asset.selector === "#thumbnail",
+        scale: asset.scale,
       });
       const image = fs.readFileSync(`${process.env.TMP_ROOT}/${asset.name}`);
       const colourType = image[25];
