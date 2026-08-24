@@ -58,12 +58,13 @@ Thanks for taking a look!
 1. `thumbnail.png`
 2. `gallery-01-report.png`
 3. `gallery-02-workflow.png`
+4. `gallery-03-full-report.png`
 
 ## Final submission checklist
 
 - Post from a completed personal Product Hunt account and add the maker by Product Hunt username.
 - Choose `Free` for pricing and `Available now` for status.
 - Use only a few closely related topics: Artificial Intelligence, Open Source, and Legal Tech when available; otherwise replace Legal Tech with Productivity.
-- Upload the assets in the order above. The gallery needs both images to be visible.
+- Upload the assets in the order above. The third image is a flat, readable view of the sample report.
 - Use the GitHub repository as the primary URL and the live HTML demo as the additional link.
 - Keep the gallery disclaimer visible: every company, credential, date, and payout shown is illustrative.

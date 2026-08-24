@@ -171,6 +171,37 @@
   }
   .g2-footer strong { font-size: 19px; }
   .g2-footer span { color: var(--muted); font-size: 15px; }
+
+  #gallery-three { background: #e9ece7; }
+  .flat-report {
+    position: absolute;
+    top: 60px;
+    left: 110px;
+    width: 1050px;
+    height: 687px;
+    overflow: hidden;
+    border: 1px solid rgba(32, 35, 31, .18);
+    border-radius: 12px;
+    background: #fff;
+  }
+  .flat-report img { display: block; width: 1050px; height: auto; }
+  .g3-title {
+    position: absolute;
+    top: 18px;
+    left: 110px;
+    margin: 0;
+    font-size: 24px;
+    letter-spacing: -.02em;
+  }
+  .g3-label {
+    position: absolute;
+    top: 23px;
+    right: 110px;
+    z-index: 2;
+    color: #4e5850;
+    font-size: 13px;
+    font-weight: 750;
+  }
 </style>
 </head>
 <body>
@@ -216,6 +247,12 @@
       </article>
     </div>
     <div class="g2-footer"><strong>One private HTML report</strong><span>Action queue · claim tracker · phishing safeguards</span></div>
+  </section>
+
+  <section class="asset gallery" id="gallery-three">
+    <h1 class="g3-title">Full sample report</h1>
+    <div class="flat-report"><img src="../screenshot-report.png" alt="Flat view of the Class Action Finder sample report"></div>
+    <div class="g3-label">Illustrative data</div>
   </section>
 </body>
 </html>

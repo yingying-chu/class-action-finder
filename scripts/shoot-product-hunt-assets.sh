@@ -57,7 +57,7 @@ const { pathToFileURL } = require("url");
   const browser = await chromium.launch({ headless: true });
   try {
     const page = await browser.newPage({
-      viewport: { width: 1500, height: 2200 },
+      viewport: { width: 1500, height: 3000 },
       deviceScaleFactor: 1,
     });
     await page.goto(pathToFileURL(process.env.SOURCE_FILE).href, { waitUntil: "load" });
@@ -66,6 +66,7 @@ const { pathToFileURL } = require("url");
       { selector: "#thumbnail", name: "thumbnail.png", width: 240, height: 240 },
       { selector: "#gallery-one", name: "gallery-01-report.png", width: 1270, height: 760 },
       { selector: "#gallery-two", name: "gallery-02-workflow.png", width: 1270, height: 760 },
+      { selector: "#gallery-three", name: "gallery-03-full-report.png", width: 1270, height: 760 },
     ];
 
     for (const asset of assets) {
@@ -104,7 +105,8 @@ const { pathToFileURL } = require("url");
 });
 NODE
 
-for asset in thumbnail.png gallery-01-report.png gallery-02-workflow.png; do
+for asset in thumbnail.png gallery-01-report.png gallery-02-workflow.png \
+  gallery-03-full-report.png; do
   mv "$TMP_ROOT/$asset" "$ASSET_DIR/$asset"
 done
 
@@ -113,6 +115,7 @@ manifest_files=(
   docs/product-hunt/thumbnail.png
   docs/product-hunt/gallery-01-report.png
   docs/product-hunt/gallery-02-workflow.png
+  docs/product-hunt/gallery-03-full-report.png
   docs/screenshot-report.png
   skills/class-action-finder/assets/app-icon.svg
   skills/class-action-finder/assets/logo-lockup.svg
