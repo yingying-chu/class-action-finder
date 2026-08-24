@@ -234,6 +234,8 @@ Within Filed & tracking, present awaiting-payout claims first and paid claims se
 
 Show filed date, claim ID and PIN, expected payout, actual payout, payout date, and payment method when known. These records remain visible across future scans through the tracker, even though they are excluded from the filing-action queue and the actionable-value total.
 
+Wrap the paid subsection heading and every paid card in exactly one `<div id="paid">...</div>`. The wrapper is mandatory even when there are no paid claims; in that case leave it empty. Do not put awaiting-payout cards inside it. This is the stable Paid destination required by the report anchor contract.
+
 ---
 
 ## Purchase Search Audit

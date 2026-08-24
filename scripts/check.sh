@@ -80,6 +80,8 @@ grep -q 'Never render a claim ID or PIN in Expired' \
   "$SKILL_DIR/SKILL.md"
 grep -q 'Use these exact IDs for report destinations' \
   "$SKILL_DIR/references/report-template.md"
+grep -q 'Wrap the paid subsection heading and every paid card in exactly one `<div id="paid">' \
+  "$SKILL_DIR/references/report-template.md"
 python3 - "$SKILL_DIR/SKILL.md" <<'PYEOF'
 import sys
 
@@ -274,6 +276,24 @@ for expected in \
   'complete report contains a not-individually-searched bucket'; do
   grep -Fq "$expected" "$BROKEN_AUDIT"
 done
+
+# The first live v2 generator run omitted only the Paid destination, despite rendering
+# paid cards. Prove that this exact one-anchor drift cannot pass by accident.
+MISSING_PAID_REPORT="$TMP_ROOT/missing-paid-anchor.html"
+MISSING_PAID_AUDIT="$TMP_ROOT/missing-paid-anchor-audit.txt"
+python3 - "$REPO_ROOT/docs/demo-report.html" "$MISSING_PAID_REPORT" <<'PYEOF'
+import sys
+
+source = open(sys.argv[1], encoding='utf-8').read()
+source = source.replace('id="paid"', 'id="paid-missing"', 1)
+open(sys.argv[2], 'w', encoding='utf-8').write(source)
+PYEOF
+if python3 "$REPO_ROOT/scripts/audit-generated-report.py" \
+  "$MISSING_PAID_REPORT" >"$MISSING_PAID_AUDIT" 2>&1; then
+  echo "Generated-report audit accepted a missing paid anchor." >&2
+  exit 1
+fi
+grep -Fq 'missing one or more required semantic anchors' "$MISSING_PAID_AUDIT"
 
 bash -n \
   "$REPO_ROOT/install.sh" \
