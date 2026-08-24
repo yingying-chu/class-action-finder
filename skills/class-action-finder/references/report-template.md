@@ -187,6 +187,8 @@ If no phishing emails were found, show: "No phishing emails detected in this sca
 
 ## "What To Do Next" Action Queue
 
+This queue holds every claim with an **open, user-actionable deadline**, not only unfiled ones. Filing is one such action; activating an awarded benefit, electing a payment method, and uploading proof are others, and each carries its own deadline. A filed claim with an outstanding action belongs here, with the CTA verb matching the action (`Activate benefit`, not `Open claim form`). Its Filed & tracking row then keeps only the record and links here rather than repeating the deadline and CTA. A filed claim with nothing outstanding stays in Filed & tracking alone.
+
 Place this immediately after the hero and status strip, before Active claims. List items sorted by soonest deadline first. Every action must be visually separated into its own row or card so the action, deadline, value, and CTA cannot blur together.
 
 Keep all action CTAs equal in width and height. On wide layouts, center each CTA vertically inside a dedicated action column. When the action row collapses at tablet or mobile widths, place the CTA on its own full grid row but cap the button at a compact width of roughly 220–260px and center it. Do not stretch a short CTA across the mobile viewport.
