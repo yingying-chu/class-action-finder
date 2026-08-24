@@ -59,7 +59,9 @@ const { pathToFileURL } = require("url");
   try {
     const page = await browser.newPage({
       viewport: { width: 1280, height: 950 },
-      deviceScaleFactor: 1,
+      // Render at Retina density so README and downstream gallery text stays
+      // sharp when shown at its CSS size on high-density displays.
+      deviceScaleFactor: 2,
     });
     await page.goto(pathToFileURL(process.env.DEMO_FILE).href, {
       waitUntil: "load",

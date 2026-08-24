@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This repo contains a single portable skill in `skills/class-action-finder/`. Run `./install.sh` to install it into Claude's global skills directory (`~/.claude/skills/`). Use `./install.sh --codex` for Codex.
+This repo contains a single portable skill for capable AI assistant and agent environments in `skills/class-action-finder/`. ChatGPT, Claude, and Codex are the currently packaged and tested integrations, not the boundary of the core workflow. Run `./install.sh` to install it into Claude's global skills directory (`~/.claude/skills/`). Use `./install.sh --codex` for Codex.
 
 ## The skill
 

@@ -1,6 +1,6 @@
 # AGENTS.md
 
-This repo contains a single portable skill for Claude, Codex, and ChatGPT in `skills/class-action-finder/`.
+This repo contains a single portable skill for capable AI assistant and agent environments in `skills/class-action-finder/`. ChatGPT, Claude, and Codex are the currently packaged and tested integrations.
 
 **[`CLAUDE.md`](CLAUDE.md) is the source of truth** for how the skill is structured — its two jobs, the reference files, the persistent claim record, generated-report handling, the provider-adaptive mail step, and the `dist/` packaging rule. All of it applies to Codex too; read it first, and keep it (not this file) authoritative so the two don't drift.
 

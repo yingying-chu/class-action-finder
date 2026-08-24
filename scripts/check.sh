@@ -137,9 +137,9 @@ from pathlib import Path
 asset_dir = Path(sys.argv[1])
 expected = {
     "thumbnail.png": (240, 240),
-    "gallery-01-report.png": (1270, 760),
-    "gallery-02-workflow.png": (1270, 760),
-    "gallery-03-full-report.png": (1270, 760),
+    "gallery-01-report.png": (2540, 1520),
+    "gallery-02-workflow.png": (2540, 1520),
+    "gallery-03-full-report.png": (2540, 1520),
 }
 for name, dimensions in expected.items():
     data = (asset_dir / name).read_bytes()

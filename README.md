@@ -6,11 +6,11 @@
 </p>
 
 <p align="center">
-  <strong>Find the settlement notices you received and the cases your purchases might reveal.</strong>
+  <strong>Find money and benefits hiding in your inbox.</strong>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/platforms-Claude%20%7C%20Codex%20%7C%20ChatGPT-5b5bd6" alt="Claude, Codex, and ChatGPT">
+  <img src="https://img.shields.io/badge/portable-AI%20agent%20skill-5b5bd6" alt="Portable AI agent skill">
   <img src="https://img.shields.io/badge/mail-Gmail--first-4285F4" alt="Gmail-first">
   <img src="https://img.shields.io/badge/license-MIT-16a34a" alt="MIT License">
 </p>
@@ -19,7 +19,9 @@
 
 > Settlement notices are easy to miss. Purchase-based cases may never contact you at all. Class Action Finder checks both paths, verifies what it finds, and turns the results into one private report.
 
-Class Action Finder is a free, open-source AI skill for Claude, Codex, and ChatGPT. It works with connected email, keeps direct notices separate from receipt-based leads, flags suspicious claim links, and remembers what you filed or received.
+Class Action Finder is a free, open-source skill for AI assistants and agents. It works with connected email, keeps direct notices separate from receipt-based leads, flags suspicious claim links, and remembers what you filed or received.
+
+The core workflow is platform-independent. It can run in an agent environment that can search email, check public web sources, and create files. Ready-to-use installation paths are included for ChatGPT, Claude, and Codex; other capable agents may only need a thin adapter for their skill format and tools, not a separate scanning workflow.
 
 <p align="center">
   <img src="docs/screenshot-report.png" alt="Sample class action settlement report" width="760">
@@ -57,7 +59,7 @@ On local runtimes, the HTML report is saved in the installed skill's `output/` f
 
 ## Installation
 
-Local Claude and Codex installations keep separate tracker files and do not overwrite one another.
+ChatGPT, Claude, and Codex are the currently packaged and tested environments. They are examples of where the portable workflow runs, not the boundary of the project. Local Claude and Codex installations keep separate tracker files and do not overwrite one another.
 
 <details>
 <summary><strong>ChatGPT</strong></summary>
