@@ -10,9 +10,12 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/portable-AI%20agent%20skill-5b5bd6" alt="Portable AI agent skill">
-  <img src="https://img.shields.io/badge/mail-Gmail--first-4285F4" alt="Gmail-first">
-  <img src="https://img.shields.io/badge/license-MIT-16a34a" alt="MIT License">
+  <img src="https://img.shields.io/badge/portable-AI%20agent%20skill-5b5bd6" alt="Portable AI agent skill" align="middle">
+  <img src="https://img.shields.io/badge/mail-Gmail--first-4285F4" alt="Gmail-first" align="middle">
+  <img src="https://img.shields.io/badge/license-MIT-16a34a" alt="MIT License" align="middle">
+  <a href="https://www.producthunt.com/products/class-action-finder?embed=true&amp;utm_source=badge-featured&amp;utm_medium=badge&amp;utm_campaign=badge-class-action-finder" target="_blank" rel="noopener noreferrer">
+    <img src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1230448&amp;theme=light&amp;t=1787639677528" alt="Class Action Finder - Find money and benefits hiding in your inbox | Product Hunt" width="250" height="54" align="middle">
+  </a>
 </p>
 
 ---
