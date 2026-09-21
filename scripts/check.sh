@@ -473,7 +473,7 @@ cmp "$TRACKED_SKILL" "$TRACKED_ZIP"
 
 mkdir -p "$TMP_ROOT/tracked-unpacked"
 unzip -q "$TRACKED_SKILL" -d "$TMP_ROOT/tracked-unpacked"
-diff -ru -x output "$SKILL_DIR" \
+diff -ru -x output -x .DS_Store "$SKILL_DIR" \
   "$TMP_ROOT/tracked-unpacked/class-action-finder"
 
 GENERATED_DIST="$TMP_ROOT/generated-dist"
@@ -501,7 +501,7 @@ cmp "$TMP_ROOT/known-good.zip" \
 
 mkdir -p "$TMP_ROOT/unpacked"
 unzip -q "$GENERATED_SKILL" -d "$TMP_ROOT/unpacked"
-diff -ru -x output "$SKILL_DIR" \
+diff -ru -x output -x .DS_Store "$SKILL_DIR" \
   "$TMP_ROOT/unpacked/class-action-finder"
 
 for archive in "$TRACKED_SKILL" "$GENERATED_SKILL"; do

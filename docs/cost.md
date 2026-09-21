@@ -4,11 +4,11 @@ How much a scan costs, and why coverage and cost are not the tradeoff they first
 
 ## Where the cost actually is
 
-Reading a message is roughly fifty times more expensive than looking at it. Server-side search is free, search results already carry sender, subject, date, and a snippet, and only full message retrieval costs real tokens:
+Full message bodies can be much larger than search metadata. Search results often carry sender, subject, date, and a snippet; those results also consume model tokens. Server-side search and web verification may have provider-specific charges. The example below illustrates metadata and body input volume, not a complete bill:
 
 ```text
 10,000 emails in the last 12 months
-   │  server-side search: free
+   │  server-side filtering (provider-dependent cost)
    ▼
 ~800 purchase confirmations matched
    │  metadata sweep: sender + subject + snippet
