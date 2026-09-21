@@ -56,8 +56,8 @@ class-action-finder/
 
 ## Invocation defaults
 
-- A bare skill invocation or a generic request to scan email for class actions runs **Part A — Notice Scan** for the previous 12 months.
-- Purchase Match runs only when the user explicitly mentions purchases, receipts, orders, subscriptions, or something they bought; its default range is the previous 12 months. Step 2 measures the match count, then pages or adaptively partitions the requested range until it is completely covered. A wider range must never mean "take the provider's first page and stop."
+- A bare skill invocation or a generic request to scan email for class actions **asks one scan-mode question** first — `1. Settlement notices only`, `2. Purchases & receipts only`, `3. Both` — so users never have to know Purchase Match exists to use it. If the user declines to choose, run **Part A — Notice Scan**. Requests that already name a path skip the question.
+- Purchase Match runs only when the user picks it in the scan-mode question or explicitly mentions purchases, receipts, orders, subscriptions, or something they bought; its default range is the previous 12 months. Step 2 measures the match count, then pages or adaptively partitions the requested range until it is completely covered. A wider range must never mean "take the provider's first page and stop."
 - A request for both paths runs both defaults unless the user supplies another range, and announces the cost before starting.
 - Record commands update the tracker only and do not scan the mailbox.
 
@@ -65,8 +65,8 @@ class-action-finder/
 
 These encode bugs that were found and fixed; don't regress them.
 
-- **Parts A and D share one report file per day.** Part D Step 10 defines three merge cases. A purchase scan must never regenerate the file and blank out Sections 1–5.
-- **Part D loads the tracker itself** (Step 2), so it can run without Part A.
+- **Parts A and D share one report file per day.** Part D Step 11 defines three merge cases. A purchase scan must never regenerate the file and blank out Sections 1–5.
+- **Part D loads the tracker itself** (Step 3), so it can run without Part A.
 - **Legitimacy and eligibility are separate judgments.** A 🟢 settlement can be a `possible` match; never collapse them into one score.
 - **No skill-imposed coverage caps.** Do not stop after a fixed number of messages, product pairs, searches, or empty results. Finish every requested range. If a provider imposes a hard, non-pageable limit, adaptively partition by date; if complete coverage is technically impossible, say exactly what the provider prevented rather than presenting the result as complete.
 - **Measure before scanning, and size partitions from density.** Part D Step 2 probes the match count first. Fixed-length segments are not a fix on their own — if each segment still overflows one page, recursively split the dense windows until the provider can return every result.

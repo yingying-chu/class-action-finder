@@ -49,9 +49,9 @@ grep -q 'Company name only — a possible match, never an automatic match' \
   "$SKILL_DIR/SKILL.md"
 grep -q '# PART D — Match purchase confirmations to possible settlements' \
   "$SKILL_DIR/SKILL.md"
-grep -q 'A bare `/class-action-finder`, `$class-action-finder`, or skill-name invocation is not ambiguous' \
+grep -q '### The scan-mode question' \
   "$SKILL_DIR/SKILL.md"
-grep -q 'settlement notices from the last 12 months' \
+grep -q 'find class action settlements I can claim' \
   "$SKILL_DIR/agents/openai.yaml"
 grep -q 'icon_small: "./assets/app-icon.svg"' \
   "$SKILL_DIR/agents/openai.yaml"
@@ -473,7 +473,7 @@ cmp "$TRACKED_SKILL" "$TRACKED_ZIP"
 
 mkdir -p "$TMP_ROOT/tracked-unpacked"
 unzip -q "$TRACKED_SKILL" -d "$TMP_ROOT/tracked-unpacked"
-diff -ru -x output "$SKILL_DIR" \
+diff -ru -x output -x .DS_Store "$SKILL_DIR" \
   "$TMP_ROOT/tracked-unpacked/class-action-finder"
 
 GENERATED_DIST="$TMP_ROOT/generated-dist"
@@ -501,7 +501,7 @@ cmp "$TMP_ROOT/known-good.zip" \
 
 mkdir -p "$TMP_ROOT/unpacked"
 unzip -q "$GENERATED_SKILL" -d "$TMP_ROOT/unpacked"
-diff -ru -x output "$SKILL_DIR" \
+diff -ru -x output -x .DS_Store "$SKILL_DIR" \
   "$TMP_ROOT/unpacked/class-action-finder"
 
 for archive in "$TRACKED_SKILL" "$GENERATED_SKILL"; do
