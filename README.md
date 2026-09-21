@@ -41,7 +41,7 @@ The core workflow is platform-independent. It can run in an agent environment th
 | **Looks for** | Settlement notices, claim forms, filing confirmations, and payout emails | Receipts, order confirmations, renewals, and subscriptions |
 | **Then does** | Extracts deadlines, payout terms, claim IDs, PINs, and verified claim links | Searches public sources for open settlements covering the merchant, product, and purchase period |
 | **Result** | A verified notice with its deadline and next step | A possible match to review, never an automatic claim of eligibility |
-| **Try it** | `Scan my email for class action settlements.` | `Scan my purchases for class actions.` |
+| **Try it** | `Scan my email for settlement notices.` | `Scan my purchases for class actions.` |
 
 Both paths feed the same local tracker and mobile-friendly HTML report, so filed claims stop appearing as unfinished tasks and payouts remain part of the record.
 
@@ -51,12 +51,13 @@ Install for your platform, connect a searchable mail integration, then just say 
 
 | Goal | Prompt |
 |---|---|
-| Find settlement notices | `Scan my email for class action settlements.` |
+| Not sure — let it ask | `/class-action-finder` or `Scan my email for class actions.` |
+| Find settlement notices | `Scan my email for settlement notices.` |
 | Match receipts to possible cases | `Scan my purchases for class actions.` |
 | Run both discovery paths | `Scan both my settlement notices and purchases.` |
 | Track a claim or payout | `I filed my ExampleApp claim today.` |
 
-Both scans cover the previous 12 months by default. Purchase Match treats every result as a lead until eligibility is confirmed. Add a merchant, product, or date range to narrow either scan.
+A general request asks which scan to run — `1. Settlement notices only`, `2. Purchases & receipts only`, or `3. Both` — so you never need to remember the exact wording. Both scans cover the previous 12 months by default. Purchase Match treats every result as a lead until eligibility is confirmed. Add a merchant, product, or date range to narrow either scan.
 
 On local runtimes, the HTML report is saved in the installed skill's `output/` folder as `class-action-report-YYYY-MM-DD.html`.
 

@@ -4,7 +4,7 @@ interface:
   icon_small: "./assets/app-icon.svg"
   icon_large: "./assets/logo-lockup.svg"
   brand_color: "#22664F"
-  default_prompt: "Use $class-action-finder to scan my connected email for class action settlement notices from the last 12 months."
+  default_prompt: "Use $class-action-finder to find class action settlements I can claim from my connected email."
 
 policy:
   allow_implicit_invocation: true

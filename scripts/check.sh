@@ -49,9 +49,9 @@ grep -q 'Company name only — a possible match, never an automatic match' \
   "$SKILL_DIR/SKILL.md"
 grep -q '# PART D — Match purchase confirmations to possible settlements' \
   "$SKILL_DIR/SKILL.md"
-grep -q 'A bare `/class-action-finder`, `$class-action-finder`, or skill-name invocation is not ambiguous' \
+grep -q '### The scan-mode question' \
   "$SKILL_DIR/SKILL.md"
-grep -q 'settlement notices from the last 12 months' \
+grep -q 'find class action settlements I can claim' \
   "$SKILL_DIR/agents/openai.yaml"
 grep -q 'icon_small: "./assets/app-icon.svg"' \
   "$SKILL_DIR/agents/openai.yaml"

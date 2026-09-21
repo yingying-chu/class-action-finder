@@ -18,14 +18,24 @@ The link between all three is a single tracker JSON file that both discovery pat
 
 | The user is… | Do this |
 |---|---|
-| Invoking the skill by name with no scan mode or arguments | Default to **Part A — Notice Scan** for the previous 12 months |
-| Asking to scan / find / audit direct settlement notices in email | **Part A — Notice Scan** |
+| Invoking the skill by name with no scan mode, or asking generically to scan / find class actions or settlements | **Ask the scan-mode question** below, then run the chosen part(s) |
+| Asking only for direct settlement notices, claim forms, or deadlines in email ("settlement notices only", "did I miss a claim deadline") | **Part A — Notice Scan** |
 | Asking to check receipts, orders, subscriptions, or purchases for possible settlements | **Part D — Purchase Match** |
-| Explicitly asking for both notices and purchase matching | Run **Part A first**, then **Part D**, each with its own default 12-month range unless the user supplies one. This is the most expensive path — say up front that it processes two mailbox sweeps plus web verification, and offer the notice scan alone if they'd rather start small. |
+| Explicitly asking for both notices and purchase matching | Run **Part A first**, then **Part D**, each with its own default 12-month range unless the user supplies one. This is the most expensive path — say up front that it processes two mailbox sweeps plus web verification. |
 | Telling you they filed a claim, received a payout, or want to watch/list their claims | **Part B — Record** |
 | (After a Part B record that matches a claim in the latest report) | **Part C — Refresh** the current report |
 
-A bare `/class-action-finder`, `$class-action-finder`, or skill-name invocation is not ambiguous: default to Part A. A generic request to "scan my email for class actions" also means Part A and must not silently scan ordinary purchase confirmations. Enter Part D only when the user mentions purchases, receipts, orders, subscriptions, something they bought, or explicitly asks for both discovery paths. If another request is genuinely ambiguous, ask one short question before reading or writing anything.
+### The scan-mode question
+
+A bare `/class-action-finder`, `$class-action-finder`, or skill-name invocation, and a generic request such as "scan my email for class actions" or "find settlements I can claim", do not say which discovery path the user wants. Do not make the user know that a purchase scan exists or phrase it themselves: before searching mail or reading the tracker, offer the choice as one question with exactly these three options, in this order:
+
+1. **Settlement notices only** — emails from settlement administrators: open claim forms, deadlines, claim IDs, phishing checks. Fastest. *(Recommended to start)*
+2. **Purchases & receipts only** — order confirmations and subscriptions, checked against open settlements on the web. Results are possible matches to review, not confirmed eligibility.
+3. **Both** — the most thorough; two mailbox sweeps plus web verification, so it takes the longest.
+
+State in the same question that every option covers the previous 12 months unless they name another range, merchant, or product. When the runtime offers a structured multiple-choice tool (for example `AskUserQuestion`), use it; otherwise print the numbered list in chat and accept a number, an option name, or a free-text answer. Map the answer to Part A, Part D, or Part A followed by Part D, and parse any date range, merchant, or product in the answer as that scan's scope.
+
+Ask once per invocation. Skip the question whenever the request already names a path (the rows above), and never ask it for Part B record commands. If the user declines to choose or says "just scan", run Part A — never silently scan ordinary purchase confirmations. If another request is genuinely ambiguous, ask one short question before reading or writing anything.
 
 ## Runtime and paths
 
@@ -61,7 +71,7 @@ Before using an existing or uploaded tracker, parse it and verify that the root 
 
 ## Reading mail economically
 
-Nearly all of this skill's cost is message retrieval, and most of that cost is avoidable. Three rules apply to **every** mail read in Part A and Part D:
+Nearly all of this skill's cost is message retrieval, and most of that cost is avoidable. Four rules apply to **every** mail read in Part A and Part D:
 
 **1. Ask for plain text, never rendered HTML.** Mail tools commonly default to returning the full message including its HTML body. For settlement notices and receipts — layout-heavy marketing HTML wrapped around a few useful facts — that body is often ten to fifty times larger than the plain-text equivalent and contains nothing extra that matters. Always request the provider's plain-text option explicitly (`messageFormat: PLAIN_TEXT` on Gmail's `get_thread`; the nearest equivalent elsewhere). Never accept the default when a plain-text option exists.
 
@@ -90,7 +100,7 @@ When only the company matches, keep the claim actionable during a scan and note 
 
 ## Step 1 — Determine date range
 
-Parse the user's invocation text or arguments to determine the lookback period. Today's date is in the system context.
+Parse the user's invocation text, arguments, or scan-mode answer to determine the lookback period. Today's date is in the system context.
 
 | Input | Date filter (Gmail reference format) |
 |---|---|
