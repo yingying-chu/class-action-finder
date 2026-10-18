@@ -37,6 +37,7 @@ required_files=(
   "$REPO_ROOT/scripts/shoot-screenshots.sh"
   "$REPO_ROOT/scripts/shoot-product-hunt-assets.sh"
   "$REPO_ROOT/scripts/audit-generated-report.py"
+  "$REPO_ROOT/scripts/build-single-file.py"
 )
 
 for file in "${required_files[@]}"; do
@@ -51,6 +52,14 @@ grep -q '# PART D — Match purchase confirmations to possible settlements' \
   "$SKILL_DIR/SKILL.md"
 grep -q '### The scan-mode question' \
   "$SKILL_DIR/SKILL.md"
+# Agents other than Claude Code and Codex get a fixed home-directory location, so a
+# project-scoped or cache-symlinked skill copy never holds private reports.
+grep -q '`~/.class-action-finder/class-action-tracker.json`' "$SKILL_DIR/SKILL.md"
+grep -q 'Write to `~/.class-action-finder/output/`' "$SKILL_DIR/SKILL.md"
+grep -q 'keep that runtime.s tracker file but write reports to `~/.class-action-finder/output/`' \
+  "$SKILL_DIR/SKILL.md"
+grep -q 'npx skills add yingying-chu/class-action-finder' "$REPO_ROOT/README.md"
+grep -q './install.sh --agents' "$REPO_ROOT/README.md"
 grep -q 'find class action settlements I can claim' \
   "$SKILL_DIR/agents/openai.yaml"
 grep -q 'icon_small: "./assets/app-icon.svg"' \
@@ -434,6 +443,12 @@ grep -q "preserve me" "$CLAUDE_SKILL/output/existing-report.html"
 )
 test -f "$TMP_ROOT/codex-home/skills/class-action-finder/SKILL.md"
 
+(
+  cd "$TMP_ROOT/unrelated-cwd"
+  HOME="$TMP_ROOT/agents-home" "$REPO_ROOT/install.sh" --agents >/dev/null
+)
+test -f "$TMP_ROOT/agents-home/.agents/skills/class-action-finder/SKILL.md"
+
 mkdir -p "$TMP_ROOT/symlink-home/.claude/skills"
 mkdir -p "$TMP_ROOT/symlink-target"
 ln -s "$TMP_ROOT/symlink-target" \
@@ -467,6 +482,7 @@ fi
 
 TRACKED_SKILL="$REPO_ROOT/dist/class-action-finder.skill"
 TRACKED_ZIP="$REPO_ROOT/dist/class-action-finder.zip"
+TRACKED_SINGLE="$REPO_ROOT/dist/class-action-finder-single-file.md"
 unzip -tq "$TRACKED_SKILL" >/dev/null
 unzip -tq "$TRACKED_ZIP" >/dev/null
 cmp "$TRACKED_SKILL" "$TRACKED_ZIP"
@@ -481,10 +497,22 @@ PACKAGE_DIST_DIR="$GENERATED_DIST" \
   "$REPO_ROOT/scripts/package-skill.sh" >/dev/null
 GENERATED_SKILL="$GENERATED_DIST/class-action-finder.skill"
 GENERATED_ZIP="$GENERATED_DIST/class-action-finder.zip"
+GENERATED_SINGLE="$GENERATED_DIST/class-action-finder-single-file.md"
 unzip -tq "$GENERATED_SKILL" >/dev/null
 unzip -tq "$GENERATED_ZIP" >/dev/null
 cmp "$GENERATED_SKILL" "$GENERATED_ZIP"
+if ! cmp -s "$GENERATED_SINGLE" "$TRACKED_SINGLE"; then
+  echo "dist/class-action-finder-single-file.md is stale." >&2
+  echo "Run ./scripts/package-skill.sh and commit the result." >&2
+  exit 1
+fi
+for appendix in references/extraction-guide.md references/phishing-guide.md \
+  references/report-template.md assets/logo-mark.svg; do
+  grep -q "^# Appendix: $appendix\$" "$GENERATED_SINGLE"
+done
+head -n 2 "$GENERATED_SINGLE" | grep -q '^name: class-action-finder$'
 
+cp "$GENERATED_SINGLE" "$TMP_ROOT/known-good-single-file.md"
 cp "$GENERATED_SKILL" \
   "$TMP_ROOT/known-good.skill"
 cp "$GENERATED_ZIP" \
@@ -498,6 +526,7 @@ cmp "$TMP_ROOT/known-good.skill" \
   "$GENERATED_SKILL"
 cmp "$TMP_ROOT/known-good.zip" \
   "$GENERATED_ZIP"
+cmp "$TMP_ROOT/known-good-single-file.md" "$GENERATED_SINGLE"
 
 mkdir -p "$TMP_ROOT/unpacked"
 unzip -q "$GENERATED_SKILL" -d "$TMP_ROOT/unpacked"

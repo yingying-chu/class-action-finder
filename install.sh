@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Install skills into Claude Code (default) or Codex.
-# Usage: ./install.sh [--codex|--claude]
+# Install skills into Claude Code (default), Codex, or the shared
+# ~/.agents/skills/ directory read by other Agent Skills runtimes.
+# Usage: ./install.sh [--claude|--codex|--agents]
 
 set -euo pipefail
 
@@ -18,8 +19,13 @@ case "$TARGET" in
     PRODUCT="Claude Code"
     INVOCATION='/class-action-finder'
     ;;
+  --agents)
+    SKILLS_DIR="$HOME/.agents/skills"
+    PRODUCT="your agent"
+    INVOCATION='"Use the class-action-finder skill"'
+    ;;
   *)
-    echo "Usage: ./install.sh [--codex|--claude]" >&2
+    echo "Usage: ./install.sh [--claude|--codex|--agents]" >&2
     exit 2
     ;;
 esac
@@ -92,3 +98,8 @@ echo "Done. Restart $PRODUCT for the skill to take effect."
 echo ""
 echo "Then try: $INVOCATION"
 echo "Or just say: \"scan my email for class action settlements\""
+if [ "$TARGET" = "--agents" ]; then
+  echo ""
+  echo "Reports and the claim tracker live in ~/.class-action-finder/."
+  echo "Your agent also needs a mail MCP server (Gmail is most complete) and web search."
+fi

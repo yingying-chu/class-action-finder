@@ -6,7 +6,7 @@ This repo contains a single portable skill for capable AI assistant and agent en
 
 ## Codex specifics
 
-- **Install:** `./install.sh --codex` installs into Codex's global skills directory (`${CODEX_HOME:-$HOME/.codex}/skills/`) so it works across all projects. The default `./install.sh` targets Claude Code.
+- **Install:** `./install.sh --codex` installs into Codex's global skills directory (`${CODEX_HOME:-$HOME/.codex}/skills/`) so it works across all projects. The default `./install.sh` targets Claude Code. `./install.sh --agents` installs into the shared `~/.agents/skills/` directory, which Codex also reads; Codex then keeps its usual tracker but writes reports to `~/.class-action-finder/output/`.
 - **Invoke:** `$class-action-finder` on Codex, versus `/class-action-finder` on Claude Code.
 - **Tracker file:** `${CODEX_HOME:-$HOME/.codex}/class-action-tracker.json`. Codex and Claude Code keep separate trackers; neither installer overwrites the other's.
 
