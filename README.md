@@ -73,7 +73,7 @@ ChatGPT, Claude, and Codex are the currently packaged and tested environments. T
 3. Upload the Skill and connect the **Gmail** or **Outlook Email** app.
 4. Select the skill with `@` where supported, or say: `Use class-action-finder to scan my email for class actions.`
 
-Skills are available to eligible ChatGPT Business, Enterprise, Healthcare, and Edu users, subject to workspace settings and product availability. Upload and invocation controls can differ by surface. Hosted chats return the report and updated tracker as downloadable artifacts.
+Skills are available to eligible ChatGPT Business, Enterprise, Healthcare, and Edu users, subject to workspace settings and product availability. Upload and invocation controls can differ by surface. ChatGPT scans an uploaded skill before it becomes available; if it shows **Needs Review**, review the details it lists before using it. Hosted chats return the report and updated tracker as downloadable artifacts.
 
 </details>
 
@@ -81,7 +81,7 @@ Skills are available to eligible ChatGPT Business, Enterprise, Healthcare, and E
 <summary><strong>Claude.ai</strong></summary>
 
 1. Download [`class-action-finder.zip`](https://raw.githubusercontent.com/yingying-chu/class-action-finder/main/dist/class-action-finder.zip).
-2. Ensure **Code execution and file creation** is enabled.
+2. Ensure **Code execution and file creation** is enabled in **Settings → Capabilities**. On Team and Enterprise plans, an owner must also allow code execution and skills under **Organization settings → Plugins & skills**.
 3. Open **Customize → Skills → + → Create skill → Upload a skill**.
 4. Upload the ZIP and connect Gmail or another searchable mail integration.
 5. Say: `Scan my email for class action settlements.`
@@ -156,9 +156,7 @@ The instructions last only for that conversation, so attach the file again in ea
 
 </details>
 
-Setup references checked September 21, 2026: [Skills in Claude](https://support.claude.com/en/articles/12512180-use-skills-in-claude) · [Google Workspace connectors](https://support.claude.com/en/articles/10166901-use-google-workspace-connectors) · [Skills in ChatGPT](https://help.openai.com/en/articles/20001066-skills-in-chatgpt) · [ChatGPT and Codex skill invocation](https://learn.chatgpt.com/docs/build-skills)
-
-Other-agent references checked October 17, 2026: [Codex skill locations](https://developers.openai.com/codex/skills) · [Gemini CLI skills](https://geminicli.com/docs/cli/using-agent-skills/) · [GitHub Copilot CLI skills](https://docs.github.com/en/enterprise-cloud@latest/copilot/how-tos/copilot-cli/customize-copilot/add-skills) · [`skills` CLI](https://github.com/vercel-labs/skills)
+Setup references checked October 17, 2026: [Skills in Claude](https://support.claude.com/en/articles/12512180-use-skills-in-claude) · [Google Workspace connectors](https://support.claude.com/en/articles/10166901-use-google-workspace-connectors) · [Skills in ChatGPT](https://help.openai.com/en/articles/20001066-skills-in-chatgpt) · [Outlook Email app in ChatGPT](https://help.openai.com/en/articles/12512241-outlook-email-and-calendar-apps-in-chatgpt) · [ChatGPT and Codex skills](https://learn.chatgpt.com/docs/build-skills) · [Gemini CLI skills](https://geminicli.com/docs/cli/using-agent-skills/) · [GitHub Copilot CLI skills](https://docs.github.com/en/enterprise-cloud@latest/copilot/how-tos/copilot-cli/customize-copilot/add-skills) · [`skills` CLI](https://github.com/vercel-labs/skills)
 
 To update a local installation, pull the latest repository changes and rerun the same installer command, or rerun the same `npx skills add` command. Existing reports (including an `output/` symlink) and tracker files are preserved. For hosted installations, download and upload the latest archive again; for the single-file edition, download the latest file.
 
