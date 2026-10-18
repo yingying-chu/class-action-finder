@@ -60,6 +60,20 @@ grep -q 'keep that runtime.s tracker file but write reports to `~/.class-action-
   "$SKILL_DIR/SKILL.md"
 grep -q 'npx skills add yingying-chu/class-action-finder' "$REPO_ROOT/README.md"
 grep -q './install.sh --agents' "$REPO_ROOT/README.md"
+# A table row directly after prose is an orphan: Markdown ends a table at the first
+# non-row line, so the row renders as pipe-delimited text.
+python3 - "$REPO_ROOT/README.md" <<'PYEOF'
+import sys
+
+previous = ""
+in_fence = False
+for number, line in enumerate(open(sys.argv[1], encoding="utf-8"), 1):
+    if line.startswith("```"):
+        in_fence = not in_fence
+    if not in_fence and line.startswith("|") and previous.strip() and not previous.startswith("|"):
+        raise SystemExit(f"README.md:{number} is a table row cut off from its table.")
+    previous = line
+PYEOF
 grep -q 'find class action settlements I can claim' \
   "$SKILL_DIR/agents/openai.yaml"
 grep -q 'icon_small: "./assets/app-icon.svg"' \
@@ -527,6 +541,40 @@ cmp "$TMP_ROOT/known-good.skill" \
 cmp "$TMP_ROOT/known-good.zip" \
   "$GENERATED_ZIP"
 cmp "$TMP_ROOT/known-good-single-file.md" "$GENERATED_SINGLE"
+
+# A ZIP failure stops before publishing starts. Also fail the last publish move, so
+# the rollback must restore all three artifacts and the exit trap must not undo it.
+FAILING_MV_BIN="$TMP_ROOT/failing-mv-bin"
+mkdir -p "$FAILING_MV_BIN"
+REAL_MV=$(command -v mv)
+cat >"$FAILING_MV_BIN/mv" <<SHEOF
+#!/usr/bin/env bash
+case "\$1" in
+  */.class-action-finder.package.*/class-action-finder-single-file.md) exit 1 ;;
+esac
+exec "$REAL_MV" "\$@"
+SHEOF
+chmod +x "$FAILING_MV_BIN/mv"
+if PATH="$FAILING_MV_BIN:$PATH" PACKAGE_DIST_DIR="$GENERATED_DIST" \
+  "$REPO_ROOT/scripts/package-skill.sh" >/dev/null 2>&1; then
+  echo "Packager unexpectedly succeeded with a failing publish move." >&2
+  exit 1
+fi
+for artifact in skill zip; do
+  if ! cmp -s "$TMP_ROOT/known-good.$artifact" \
+    "$GENERATED_DIST/class-action-finder.$artifact"; then
+    echo "Publish rollback lost dist/class-action-finder.$artifact." >&2
+    exit 1
+  fi
+done
+if ! cmp -s "$TMP_ROOT/known-good-single-file.md" "$GENERATED_SINGLE"; then
+  echo "Publish rollback lost dist/class-action-finder-single-file.md." >&2
+  exit 1
+fi
+if ls -A "$GENERATED_DIST" | grep -q '^\.class-action-finder\.package\.'; then
+  echo "Publish rollback left a staging directory behind." >&2
+  exit 1
+fi
 
 mkdir -p "$TMP_ROOT/unpacked"
 unzip -q "$GENERATED_SKILL" -d "$TMP_ROOT/unpacked"

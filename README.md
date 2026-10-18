@@ -206,11 +206,9 @@ Only absolute `https://` URLs that pass validation can become clickable. Reports
 | Claude Code | `~/.claude/class-action-tracker.json` | `~/.claude/skills/class-action-finder/output/` |
 | Codex | `${CODEX_HOME:-$HOME/.codex}/class-action-tracker.json` | `${CODEX_HOME:-$HOME/.codex}/skills/class-action-finder/output/` |
 | Other local agents | `~/.class-action-finder/class-action-tracker.json` | `~/.class-action-finder/output/` |
-
-The Claude Code and Codex report paths apply to `./install.sh --claude` and `./install.sh --codex`. When either one loads the skill from somewhere else, such as an `npx skills` or `--agents` install, it keeps its own tracker and writes reports to `~/.class-action-finder/output/`.
 | Claude.ai / ChatGPT / single-file edition | Returned as a downloadable artifact | Returned as a downloadable artifact |
 
-With the repository installer, Claude Code and Codex write reports to the `output/` directory that belongs to the skill copy being run. Every other local install uses `~/.class-action-finder/output/`, because that skill copy may sit inside a project repository or a package cache that updates replace. Reports never go to the caller's current working directory or an unrelated repository. This repository ignores generated files in the skill's `output/` except `.gitkeep`, and distribution archives exclude `output/`. Gitignore prevents ordinary accidental staging; it does not prevent forced adds or copies elsewhere. Never commit or push private reports.
+The Claude Code and Codex report paths apply to `./install.sh --claude` and `./install.sh --codex`, which write reports to the `output/` directory that belongs to the skill copy being run. When either one loads the skill from somewhere else, such as an `npx skills` or `--agents` install, it keeps its own tracker and writes reports to `~/.class-action-finder/output/`, like every other local install, because that skill copy may sit inside a project repository or a package cache that updates replace. Reports never go to the caller's current working directory or an unrelated repository. This repository ignores generated files in the skill's `output/` except `.gitkeep`, and distribution archives exclude `output/`. Gitignore prevents ordinary accidental staging; it does not prevent forced adds or copies elsewhere. Never commit or push private reports.
 
 On hosted runtimes, do not assume arbitrary files persist across chats; keep `class-action-tracker.json` and upload it when prior claim history is needed.
 

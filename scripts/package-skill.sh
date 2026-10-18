@@ -74,6 +74,9 @@ for skill in "$REPO_ROOT"/skills/*/; do
   if ! mv "$staged_skill" "$skill_file" ||
     ! mv "$staged_archive" "$zip_file" ||
     ! mv "$staged_single" "$single_file"; then
+    # Disarm the trap first: a second cleanup on exit would delete the
+    # artifacts this one just restored, with no backups left to restore.
+    trap - EXIT INT TERM
     cleanup
     echo "Packaging failed; restored the previous release artifacts." >&2
     exit 1
