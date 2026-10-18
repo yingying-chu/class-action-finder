@@ -24,7 +24,7 @@
 
 Class Action Finder is a free, open-source skill for AI assistants and agents. It works with connected email, keeps direct notices separate from receipt-based leads, flags suspicious claim links, and remembers what you filed or received.
 
-The core workflow is platform-independent. It can run in an agent environment that can search email, check public web sources, and create files. Ready-to-use installation paths are included for ChatGPT, Claude, and Codex; other capable agents may only need a thin adapter for their skill format and tools, not a separate scanning workflow.
+The core workflow is platform-independent. It can run in an agent environment that can search email, check public web sources, and create files. Ready-to-use installation paths are included for ChatGPT, Claude, and Codex. The skill follows the open [Agent Skills](https://agentskills.io) `SKILL.md` format, so other agents that support it can install the same folder. A single-file edition is provided for assistants that cannot install skills at all.
 
 <p align="center">
   <img src="docs/screenshot-report.png" alt="Sample class action settlement report" width="760">
@@ -59,11 +59,11 @@ Install for your platform, connect a searchable mail integration, then just say 
 
 A bare invocation (`/class-action-finder` in Claude Code or `$class-action-finder` in Codex) or a general request asks which scan to run — `1. Settlement notices only`, `2. Purchases & receipts only`, or `3. Both` — so you never need to remember the exact wording. Explicit notice or purchase requests skip that question; if you decline to choose or say “just scan,” it runs Notice Scan. Record commands do not scan email. Both scans cover the previous 12 months by default. Purchase Match treats every result as a lead until eligibility is confirmed. Add a merchant, product, or date range to narrow either scan.
 
-On local runtimes, the HTML report is saved in the installed skill's `output/` folder as `class-action-report-YYYY-MM-DD.html`.
+On local runtimes, the HTML report is saved in the installed skill's `output/` folder as `class-action-report-YYYY-MM-DD.html` (in `~/.class-action-finder/output/` for other agents, `npx skills` installs, and `./install.sh --agents`).
 
 ## Installation
 
-ChatGPT, Claude, and Codex are the currently packaged and tested environments. They are examples of where the portable workflow runs, not the boundary of the project. Local Claude and Codex installations keep separate tracker files and do not overwrite one another.
+ChatGPT, Claude, and Codex are the currently packaged and tested environments. They are examples of where the portable workflow runs, not the boundary of the project. Local Claude, Codex, and other-agent installations keep separate tracker files and do not overwrite one another.
 
 <details>
 <summary><strong>ChatGPT</strong></summary>
@@ -116,9 +116,51 @@ Installs to `${CODEX_HOME:-$HOME/.codex}/skills/class-action-finder/`. Restart C
 
 </details>
 
+<details>
+<summary><strong>Other agents (Gemini CLI, GitHub Copilot, Cursor, OpenCode, and more)</strong></summary>
+
+Any agent that reads `SKILL.md` folders can run the skill. The [`skills` CLI](https://github.com/vercel-labs/skills) knows each agent's skills directory and installs into the ones it detects:
+
+```bash
+npx skills add yingying-chu/class-action-finder -g
+```
+
+Add `-a <agent>` (for example `-a gemini-cli -a github-copilot`) to choose agents explicitly. Without the CLI, install into the shared `~/.agents/skills/` directory, which Codex, Gemini CLI, and GitHub Copilot read:
+
+```bash
+git clone https://github.com/yingying-chu/class-action-finder.git
+cd class-action-finder
+./install.sh --agents
+```
+
+Before the first scan, give the agent three capabilities:
+
+- **Mail search**, usually a Gmail or other mail MCP server configured in that agent. Coding agents rarely include one by default; without it the skill stops and says so.
+- **Web search or fetch**, used to verify cases and claim sites.
+- **File writing**, used for the report and tracker in `~/.class-action-finder/`.
+
+Then restart the agent and say `Scan my email for class actions.`
+
+</details>
+
+<details>
+<summary><strong>Assistants without skill install (for example Meta Muse)</strong></summary>
+
+Some assistants accept a file in chat but cannot install a skill folder. For those, use the single-file edition, which inlines the reference guides that the folder version loads separately:
+
+1. Download [`class-action-finder-single-file.md`](https://raw.githubusercontent.com/yingying-chu/class-action-finder/main/dist/class-action-finder-single-file.md).
+2. Connect your email in the assistant, and allow web browsing if it asks.
+3. Attach the file at the start of a chat, or paste its contents, and say: `Follow the attached class-action-finder instructions to scan my email for class actions.`
+
+The instructions last only for that conversation, so attach the file again in each new chat. Keep the returned `class-action-tracker.json` and attach it too when you want earlier claim history. The single-file edition has not yet been tested on a specific assistant, and results depend on that assistant's mail and web tools.
+
+</details>
+
 Setup references checked September 21, 2026: [Skills in Claude](https://support.claude.com/en/articles/12512180-use-skills-in-claude) · [Google Workspace connectors](https://support.claude.com/en/articles/10166901-use-google-workspace-connectors) · [Skills in ChatGPT](https://help.openai.com/en/articles/20001066-skills-in-chatgpt) · [ChatGPT and Codex skill invocation](https://learn.chatgpt.com/docs/build-skills)
 
-To update a local installation, pull the latest repository changes and rerun the same installer command. Existing reports (including an `output/` symlink) and tracker files are preserved. For hosted installations, download and upload the latest archive again.
+Other-agent references checked October 17, 2026: [Codex skill locations](https://developers.openai.com/codex/skills) · [Gemini CLI skills](https://geminicli.com/docs/cli/using-agent-skills/) · [GitHub Copilot CLI skills](https://docs.github.com/en/enterprise-cloud@latest/copilot/how-tos/copilot-cli/customize-copilot/add-skills) · [`skills` CLI](https://github.com/vercel-labs/skills)
+
+To update a local installation, pull the latest repository changes and rerun the same installer command, or rerun the same `npx skills add` command. Existing reports (including an `output/` symlink) and tracker files are preserved. For hosted installations, download and upload the latest archive again; for the single-file edition, download the latest file.
 
 ## Report contents
 
@@ -163,9 +205,10 @@ Only absolute `https://` URLs that pass validation can become clickable. Reports
 |---|---|---|
 | Claude Code | `~/.claude/class-action-tracker.json` | `~/.claude/skills/class-action-finder/output/` |
 | Codex | `${CODEX_HOME:-$HOME/.codex}/class-action-tracker.json` | `${CODEX_HOME:-$HOME/.codex}/skills/class-action-finder/output/` |
-| Claude.ai / ChatGPT | Returned as a downloadable artifact | Returned as a downloadable artifact |
+| Other local agents | `~/.class-action-finder/class-action-tracker.json` | `~/.class-action-finder/output/` |
+| Claude.ai / ChatGPT / single-file edition | Returned as a downloadable artifact | Returned as a downloadable artifact |
 
-On local runtimes, the report goes to the `output/` directory that belongs to the skill copy being run, never the caller's current working directory or an unrelated repository. This repository ignores generated files there except `.gitkeep`, and distribution archives exclude `output/`. Gitignore prevents ordinary accidental staging; it does not prevent forced adds or copies elsewhere. Never commit or push private reports.
+The Claude Code and Codex report paths apply to `./install.sh --claude` and `./install.sh --codex`, which write reports to the `output/` directory that belongs to the skill copy being run. When either one loads the skill from somewhere else, such as an `npx skills` or `--agents` install, it keeps its own tracker and writes reports to `~/.class-action-finder/output/`, like every other local install, because that skill copy may sit inside a project repository or a package cache that updates replace. Reports never go to the caller's current working directory or an unrelated repository. This repository ignores generated files in the skill's `output/` except `.gitkeep`, and distribution archives exclude `output/`. Gitignore prevents ordinary accidental staging; it does not prevent forced adds or copies elsewhere. Never commit or push private reports.
 
 On hosted runtimes, do not assume arbitrary files persist across chats; keep `class-action-tracker.json` and upload it when prior claim history is needed.
 

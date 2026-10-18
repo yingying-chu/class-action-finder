@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This repo contains a single portable skill for capable AI assistant and agent environments in `skills/class-action-finder/`. ChatGPT, Claude, and Codex are the currently packaged and tested integrations, not the boundary of the core workflow. Run `./install.sh` to install it into Claude's global skills directory (`~/.claude/skills/`). Use `./install.sh --codex` for Codex.
+This repo contains a single portable skill for capable AI assistant and agent environments in `skills/class-action-finder/`. ChatGPT, Claude, and Codex are the currently packaged and tested integrations, not the boundary of the core workflow. Run `./install.sh` to install it into Claude's global skills directory (`~/.claude/skills/`). Use `./install.sh --codex` for Codex, and `./install.sh --agents` for the shared `~/.agents/skills/` directory that other Agent Skills runtimes read. Because the skill follows the open `SKILL.md` format, `npx skills add yingying-chu/class-action-finder -g` also installs it into any agent the `skills` CLI supports.
 
 ## The skill
 
@@ -42,15 +42,15 @@ class-action-finder/
 ├── README.md                 user-facing
 ├── CLAUDE.md                 this file — contributor source of truth
 ├── AGENTS.md                 pointer to this file for Codex
-├── install.sh                --claude (default) | --codex
+├── install.sh                --claude (default) | --codex | --agents
 ├── skills/class-action-finder/
 │   ├── SKILL.md              the portable workflow (Parts A–D)
 │   ├── agents/openai.yaml    ChatGPT interface metadata
 │   ├── assets/               brand SVGs
 │   ├── references/           runtime-loaded guides
 │   └── output/               generated reports (gitignored)
-├── scripts/                  package-skill.sh, shoot-screenshots.sh, check.sh
-├── dist/                     .zip + byte-identical .skill
+├── scripts/                  package-skill.sh, build-single-file.py, shoot-screenshots.sh, check.sh
+├── dist/                     .zip + byte-identical .skill + single-file .md
 └── docs/                     demo report, screenshots, cost model
 ```
 
@@ -78,6 +78,7 @@ These encode bugs that were found and fixed; don't regress them.
 - **The action queue is about what is due, not about what is unfiled.** A filed claim can still owe an action — activating an awarded benefit, electing payment, uploading proof — each with its own deadline. Those belong in the queue with a matching CTA verb; the Filed & tracking row keeps the record and links to the queue. The first live run buried a benefit that expired in 34 days under an `Open window` label that means something else.
 - **One navigation row, describing this report.** Never two rows. Chip order is fixed (Action required, Security alerts, Purchase matches, Filed & tracking, Watching, Expired, Active claims) so layout stays predictable, but membership is not: sections with a zero count are omitted and named once in a muted trailing line. Every chip carries its count. `Paid` is a subsection of Filed & tracking and shows as a nested count inside that chip — never a peer. A section with content and no navigation entry is the bug this replaced.
 - **Sections must look separated, and outrank their cards.** A rule and real space above each section head, a heading heavier than the bordered cards beneath it, and a right-aligned item count. Long sections end with a quiet `↑ Back to top` link to `#top` — that link is the only orientation aid mobile has once the navigation row stops being sticky.
+- **Reports never live in a skill copy this project does not control.** Only the `install.sh --claude` / `--codex` copies write to the skill's own `output/`; any other install writes to `~/.class-action-finder/output/`, so a project-scoped or package-cache install can neither commit nor lose a private report.
 - **`scroll-margin-top` must be at least the sticky row's rendered height.** A smaller value hides the heading it just scrolled to; the first live run shipped 16px against a 68px bar.
 - **Generated-report destinations are semantic.** Use `action-queue`, `purchase-matches`, `active`, `watching`, `expired`, `filed`, `paid`, and `security`; positional IDs such as `sec1` are drift. Filed & tracking always contains exactly one `<div id="paid">...</div>`, even when the paid subset is empty.
 
@@ -113,12 +114,13 @@ Generated reports remain self-contained. Inline the trusted static artwork from 
 Stored on each user's own machine (not committed), per runtime:
 - **Claude Code** — `~/.claude/class-action-tracker.json`
 - **Codex** — `${CODEX_HOME:-$HOME/.codex}/class-action-tracker.json`
+- **Any other local agent** — `~/.class-action-finder/class-action-tracker.json`
 
-Neither platform's installer overwrites the other's tracker. The filename kept the `tracker` name for backward compatibility with existing data — don't rename it.
+No runtime's installer overwrites another runtime's tracker. The filename kept the `tracker` name for backward compatibility with existing data — don't rename it.
 
 ## Generated reports
 
-Written to `output/` relative to the skill's own installed directory, never the user's cwd or Desktop/Documents. The whole folder is gitignored (everything under `output/` except a `.gitkeep`), so a generated report is **local-only and can never be committed or pushed to the origin repo** — this holds for anyone who clones or forks the project, not just the maintainer. Reports stay on the machine that ran the scan.
+Written to `output/` relative to the skill's own installed directory when Claude Code or Codex runs a copy installed by `install.sh --claude` / `--codex`, never the user's cwd or Desktop/Documents. Every other local install — other agents, `npx skills`, `install.sh --agents` — writes to `~/.class-action-finder/output/` instead: `npx skills` may install project-scoped into the user's own repository, where this project's gitignore does not apply, or symlink the skill from a package cache that an update replaces. The skill's `output/` folder is gitignored (everything under `output/` except a `.gitkeep`), so a generated report is **local-only and can never be committed or pushed to the origin repo** — this holds for anyone who clones or forks the project, not just the maintainer. Reports stay on the machine that ran the scan.
 
 A user may redirect the installed skill's `output/` to a more convenient, still-gitignored location (for example, symlink it into a project checkout so reports are easy to find). `install.sh` detects a symlinked `output/` and preserves the link across reinstalls rather than replacing it with a fresh directory.
 
@@ -134,7 +136,7 @@ The skill uses whichever connected mail app, connector, or MCP can search mail a
 
 ## Portable distribution (dist/)
 
-`dist/class-action-finder.zip` is checked in for Claude uploads, and the byte-identical `dist/class-action-finder.skill` is checked in for ChatGPT. **After editing `SKILL.md`, `agents/openai.yaml`, an asset, or a reference file, re-run `./scripts/package-skill.sh` and commit both artifacts** so the download links stay current.
+`dist/class-action-finder.zip` is checked in for Claude uploads, and the byte-identical `dist/class-action-finder.skill` is checked in for ChatGPT. `dist/class-action-finder-single-file.md` is the same workflow as one Markdown file — SKILL.md followed by every reference guide and the report logo as appendices — for assistants such as Meta Muse that accept an attached file but cannot install a skill folder. **After editing `SKILL.md`, `agents/openai.yaml`, an asset, or a reference file, re-run `./scripts/package-skill.sh` and commit all three artifacts** so the download links stay current; `scripts/check.sh` fails on a stale single-file edition.
 
 The cost model and per-model estimates live in [`docs/cost.md`](docs/cost.md); README links to it rather than inlining it, so pricing drift is contained to one file.
 
