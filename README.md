@@ -224,7 +224,7 @@ The skill itself is free. Model usage, subscription limits, and any search or co
 
 The skill has **no fixed 100-message, 25-product, or 30-search ceiling**. It pages to completion and adaptively partitions dense date ranges rather than silently sampling a first page and calling it complete.
 
-→ [Illustrative workload model and dated per-model estimates](docs/cost.md). Check your provider’s current pricing before relying on a dollar estimate.
+→ [Workload model, a measured scan, and dated per-model estimates](docs/cost.md). Check your provider’s current pricing before relying on a dollar estimate.
 
 ## Scheduled scans
 

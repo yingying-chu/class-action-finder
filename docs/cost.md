@@ -29,6 +29,8 @@ Three choices do most of the work here:
 
 The practical effect: a wide metadata sweep with narrow, plain-text reads is usually both broader *and* cheaper than a narrow sweep of full-HTML fetches.
 
+The funnel leaves out the largest line on a real bill. An agent works in a loop, and every model request re-reads the conversation so far, mostly from the prompt cache. In the [measured run](#measured-scan-cost) below, cache reads came to about 4.6M tokens, against about 53K output tokens. Fewer model requests and smaller tool results therefore save more than any single read.
+
 ## Workload by scan type
 
 **Notice Scan** — four overlapping metadata searches, de-duplicated before any body retrieval, followed by plain-text reads only for relevant candidates and public-record checks only for unique cases.
@@ -43,19 +45,37 @@ The skill has no fixed 100-message, 25-product, or 30-search ceiling. It follows
 
 This matters more than it sounds. Mail search returns results newest-first, so a scan that takes only the first page makes a 12-month request and a 3-year request return the same recent messages — while reporting both as complete. If an external service makes complete coverage genuinely impossible, the report names that provider constraint and the known coverage instead of silently sampling.
 
-## Rough per-scan estimates
+## Measured scan cost
 
-API-equivalent token estimates for a **notice scan** with prompt caching — not guaranteed subscription charges.
+These figures come from one real run on September 21, 2026. It was a **Both** scan (settlement notices and purchases) of one personal mailbox over the default 12 months, run in Claude Code on Claude Sonnet 5 with prompt caching. It cost about **$2.29** at Claude Sonnet 5 list prices.
 
-| Provider | Model | Estimated typical notice scan | Best fit |
-|---|---|---:|---|
-| Anthropic | **Opus** | ~$1.40 | Deepest review for ambiguous notices |
-| Anthropic | **Sonnet** | ~$0.35 | Balanced everyday scanning |
-| Anthropic | **Haiku** | ~$0.12 | Frequent or scheduled scans |
-| OpenAI | **GPT-5.6 Sol** | ~$0.70 | Frontier capability |
-| OpenAI | **GPT-5.6 Terra** | ~$0.28 | Balanced intelligence and cost |
-| OpenAI | **GPT-5.6 Luna** | ~$0.03 | Cost-sensitive, high-volume scans |
+| | Notice phase | Full scan |
+|---|---:|---:|
+| Model requests | 11 | 26 |
+| Cache reads | 942K | 4.58M |
+| Cache writes | 220K | 337K |
+| Output tokens | 10K | 53K |
+| Largest single request | 168K | 285K |
 
-Actual cost varies with date range, tool calls, and reasoning effort. OpenAI estimates use the published [Sol](https://developers.openai.com/api/docs/models/gpt-5.6-sol), [Terra](https://developers.openai.com/api/docs/models/gpt-5.6-terra), and [Luna](https://developers.openai.com/api/docs/models/gpt-5.6-luna) rates checked in August 2026. Model pricing changes; treat this table as an order of magnitude, not a quote.
+The notice phase ends at the first purchase search, so it does not include writing the report. A notice-only scan therefore costs somewhat more than that column.
 
-One recovered claim deadline can outweigh years of routine scans.
+### The same workload at current prices
+
+This table applies the measured token counts to each model's list price as of October 17, 2026. Each request is priced separately, so long-prompt tiers apply where a request crosses them: Claude Haiku 5.5 above 100K prompt tokens, and OpenAI models above 272K input tokens. These are API-equivalent costs, not subscription charges.
+
+| Provider | Model | Notice phase | Full scan | Best fit |
+|---|---|---:|---:|---|
+| Anthropic | **Claude Opus 5.5** | ~$1.50 | ~$3.70 | Deepest review for ambiguous notices |
+| Anthropic | **Claude Sonnet 5.5** | ~$0.75 | ~$1.80 | Balanced everyday scanning |
+| Anthropic | **Claude Haiku 5.5** | ~$0.13 | ~$0.50 | Frequent or scheduled scans |
+| OpenAI | **GPT-6 Astra** | ~$4.20 | ~$13 | OpenAI's most capable model |
+| OpenAI | **GPT-6.1 Sol** | ~$0.75 | ~$2.00 | Balanced capability and cost |
+| OpenAI | **GPT-6 Luna** | ~$0.04 | ~$0.13 | Cost-sensitive, high-volume scans |
+
+Treat this as an order of magnitude, not a quote:
+
+- It is one run on one mailbox. A busier inbox, a longer date range, or more distinct purchases raises the cost; a narrow merchant, product, or date request lowers it.
+- Other models tokenize text differently, and they take different numbers of turns and write different amounts of output for the same task.
+- Prices change. Rates used: [Claude pricing](https://platform.claude.com/docs/en/about-claude/pricing), [OpenAI pricing](https://developers.openai.com/api/docs/pricing), and the [GPT-6 Astra](https://developers.openai.com/api/docs/models/gpt-6-astra), [GPT-6.1 Sol](https://developers.openai.com/api/docs/models/gpt-6.1-sol), and [GPT-6 Luna](https://developers.openai.com/api/docs/models/gpt-6-luna) model pages, all checked October 17, 2026.
+
+One recovered claim can outweigh many routine scans.
