@@ -56,8 +56,10 @@ grep -q '### The scan-mode question' \
 # project-scoped or cache-symlinked skill copy never holds private reports.
 grep -q '`~/.class-action-finder/class-action-tracker.json`' "$SKILL_DIR/SKILL.md"
 grep -q 'Write to `~/.class-action-finder/output/`' "$SKILL_DIR/SKILL.md"
-grep -q 'keep that runtime.s tracker file but write reports to `~/.class-action-finder/output/`' \
-  "$SKILL_DIR/SKILL.md"
+grep -q 'writes a `.install-sh` marker file at the skill root' "$SKILL_DIR/SKILL.md"
+# The marker exists only in installed copies, never in the repository or archives.
+test ! -e "$SKILL_DIR/.install-sh"
+grep -q 'do not infer the install method from the path' "$SKILL_DIR/SKILL.md"
 grep -q 'npx skills add yingying-chu/class-action-finder' "$REPO_ROOT/README.md"
 grep -q './install.sh --agents' "$REPO_ROOT/README.md"
 # A table row directly after prose is an orphan: Markdown ends a table at the first
@@ -438,6 +440,8 @@ printf '%s\n' '{"filed_claims":[],"watch_list":[]}' \
 )
 CLAUDE_SKILL="$TMP_ROOT/claude-home/.claude/skills/class-action-finder"
 test -f "$CLAUDE_SKILL/SKILL.md"
+# Only install.sh copies may keep reports in their own output/; the marker says so.
+test -f "$CLAUDE_SKILL/.install-sh"
 grep -q "leave me alone" \
   "$TMP_ROOT/claude-home/.claude/skills/other-skill/sentinel.txt"
 grep -q '"filed_claims"' \
@@ -456,12 +460,14 @@ grep -q "preserve me" "$CLAUDE_SKILL/output/existing-report.html"
   CODEX_HOME="$TMP_ROOT/codex-home" "$REPO_ROOT/install.sh" --codex >/dev/null
 )
 test -f "$TMP_ROOT/codex-home/skills/class-action-finder/SKILL.md"
+test -f "$TMP_ROOT/codex-home/skills/class-action-finder/.install-sh"
 
 (
   cd "$TMP_ROOT/unrelated-cwd"
   HOME="$TMP_ROOT/agents-home" "$REPO_ROOT/install.sh" --agents >/dev/null
 )
 test -f "$TMP_ROOT/agents-home/.agents/skills/class-action-finder/SKILL.md"
+test ! -e "$TMP_ROOT/agents-home/.agents/skills/class-action-finder/.install-sh"
 
 mkdir -p "$TMP_ROOT/symlink-home/.claude/skills"
 mkdir -p "$TMP_ROOT/symlink-target"
