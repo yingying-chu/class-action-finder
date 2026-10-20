@@ -58,6 +58,14 @@ for skill in "$REPO_ROOT"/skills/*/; do
   mkdir -p "$staged"
   cp -R "$skill"/. "$staged"/
 
+  # Claude Code and Codex keep reports in this copy's output/ only when this
+  # marker is present; any other copy (skills CLI, project-scoped, symlinked)
+  # writes to ~/.class-action-finder/output/ because an update replaces it.
+  if [ "$TARGET" != "--agents" ]; then
+    printf '%s\n' "Installed by class-action-finder install.sh; output/ is preserved on reinstall." \
+      >"$staged/.install-sh"
+  fi
+
   if [ -d "$dest" ]; then
     echo "  Updating $skill_name..."
 
